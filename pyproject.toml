@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "nix-alien"
+version = "0.1.0"
+description = "Run unpatched binaries on Nix/NixOS"
+authors = ["Thiago Kenji Okada <thiagokokada@gmail.com>"]
+license = "MIT"
+
+[tool.poetry.dependencies]
+python = "^3.8"
+pylddwrap = "^1.2.1"
+pyfzf = "^0.2.2"
+
+[tool.poetry.dev-dependencies]
+black = "^21.9b0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
