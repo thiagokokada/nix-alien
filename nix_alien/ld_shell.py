@@ -18,17 +18,22 @@ mkShell {
     ${packages}
   ];
   NIX_LD = lib.fileContents "$${stdenv.cc}/nix-support/dynamic-linker";
+  shellHook = ''
+    ${program}
+  '';
 }
 """
 )
 
 
-def create_ld_shell(program_name: str) -> str:
-    path = Path(program_name).expanduser()
+def create_ld_shell(program: str) -> str:
+    path = Path(program).expanduser()
     libs = find_libs(path)
 
     return SHELL_TEMPLATE.substitute(
-        name=path.name, packages="\n    ".join(libs.values())
+        name=path.name,
+        program=program,
+        packages="\n    ".join(libs.values())
     )
 
 
