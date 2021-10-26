@@ -1,10 +1,11 @@
 import argparse
+import subprocess
 import sys
 from pathlib import Path
 from string import Template
 
 from .libs import get_unique_packages, find_libs
-from .helpers import yes_or_no
+from .helpers import get_cache_path
 
 FHS_TEMPLATE = Template(
     """\
@@ -39,25 +40,31 @@ def main(args=sys.argv[1:]):
     parser = argparse.ArgumentParser()
     parser.add_argument("program", help="Program to run")
     parser.add_argument(
-        "--destination",
-        help="Where to create 'default.nix' file",
-        default="default.nix",
-    )
-    parser.add_argument(
         "--recreate",
-        help="Ignore yes/no prompts",
+        help="Recreate 'default.nix' file if exists",
         action="store_true",
     )
 
     args = parser.parse_args(args=args)
+    cache_file = get_cache_path(args.program) / "default.nix"
+    name = Path(args.program).name
 
-    if Path(args.destination).exists():
-        if not args.yes and not yes_or_no(
-            f"File '{args.destination}' already exist! Continue?"
-        ):
-            sys.exit(1)
+    if args.recreate:
+        cache_file.unlink(missing_ok=True)
 
-    with open(args.destination, "w") as f:
-        f.write(create_fhs_shell(args.program))
+    if not cache_file.exists():
+        cache_file.parent.mkdir(parents=True, exist_ok=True)
+        with open(cache_file, "w") as f:
+            f.write(create_fhs_shell(args.program))
+        print(f"File '{cache_file}' created successfuly!")
 
-    print(f"File '{args.destination}' created successfuly!")
+    build_path = Path(
+        subprocess.run(
+            ["nix-build", "--no-out-link", cache_file],
+            check=True,
+            capture_output=True,
+            text=True,
+        ).stdout.strip()
+    )
+
+    subprocess.run([build_path / "bin" / f"{name}-fhs"])

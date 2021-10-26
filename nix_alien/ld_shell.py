@@ -1,10 +1,11 @@
 import argparse
+import subprocess
 import sys
 from pathlib import Path
 from string import Template
 
 from .libs import get_unique_packages, find_libs
-from .helpers import yes_or_no
+from .helpers import get_cache_path
 
 SHELL_TEMPLATE = Template(
     """\
@@ -38,25 +39,21 @@ def main(args=sys.argv[1:]):
     parser = argparse.ArgumentParser()
     parser.add_argument("program", help="Program to run")
     parser.add_argument(
-        "--destination",
-        help="Where to create 'shell.nix' file",
-        default="shell.nix",
-    )
-    parser.add_argument(
-        "--yes",
-        help="Ignore yes/no prompts",
+        "--recreate",
+        help="Recreate 'shell.nix' file if exists",
         action="store_true",
     )
 
     args = parser.parse_args(args=args)
+    cache_file = get_cache_path(args.program) / "shell.nix"
 
-    if Path(args.destination).exists():
-        if not args.yes and not yes_or_no(
-            f"File '{args.destination}' already exist! Continue?"
-        ):
-            sys.exit(1)
+    if args.recreate:
+        cache_file.unlink(missing_ok=True)
 
-    with open(args.destination, "w") as f:
-        f.write(create_ld_shell(args.program))
+    if not cache_file.exists():
+        cache_file.parent.mkdir(parents=True, exist_ok=True)
+        with open(cache_file, "w") as f:
+            f.write(create_ld_shell(args.program))
+        print(f"File '{cache_file}' created successfuly!")
 
-    print(f"File '{args.destination}' created successfuly!")
+    subprocess.run(["nix-shell", str(cache_file)])
