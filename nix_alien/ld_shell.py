@@ -3,7 +3,7 @@ import sys
 from pathlib import Path
 from string import Template
 
-from .libs import find_libs
+from .libs import get_unique_packages, find_libs
 
 SHELL_TEMPLATE = Template(
     """\
@@ -26,12 +26,10 @@ mkShell {
 def create_ld_shell(program: str) -> str:
     path = Path(program).expanduser()
     libs = find_libs(path)
-    # Remove None values
-    unique_packages = set([l for l in libs.values() if l])
 
     return SHELL_TEMPLATE.substitute(
         name=path.name,
-        packages=("\n" + 4 * " ").join(sorted(unique_packages)),
+        packages=("\n" + 4 * " ").join(get_unique_packages(libs)),
     )
 
 

@@ -55,10 +55,16 @@ def find_libs(path: Union[Path, str]) -> Dict[str, Optional[str]]:
     return resolved_deps
 
 
+def get_unique_packages(libs: Dict[str, Optional[str]]) -> List[str]:
+    # remove None values
+    unique_packages = set([l for l in libs.values() if l])
+    return sorted(unique_packages)
+
+
 def main(args=sys.argv[1:]):
     parser = argparse.ArgumentParser()
     parser.add_argument("program", help="Program to analyze")
 
     args = parser.parse_args(args=args)
     libs = find_libs(args.program)
-    print(" ".join([l for l in libs.values() if l]))  # remove None values
+    print(" ".join(get_unique_packages(libs)))
