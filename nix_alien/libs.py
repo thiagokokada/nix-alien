@@ -1,6 +1,8 @@
+import argparse
 import subprocess
+import sys
 from pathlib import Path
-from typing import Dict, Optional
+from typing import Dict, Optional, Union
 
 import lddwrap
 from pyfzf.pyfzf import FzfPrompt
@@ -21,7 +23,8 @@ def find_lib_candidates(basename: str):
     )
 
 
-def find_libs(path: Path) -> Dict[str, Optional[str]]:
+def find_libs(path: Union[Path, str]) -> Dict[str, Optional[str]]:
+    path = Path(path).expanduser()
     deps = lddwrap.list_dependencies(path=path)
     resolved_deps = {}
 
@@ -31,7 +34,7 @@ def find_libs(path: Path) -> Dict[str, Optional[str]]:
 
         candidates = find_lib_candidates(dep.soname)
         if len(candidates) == 0:
-            print(f"No candidate found for '{dep.soname}'")
+            print(f"No candidate found for '{dep.soname}'", file=sys.stderr)
             selected_candidate = None
         elif len(candidates) == 1:
             selected_candidate = candidates[0]
@@ -45,7 +48,19 @@ def find_libs(path: Path) -> Dict[str, Optional[str]]:
                     candidates, f"--cycle --prompt '{dep.soname}> '"
                 )[0]
 
-        print(f"Selected candidate for '{dep.soname}': {selected_candidate}")
+        print(
+            f"Selected candidate for '{dep.soname}': {selected_candidate}",
+            file=sys.stderr,
+        )
         resolved_deps[dep.soname] = selected_candidate
 
     return resolved_deps
+
+
+def main(args=sys.argv[1:]):
+    parser = argparse.ArgumentParser()
+    parser.add_argument("program", help="Program to analyze")
+
+    args = parser.parse_args(args=args)
+    libs = find_libs(args.program)
+    print(" ".join([l for l in libs.values() if l]))  # remove None values

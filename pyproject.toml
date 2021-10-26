@@ -15,6 +15,7 @@ black = "^21.9b0"
 
 [tool.poetry.scripts]
 nix-alien-ld = "nix_alien.ld_shell:main"
+nix-alien-find-libs = "nix_alien.libs:main"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
