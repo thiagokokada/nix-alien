@@ -2,7 +2,7 @@ import argparse
 import subprocess
 import sys
 from pathlib import Path
-from typing import Dict, Optional, Union
+from typing import Dict, List, Optional, Union
 
 import lddwrap
 from pyfzf.pyfzf import FzfPrompt
@@ -10,7 +10,7 @@ from pyfzf.pyfzf import FzfPrompt
 fzf = FzfPrompt()
 
 
-def find_lib_candidates(basename: str):
+def find_lib_candidates(basename: str) -> List[str]:
     result = subprocess.run(
         ["nix-locate", "--minimal", "--whole-name", "--top-level", basename],
         check=True,
@@ -24,10 +24,10 @@ def find_lib_candidates(basename: str):
 def find_libs(path: Union[Path, str]) -> Dict[str, Optional[str]]:
     path = Path(path).expanduser()
     deps = lddwrap.list_dependencies(path=path)
-    resolved_deps = {}
+    resolved_deps: Dict[str, Optional[str]] = {}
 
     for dep in deps:
-        if dep.found:
+        if not dep.soname or dep.found:
             continue
 
         candidates = find_lib_candidates(dep.soname)

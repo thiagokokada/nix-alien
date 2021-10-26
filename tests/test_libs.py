@@ -1,10 +1,10 @@
-from unittest.mock import patch, Mock
 from collections import namedtuple
+from unittest.mock import patch
 
 from nix_alien import libs
 
-CompletedProcessMock = namedtuple("CompletedProcess", ["stdout"])
-DependencyMock = namedtuple("Dependency", ["soname", "path", "found"])
+CompletedProcessMock = namedtuple("CompletedProcessMock", ["stdout"])
+DependencyMock = namedtuple("DependencyMock", ["soname", "path", "found"])
 
 
 def test_find_lib_candidates():
