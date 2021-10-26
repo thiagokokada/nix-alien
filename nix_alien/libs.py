@@ -1,6 +1,6 @@
 import subprocess
 from pathlib import Path
-from typing import Dict
+from typing import Dict, Optional
 
 import lddwrap
 from pyfzf.pyfzf import FzfPrompt
@@ -21,7 +21,7 @@ def find_lib_candidates(basename: str):
     )
 
 
-def find_libs(path: Path) -> Dict[str, str]:
+def find_libs(path: Path) -> Dict[str, Optional[str]]:
     deps = lddwrap.list_dependencies(path=path)
     resolved_deps = {}
 
@@ -30,8 +30,10 @@ def find_libs(path: Path) -> Dict[str, str]:
             continue
 
         candidates = find_lib_candidates(dep.soname)
-        assert len(candidates) > 0, f"Did not find candidates for '{dep.soname}'"
-        if len(candidates) == 1:
+        if len(candidates) == 0:
+            print(f"No candidate found for '{dep.soname}'")
+            selected_candidate = None
+        elif len(candidates) == 1:
             selected_candidate = candidates[0]
         else:
             intersection = set(resolved_deps.values()).intersection(candidates)
