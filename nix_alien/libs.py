@@ -11,16 +11,14 @@ fzf = FzfPrompt()
 
 
 def find_lib_candidates(basename: str):
-    return (
-        subprocess.run(
-            ["nix-locate", "--minimal", "--whole-name", "--top-level", basename],
-            check=True,
-            capture_output=True,
-            text=True,
-        )
-        .stdout.strip()
-        .split("\n")
+    result = subprocess.run(
+        ["nix-locate", "--minimal", "--whole-name", "--top-level", basename],
+        check=True,
+        capture_output=True,
+        text=True,
     )
+    candidates = result.stdout.strip().split("\n")
+    return [c for c in candidates if c != ""]
 
 
 def find_libs(path: Union[Path, str]) -> Dict[str, Optional[str]]:

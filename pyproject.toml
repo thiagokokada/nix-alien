@@ -12,6 +12,7 @@ pyfzf = "^0.2.2"
 
 [tool.poetry.dev-dependencies]
 black = "^21.9b0"
+pytest = "^6.2.5"
 
 [tool.poetry.scripts]
 nix-alien-ld = "nix_alien.ld_shell:main"
