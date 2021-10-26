@@ -13,6 +13,9 @@ pyfzf = "^0.2.2"
 [tool.poetry.dev-dependencies]
 black = "^21.9b0"
 
+[tool.poetry.scripts]
+nix-alien-ld = "nix_alien.ld_shell:main"
+
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"

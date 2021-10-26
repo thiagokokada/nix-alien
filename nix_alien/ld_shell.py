@@ -1,5 +1,5 @@
+import argparse
 import sys
-import subprocess
 from pathlib import Path
 from string import Template
 
@@ -35,9 +35,15 @@ def create_ld_shell(program: str) -> str:
     )
 
 
-def main(argv=sys.argv):
-    program = argv[1]
-    with open("shell.nix", "w") as f:
-        f.write(create_ld_shell(program))
+def main(args=sys.argv[1:]):
+    parser = argparse.ArgumentParser()
+    parser.add_argument("program", help="Program to run")
+    parser.add_argument(
+        "--destination",
+        help="Where to create 'shell.nix' file",
+        default="shell.nix",
+    )
 
-    subprocess.run(["nix-shell"])
+    args = parser.parse_args(args=args)
+    with open(args.destination, "w") as f:
+        f.write(create_ld_shell(args.program))
