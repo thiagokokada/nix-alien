@@ -26,12 +26,12 @@ mkShell {
 def create_ld_shell(program: str) -> str:
     path = Path(program).expanduser()
     libs = find_libs(path)
+    # Remove None values
+    unique_packages = set([l for l in libs.values() if l])
 
     return SHELL_TEMPLATE.substitute(
         name=path.name,
-        packages=("\n" + 4 * " ").join(
-            [l for l in libs.values() if l]
-        ),  # remove None values
+        packages=("\n" + 4 * " ").join(sorted(unique_packages)),
     )
 
 
