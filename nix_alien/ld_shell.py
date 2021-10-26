@@ -4,6 +4,7 @@ from pathlib import Path
 from string import Template
 
 from .libs import get_unique_packages, find_libs
+from .helpers import yes_or_no
 
 SHELL_TEMPLATE = Template(
     """\
@@ -41,7 +42,21 @@ def main(args=sys.argv[1:]):
         help="Where to create 'shell.nix' file",
         default="shell.nix",
     )
+    parser.add_argument(
+        "--yes",
+        help="Ignore yes/no prompts",
+        action="store_true",
+    )
 
     args = parser.parse_args(args=args)
+
+    if Path(args.destination).exists():
+        if not args.yes and not yes_or_no(
+            f"File '{args.destination}' already exist! Continue?"
+        ):
+            sys.exit(1)
+
     with open(args.destination, "w") as f:
         f.write(create_ld_shell(args.program))
+
+    print(f"File '{args.destination}' created successfuly!")

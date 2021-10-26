@@ -87,14 +87,24 @@ def test_find_libs_when_multiple_candidates_found():
 def test_get_unique_packages():
     assert libs.get_unique_packages({}) == []
 
-    assert libs.get_unique_packages({
-        "libfoo.so": "foo.out",
-        "libbar.so": "bar.out",
-        "libnone.so": None
-    }) == ["bar.out", "foo.out"]
+    assert (
+        libs.get_unique_packages(
+            {
+                "libfoo.so": "foo.out",
+                "libbar.so": "bar.out",
+                "libnone.so": None,
+            }
+        )
+        == ["bar.out", "foo.out"]
+    )
 
-    assert libs.get_unique_packages({
-        "libfoo.so": "foo.out",
-        "libbar.so": "foo.out",
-        "libnone.so": None
-    }) == ["foo.out"]
+    assert (
+        libs.get_unique_packages(
+            {
+                "libfoo.so": "foo.out",
+                "libbar.so": "foo.out",
+                "libnone.so": None,
+            }
+        )
+        == ["foo.out"]
+    )
