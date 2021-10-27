@@ -10,7 +10,7 @@ let
       final: prev: {
         pylddwrap = prev.pylddwrap.overrideAttrs (oldAttrs: {
           propagatedBuildInputs = (oldAttrs.propagatedBuildInputs or [ ]) ++ [
-            pkgs.stdenv.glibc.bin
+            pkgs.glibc.bin
           ];
         });
         pyfzf = prev.pyfzf.overrideAttrs (oldAttrs: {
