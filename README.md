@@ -1,5 +1,7 @@
 # nix-alien
 
+[![ci](https://github.com/thiagokokada/nix-alien/actions/workflows/ci.yml/badge.svg)](https://github.com/thiagokokada/nix-alien/actions/workflows/ci.yml)
+
 ## Introduction
 
 You are running nix/NixOS and have ever encountered the following problem?
