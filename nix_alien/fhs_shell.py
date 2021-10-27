@@ -44,27 +44,37 @@ def main(args=sys.argv[1:]):
         help="Recreate 'default.nix' file if exists",
         action="store_true",
     )
+    parser.add_argument(
+        "--destination",
+        metavar="PATH",
+        help="Path where 'default.nix' file will be created",
+    )
 
-    args = parser.parse_args(args=args)
-    cache_file = get_cache_path(args.program) / "default.nix"
-    name = Path(args.program).name
+    parsed_args = parser.parse_args(args=args)
+    if parsed_args.destination:
+        destination = (
+            Path(parsed_args.destination).expanduser().resolve() / "default.nix"
+        )
+    else:
+        destination = get_cache_path(parsed_args.program) / "default.nix"
 
-    if args.recreate:
-        cache_file.unlink(missing_ok=True)
+    if parsed_args.recreate:
+        destination.unlink(missing_ok=True)
 
-    if not cache_file.exists():
-        cache_file.parent.mkdir(parents=True, exist_ok=True)
-        with open(cache_file, "w") as f:
-            f.write(create_fhs_shell(args.program))
-        print(f"File '{cache_file}' created successfuly!")
+    if not destination.exists():
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        with open(destination, "w") as f:
+            f.write(create_fhs_shell(parsed_args.program))
+        print(f"File '{destination}' created successfuly!")
 
     build_path = Path(
         subprocess.run(
-            ["nix-build", "--no-out-link", cache_file],
+            ["nix-build", "--no-out-link", destination],
             check=True,
             capture_output=True,
             text=True,
         ).stdout.strip()
     )
 
+    name = Path(parsed_args.program).name
     subprocess.run([build_path / "bin" / f"{name}-fhs"])

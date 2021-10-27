@@ -43,17 +43,25 @@ def main(args=sys.argv[1:]):
         help="Recreate 'shell.nix' file if exists",
         action="store_true",
     )
+    parser.add_argument(
+        "--destination",
+        metavar="PATH",
+        help="Path where 'shell.nix' file will be created",
+    )
 
-    args = parser.parse_args(args=args)
-    cache_file = get_cache_path(args.program) / "shell.nix"
+    parsed_args = parser.parse_args(args=args)
+    if parsed_args.destination:
+        destination = Path(parsed_args.destination).expanduser().resolve() / "shell.nix"
+    else:
+        destination = get_cache_path(parsed_args.program) / "shell.nix"
 
-    if args.recreate:
-        cache_file.unlink(missing_ok=True)
+    if parsed_args.recreate:
+        destination.unlink(missing_ok=True)
 
-    if not cache_file.exists():
-        cache_file.parent.mkdir(parents=True, exist_ok=True)
-        with open(cache_file, "w") as f:
-            f.write(create_ld_shell(args.program))
-        print(f"File '{cache_file}' created successfuly!")
+    if not destination.exists():
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        with open(destination, "w") as f:
+            f.write(create_ld_shell(parsed_args.program))
+        print(f"File '{destination}' created successfuly!")
 
-    subprocess.run(["nix-shell", str(cache_file)])
+    subprocess.run(["nix-shell", str(destination)])
