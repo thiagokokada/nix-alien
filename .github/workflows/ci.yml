@@ -24,4 +24,6 @@ jobs:
         run: nix-shell --run "make ci"
 
       - name: Build
-        run: nix build .
+        run: |
+          nix build ".#nix-alien"
+          nix build ".#nix-index-update"
