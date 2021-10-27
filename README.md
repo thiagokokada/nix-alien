@@ -36,7 +36,8 @@ This will run `nix-alien` on `~/myapp` binary with a `FHSUserEnv` including all
 shared library dependencies. The resulting `default.nix` file will be saved to
 `$XDG_CACHE_HOME/nix-alien/<path-uuid>/default.nix`, making the next evaluation
 faster. You can also pass `--recreate` flag to force the recreation of
-`default.nix` file
+`default.nix` file, and `--destination` to change where `default.nix` file will
+be saved.
 
 You can edit your `/etc/nix/nix.conf` or `~/.config/nix/nix.conf` file and
 add the following line to avoid having to pass `--experimental-features` flag
@@ -65,7 +66,8 @@ This will spawn a `mkShell` instead with `NIX_LD_LIBRARY_PATH` and `NIX_LD`
 setup. The resulting `shell.nix` file will be saved to
 `$XDG_CACHE_HOME/nix-alien/<path-uuid>/shell.nix`, making the next evaluation
 faster. You can also pass `--recreate` flag to force the recreation of
-`shell.nix` file
+`shell.nix` file, and `--destination` to  change where `shell.nix` file will
+be saved.
 
 If you want to use the `fzf` based menu to find the libraries for scripting
 purposes, you can run:
@@ -76,7 +78,7 @@ $ nix run "github:thiagokokada/nix-alien#nix-alien-find-libs" -- ~/myapp
 
 This will print the found libraries on the `stdout`. The informational messages
 are printed to `stderr`, so you can easily redirect them to `/dev/null` if
-needed.
+needed. You can also use `--json` flag to print the result as a JSON instead.
 
 To avoid the slow startup of `nix-index`, you can also download a pre-computed
 index from [`nix-index-database`](https://github.com/Mic92/nix-index-database):
@@ -91,6 +93,36 @@ $ $(nix-build default.nix --no-out-link)/bin/nix-alien ~/myapp -- --arg foo
 $ $(nix-build default.nix --no-out-link)/bin/nix-alien-ld ~/myapp
 $ $(nix-build default.nix --no-out-link)/bin/nix-alien-find-libs ~/myapp
 $ $(nix-build nix-index-update.nix --no-out-link)/bin/nix-index-update
+```
+
+## Installation (Flakes)
+
+```nix
+{
+  description = "nix-alien-on-nixos";
+
+  inputs.nix-alien.url = "github:thiagokokada/nix-alien";
+  inputs.nixpkgs.url = "github:NixOS/nixpkgs";
+
+  outputs = { self, nixpkgs, nix-alien }: {
+      nixosConfigurations.nix-alien-desktop = nixpkgs.lib.nixosSystem {
+      system = "x86_64-linux";
+      specialArgs = { inherit self system; }:
+      modules = [
+        ({ self, system, ... }: {
+          environment.systemPackages =
+            let
+              inherit (self.inputs.nix-alien.packages.${system}) nix-alien nix-index-update;
+            in
+            [
+              nix-alien
+              nix-index-update
+            ];
+        })
+      ];
+    };
+  };
+}
 ```
 
 ## Limitations
