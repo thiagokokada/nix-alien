@@ -3,7 +3,7 @@
 
   inputs.flake-utils.url = "github:numtide/flake-utils";
   inputs.nixpkgs.url = "github:NixOS/nixpkgs";
-  inputs.poetry2nix ={
+  inputs.poetry2nix = {
     url = "github:nix-community/poetry2nix";
     inputs.nixpkgs.follows = "nixpkgs";
     inputs.flake-utils.follows = "flake-utils";
@@ -25,26 +25,9 @@
             poetry2nix = poetry2nix';
           };
 
-          nix-index-update =
-            let
-              inherit (pkgs) coreutils wget;
-            in
-            pkgs.writeShellScriptBin "nix-index-update" ''
-              set -euo pipefail
-
-              readonly filename="index-${system}"
-              readonly dest_dir="$HOME/.cache/nix-index"
-
-              ${coreutils}/bin/mkdir -p "$dest_dir"
-              pushd "$dest_dir" >/dev/null
-              trap "popd >/dev/null" EXIT
-
-              # -N will only download a new version if there is an update.
-              ${wget}/bin/wget -q -N "https://github.com/Mic92/nix-index-database/releases/latest/download/$filename"
-              ${coreutils}/bin/ln -f "$filename" files
-
-              echo "Done!"
-            '';
+          nix-index-update = import ./nix-index-update.nix {
+            inherit pkgs system;
+          };
         };
 
         defaultPackage = packages.nix-alien;
