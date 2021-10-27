@@ -94,10 +94,14 @@ the runtime dependencies of the program.
 
 ## Technical Description
 
-This Python program allows you to download ELF binaries and use them right away!
 This is achieved by enumerating the shared library dependencies from the ELF
-header and then searching for the equivalent library in `nixpkgs`. This is done
-by querying `nix-locate` locally.
+header using `ldd` (actually,
+[`pylddwrap`](https://github.com/Parquery/pylddwrap)) and then searching for the
+equivalent library in `nixpkgs`. This is done by querying `nix-locate` locally.
+To solve possible conflicts, human intervation is needed, but thanks to
+[`fzf`](https://github.com/junegunn/fzf) and
+[`pyfzf`](https://github.com/nk412/pyfzf) this is made easy by showing an
+interactive list.
 
 To be able to use `nix-locate`, first, the index has to be build. This is done
 by running `nix-index` and waiting 10-15 minutes. To speed-up this process, this
