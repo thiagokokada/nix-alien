@@ -10,9 +10,27 @@
   };
 
   outputs = { self, nixpkgs, flake-utils, poetry2nix }:
-    (flake-utils.lib.eachDefaultSystem (system:
+    {
+      overlay = nixpkgs.lib.composeManyExtensions [
+        poetry2nix.overlay
+        (final: prev: {
+          # The application
+          nix-alien = import ./default.nix {
+            inherit (final) poetry2nix;
+            pkgs = final;
+          };
+          nix-index-update = import ./nix-index-update.nix {
+            pkgs = final;
+            system = final.system;
+          };
+        })
+      ];
+    } // (flake-utils.lib.eachDefaultSystem (system:
       let
-        pkgs = import nixpkgs { inherit system; };
+        pkgs = import nixpkgs {
+          inherit system;
+          overlays = [ self.overlay ];
+        };
         poetry2nix' = import poetry2nix {
           inherit pkgs;
           poetry = pkgs.poetry;
@@ -20,14 +38,8 @@
       in
       rec {
         packages = {
-          nix-alien = import ./default.nix {
-            inherit pkgs;
-            poetry2nix = poetry2nix';
-          };
-
-          nix-index-update = import ./nix-index-update.nix {
-            inherit pkgs system;
-          };
+          nix-alien = pkgs.nix-alien;
+          nix-index-update = pkgs.nix-index-update;
         };
 
         defaultPackage = packages.nix-alien;
