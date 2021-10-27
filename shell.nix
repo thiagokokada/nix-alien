@@ -27,11 +27,11 @@ appEnv.env.overrideAttrs (oldAttrs: {
   buildInputs = with pkgs; [
     findutils
     fzf
-    glibc
     gnumake
     nix-index
     nixUnstable
     nixpkgs-fmt
     poetry
+    stdenv.glibc.bin
   ];
 })
