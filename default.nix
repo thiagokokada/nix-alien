@@ -39,7 +39,7 @@ app.overrideAttrs (oldAttrs: {
   ];
 
   checkPhase = ''
-    # TODO: why hashlib/UUID is returning different values when building with nix?
+    # FIXME: seems like hashlib/UUID depends on host or something
     pytest -vvv --ignore=tests/test_helpers.py
   '';
 
