@@ -46,6 +46,12 @@ experimental-features = nix-command flakes
 
 From here on this guide will assume the above configuration is done for brevity.
 
+To pass arguments to the app:
+
+```sh
+$ nix run "github:thiagokokada/nix-alien" -- ~/myapp -- --help
+```
+
 In case you're using [`nix-ld`](https://github.com/Mic92/nix-ld), there is also
 `nix-alien-ld`:
 
@@ -79,9 +85,9 @@ $ nix run "github:thiagokokada/nix-alien#nix-index-update"
 ## Usage (non-Flakes)
 
 ``` sh
-$ $(nix-build default.nix --no-out-link)/bin/nix-alien
-$ $(nix-build default.nix --no-out-link)/bin/nix-alien-ld
-$ $(nix-build default.nix --no-out-link)/bin/nix-alien-find-libs
+$ $(nix-build default.nix --no-out-link)/bin/nix-alien ~/myapp -- --arg foo
+$ $(nix-build default.nix --no-out-link)/bin/nix-alien-ld ~/myapp
+$ $(nix-build default.nix --no-out-link)/bin/nix-alien-find-libs ~/myapp
 $ $(nix-build nix-index-update.nix --no-out-link)/bin/nix-index-update
 ```
 
