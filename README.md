@@ -1,5 +1,7 @@
 # nix-alien
 
+![nix-alien](./.github/nix-alien.jpg)
+
 [![ci](https://github.com/thiagokokada/nix-alien/actions/workflows/ci.yml/badge.svg)](https://github.com/thiagokokada/nix-alien/actions/workflows/ci.yml)
 
 ## Introduction
