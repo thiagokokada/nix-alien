@@ -1,19 +1,18 @@
+PYTHON := python -m
 .PHONY = all ci format install test
 
-all: install
-
-install:
-	poetry install
+all: test
 
 test:
-	poetry run pytest -vv
+	${PYTHON_RUN} pytest -vvv
 
 ci:
-	poetry run black --check .
-	poetry run mypy . --ignore-missing-imports
-	poetry run pytest -vv
-	find -name '*.nix' -exec nixpkgs-fmt {} --check \+
+	${PYTHON_RUN} black --check .
+	${PYTHON_RUN} mypy --ignore-missing-imports .
+	${PYTHON_RUN} pytest -vvv
+	find -name '*.nix' -exec nixpkgs-fmt --check {} \+
+	nix --experimental-features 'nix-command flakes' flake check
 
 format:
-	poetry run black .
+	${PYTHON_RUN} black .
 	find -name '*.nix' -exec nixpkgs-fmt {} \+
