@@ -12,6 +12,8 @@ ci:
 	poetry run black --check .
 	poetry run mypy . --ignore-missing-imports
 	poetry run pytest -vv
+	find -name '*.nix' -exec nixpkgs-fmt {} --check \+
 
 format:
 	poetry run black .
+	find -name '*.nix' -exec nixpkgs-fmt {} \+

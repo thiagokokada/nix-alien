@@ -22,11 +22,14 @@ let
       }
     );
   };
-in appEnv.env.overrideAttrs(oldAttrs: {
+in
+appEnv.env.overrideAttrs (oldAttrs: {
   buildInputs = with pkgs; [
     fzf
     glibc
+    gnumake
     nix-index
+    nixpkgs-fmt
     poetry
   ];
 })
