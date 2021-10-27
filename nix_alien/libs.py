@@ -4,6 +4,7 @@ import subprocess
 import sys
 from pathlib import Path
 from typing import Dict, List, Optional, Union
+from shlex import join
 
 import lddwrap
 from pyfzf.pyfzf import FzfPrompt
@@ -43,9 +44,14 @@ def find_libs(path: Union[Path, str]) -> Dict[str, Optional[str]]:
                 # Can be any candidate really, lets pick the first one
                 selected_candidate = intersection.pop()
             else:
-                selected_candidate = fzf.prompt(
-                    candidates, f"--cycle --prompt '{dep.soname}> '"
-                )[0]
+                fzf_options = join(
+                    [
+                        "--cycle",
+                        "--prompt",
+                        f"Select candidate for '{dep.soname}'> ",
+                    ]
+                )
+                selected_candidate = fzf.prompt(candidates, fzf_options)[0]
 
         print(
             f"Selected candidate for '{dep.soname}': {selected_candidate}",
