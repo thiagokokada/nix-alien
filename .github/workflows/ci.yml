@@ -22,3 +22,6 @@ jobs:
 
       - name: CI
         run: nix-shell --run "make ci"
+
+      - name: Build
+        run: nix build .
