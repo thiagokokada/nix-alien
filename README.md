@@ -112,7 +112,7 @@ $ $(nix-build nix-index-update.nix --no-out-link)/bin/nix-index-update
         ({ self, ... }: {
           nixpkgs.overlays = [
             self.inputs.nix-alien.overlay
-          ]
+          ];
           environment.systemPackages = with pkgs; [
             nix-alien
             nix-index # not necessary, but recommended
