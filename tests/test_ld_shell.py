@@ -59,19 +59,9 @@ def test_main_with_args(mock_find_libs, mock_subprocess, tmp_path):
         "libquux.so": "quux.out",
     }
 
-    ld_shell.main(["xyz", "--destination", str(tmp_path)])
+    ld_shell.main(["xyz", "--destination", str(tmp_path), "--recreate"])
     shell_nix = tmp_path / "shell.nix"
-    old_stat = shell_nix.stat()
 
     assert shell_nix.is_file()
 
-    ld_shell.main(["xyz", "--destination", str(tmp_path), "--recreate"])
-    new_shell_nix = tmp_path / "shell.nix"
-
-    assert new_shell_nix.stat().st_ino != old_stat.st_ino
-    mock_subprocess.run.assert_has_calls(
-        [
-            call(["nix-shell", str(shell_nix)]),
-            call(["nix-shell", str(shell_nix)]),
-        ]
-    )
+    mock_subprocess.run.assert_called_once_with(["nix-shell", str(shell_nix)])

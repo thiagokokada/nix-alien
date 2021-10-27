@@ -62,15 +62,10 @@ def test_main_with_args(mock_find_libs, mock_subprocess, tmp_path):
         "libquux.so": "quux.out",
     }
 
-    fhs_shell.main(["xyz", "--destination", str(tmp_path)])
+    fhs_shell.main(["xyz", "--destination", str(tmp_path), "--recreate"])
     shell_nix = tmp_path / "default.nix"
-    old_stat = shell_nix.stat()
 
     assert shell_nix.is_file()
 
-    fhs_shell.main(["xyz", "--destination", str(tmp_path), "--recreate"])
-    new_shell_nix = tmp_path / "default.nix"
-
-    assert new_shell_nix.stat().st_ino != old_stat.st_ino
     # Quite difficult to assert the input for the second run call here
     mock_subprocess.run.assert_called()
