@@ -59,11 +59,30 @@ setup. The resulting `shell.nix` file will be saved to
 faster. You can also pass `--recreate` flag to force the recreation of
 `shell.nix` file
 
+If you want to use the `fzf` based menu to find the libraries for scripting
+purposes, you can run:
+
+``` sh
+$ nix run "github:thiagokokada/nix-alien#nix-alien-find-libs" -- ~/myapp 
+```
+
+This will print the found libraries on the `stdout`. The informational messages
+are printed to `stderr`, so you can easily redirect them to `/dev/null` if
+needed.
+
 To avoid the slow startup of `nix-index`, you can also download a pre-computed
 index from [`nix-index-database`](https://github.com/Mic92/nix-index-database):
 
 ``` sh
 $ nix run "github:thiagokokada/nix-alien#nix-index-update"
+```
+## Usage (non-Flakes)
+
+``` sh
+$ $(nix-build default.nix --no-out-link)/bin/nix-alien
+$ $(nix-build default.nix --no-out-link)/bin/nix-alien-ld
+$ $(nix-build default.nix --no-out-link)/bin/nix-alien-find-libs
+$ $(nix-build nix-index-update.nix --no-out-link)/bin/nix-index-update
 ```
 
 ## Limitations
@@ -75,18 +94,19 @@ the runtime dependencies of the program.
 
 ## Technical Description
 
-This simple Python program allows you to download ELF binaries and use them
-right away! This is achieved by enumerating the shared library dependencies from
-the ELF header and then searching for the equivalent library in `nixpkgs`. This
-is done by querying `nix-locate` locally.
+This Python program allows you to download ELF binaries and use them right away!
+This is achieved by enumerating the shared library dependencies from the ELF
+header and then searching for the equivalent library in `nixpkgs`. This is done
+by querying `nix-locate` locally.
 
 To be able to use `nix-locate`, first, the index has to be build. This is done
-by running `nix-index` and waiting 10-15 minutes. To speed-up this process,
-this repo also includes `nix-index-update` script, that downloads the index from
+by running `nix-index` and waiting 10-15 minutes. To speed-up this process, this
+repo also includes `nix-index-update` script, that downloads the index from
 [`nix-index-database`](https://github.com/Mic92/nix-index-database).
 
 ## Credits
 
-Inspired by [nix-autobahn](https://github.com/Lassulus/nix-autobahn). The
-original version is written in shell script, this one is written in Python and
-also brings some improvements.
+- Inspired by [Lassulus/nix-autobahn](https://github.com/Lassulus/nix-autobahn)
+- Thanks to [Mic92/nix-ld](https://github.com/Mic92/nix-ld) and
+  [bennofs/nix-index](https://github.com/bennofs/nix-index), since without them
+  this project wouldn't be possible
