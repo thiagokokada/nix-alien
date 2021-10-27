@@ -1,4 +1,4 @@
-PYTHON := python -m
+PYTHON_RUN := python -m
 .PHONY = all ci format install test
 
 all: test
