@@ -39,8 +39,7 @@ app.overrideAttrs (oldAttrs: {
   ];
 
   checkPhase = ''
-    # FIXME: seems like hashlib/UUID depends on host or something
-    pytest -vvv --ignore=tests/test_helpers.py
+    pytest -vvv
   '';
 
   doCheck = true;

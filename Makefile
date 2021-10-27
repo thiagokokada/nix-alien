@@ -9,8 +9,7 @@ test:
 ci:
 	${PYTHON_RUN} black --check .
 	${PYTHON_RUN} mypy --ignore-missing-imports .
-    # FIXME: seems like hashlib/UUID depends on host or something
-	${PYTHON_RUN} pytest -vvv --ignore=tests/test_helpers.py
+	${PYTHON_RUN} pytest -vvv
 	find -name '*.nix' -exec nixpkgs-fmt --check {} \+
 	nix --experimental-features 'nix-command flakes' flake check
 

@@ -6,7 +6,7 @@ UUID_NAMESPACE = uuid.UUID("f318d4a6-dd46-47ce-995d-e95c17cadcc0")
 
 
 def get_hash_for_program(program: str) -> uuid.UUID:
-    path = Path(program).absolute()
+    path = Path(program).absolute().resolve()
     return uuid.uuid5(UUID_NAMESPACE, str(path))
 
 
