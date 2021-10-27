@@ -1,3 +1,4 @@
+import json
 from collections import namedtuple
 from unittest.mock import patch
 
@@ -111,3 +112,34 @@ def test_get_unique_packages():
         )
         == ["foo.out"]
     )
+
+
+@patch("nix_alien.libs.lddwrap", autospec=True)
+@patch("nix_alien.libs.subprocess", autospec=True)
+def test_main_wo_args(mock_subprocess, mock_lddwrap, capsys):
+    mock_lddwrap.list_dependencies.return_value = [
+        DependencyMock(soname="libfoo.so", path="/lib/libfoo.so", found=False),
+        DependencyMock(soname="libbar.so", path="/lib/libbar.so", found=False),
+    ]
+    mock_subprocess.run.return_value = CompletedProcessMock(stdout="foo.out")
+    libs.main(["xyz"])
+
+    captured = capsys.readouterr()
+    assert captured.out == "foo.out\n"
+
+
+@patch("nix_alien.libs.lddwrap", autospec=True)
+@patch("nix_alien.libs.subprocess", autospec=True)
+def test_main_with_args(mock_subprocess, mock_lddwrap, capsys):
+    mock_lddwrap.list_dependencies.return_value = [
+        DependencyMock(soname="libfoo.so", path="/lib/libfoo.so", found=False),
+        DependencyMock(soname="libbar.so", path="/lib/libbar.so", found=False),
+    ]
+    mock_subprocess.run.return_value = CompletedProcessMock(stdout="foo.out")
+    libs.main(["xyz", "--json"])
+
+    captured = capsys.readouterr()
+    assert json.loads(captured.out) == {
+        "libfoo.so": "foo.out",
+        "libbar.so": "foo.out",
+    }
