@@ -71,6 +71,6 @@ def test_main_with_args(mock_find_libs, mock_subprocess, tmp_path):
     fhs_shell.main(["xyz", "--destination", str(tmp_path), "--recreate"])
     new_shell_nix = tmp_path / "default.nix"
 
-    assert new_shell_nix.stat().st_mtime_ns > old_stat.st_mtime_ns
+    assert new_shell_nix.stat().st_ino != old_stat.st_ino
     # Quite difficult to assert the input for the second run call here
     mock_subprocess.run.assert_called()
