@@ -45,6 +45,9 @@
 
         defaultApp = apps.nix-alien;
 
-        devShell = import ./shell.nix { inherit pkgs; };
+        devShell = import ./shell.nix {
+          inherit pkgs;
+          poetry2nix = poetry2nix';
+        };
       }));
 }
