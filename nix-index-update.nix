@@ -1,5 +1,5 @@
 { pkgs ? (import ./compat.nix).pkgs
-, system ? "x86_64-linux"
+, system ? builtins.currentSystem
 }:
 
 let
