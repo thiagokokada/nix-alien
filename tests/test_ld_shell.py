@@ -68,7 +68,7 @@ def test_main_with_args(mock_find_libs, mock_subprocess, tmp_path):
     ld_shell.main(["xyz", "--destination", str(tmp_path), "--recreate"])
     new_shell_nix = tmp_path / "shell.nix"
 
-    assert new_shell_nix.stat().st_mtime > old_stat.st_mtime
+    assert new_shell_nix.stat().st_mtime_ns > old_stat.st_mtime_ns
     mock_subprocess.run.assert_has_calls(
         [
             call(["nix-shell", str(shell_nix)]),
