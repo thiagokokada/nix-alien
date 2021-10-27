@@ -26,7 +26,7 @@
 
         nix-index-update = import ./nix-index-update.nix {
           pkgs = final;
-          system = final.system;
+          system = final.stdenv.hostPlatform.system;
         };
       });
     } // (flake-utils.lib.eachDefaultSystem (system:
