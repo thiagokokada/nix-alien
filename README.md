@@ -107,17 +107,17 @@ $ $(nix-build nix-index-update.nix --no-out-link)/bin/nix-index-update
   outputs = { self, nixpkgs, nix-alien }: {
       nixosConfigurations.nix-alien-desktop = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
-      specialArgs = { inherit self system; };
+      specialArgs = { inherit self; };
       modules = [
-        ({ self, system, ... }: {
-          environment.systemPackages =
-            let
-              inherit (self.inputs.nix-alien.packages.${system}) nix-alien nix-index-update;
-            in
-            [
-              nix-alien
-              nix-index-update
-            ];
+        ({ self, ... }: {
+          nixpkgs.overlays = [
+            self.inputs.nix-alien.overlay
+          ]
+          environment.systemPackages = with pkgs; [
+            nix-alien
+            nix-index # not necessary, but recommended
+            nix-index-update
+          ];
         })
       ];
     };
