@@ -60,8 +60,9 @@ def main(args=sys.argv[1:]):
 
     if not destination.exists():
         destination.parent.mkdir(parents=True, exist_ok=True)
+        ld_shell = create_ld_shell(parsed_args.program)
         with open(destination, "w") as f:
-            f.write(create_ld_shell(parsed_args.program))
+            f.write(ld_shell)
         print(f"File '{destination}' created successfuly!")
 
     subprocess.run(["nix-shell", str(destination)])

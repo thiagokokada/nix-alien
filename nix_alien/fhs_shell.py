@@ -63,8 +63,9 @@ def main(args=sys.argv[1:]):
 
     if not destination.exists():
         destination.parent.mkdir(parents=True, exist_ok=True)
+        fhs_shell = create_fhs_shell(parsed_args.program)
         with open(destination, "w") as f:
-            f.write(create_fhs_shell(parsed_args.program))
+            f.write(fhs_shell)
         print(f"File '{destination}' created successfuly!")
 
     build_path = Path(
