@@ -125,6 +125,25 @@ $ $(nix-build nix-index-update.nix --no-out-link)/bin/nix-index-update
 }
 ```
 
+## Installation (non-Flakes)
+
+``` nix
+{ pkgs, ... }:
+
+let
+  nix-alien-src = fetchTarball "https://github.com/thiagokokada/nix-alien/tarball/master";
+  nix-alien = import (nix-alien-src) { };
+  nix-index-update = import (nix-alien-src + "/nix-index-update.nix") {};
+in
+{
+  environment.systemPackages = with pkgs; [
+    nix-alien
+    nix-index # not necessary, but recommended
+    nix-index-update
+  ];
+}
+```
+
 ## Limitations
 
 Binaries loading shared libraries dynamically (e.g.: with `dlopen`) will
