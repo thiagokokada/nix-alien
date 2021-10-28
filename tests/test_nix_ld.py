@@ -63,7 +63,7 @@ def test_main_with_args(mock_find_libs, mock_subprocess, tmp_path):
         "libquux.so": "quux.out",
     }
 
-    nix_ld.main(["xyz", "--destination", str(tmp_path), "--recreate"])
+    nix_ld.main(["--destination", str(tmp_path), "--recreate", "xyz", "--foo", "bar"])
     shell_nix = tmp_path / "default.nix"
 
     assert shell_nix.is_file()

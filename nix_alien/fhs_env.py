@@ -49,8 +49,13 @@ def main(args=sys.argv[1:]):
         metavar="PATH",
         help="Path where 'default.nix' file will be created",
     )
+    parser.add_argument(
+        "args",
+        nargs=argparse.REMAINDER,
+        help="Arguments to be passed to the program",
+    )
 
-    parsed_args, program_args = parser.parse_known_args(args=args)
+    parsed_args = parser.parse_args(args=args)
     if parsed_args.destination:
         destination = (
             Path(parsed_args.destination).expanduser().resolve() / "default.nix"
@@ -78,4 +83,4 @@ def main(args=sys.argv[1:]):
     )
 
     name = Path(parsed_args.program).name
-    subprocess.run([build_path / "bin" / f"{name}-fhs", *program_args])
+    subprocess.run([build_path / "bin" / f"{name}-fhs", *parsed_args.args])
