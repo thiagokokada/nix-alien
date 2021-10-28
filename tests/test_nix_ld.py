@@ -1,11 +1,11 @@
 from pathlib import Path
 from unittest.mock import patch
 
-from nix_alien import ld_shell
+from nix_alien import nix_ld
 
 
-@patch("nix_alien.ld_shell.find_libs")
-def test_create_ld_shell(mock_find_libs):
+@patch("nix_alien.nix_ld.find_libs")
+def test_create_nix_ld(mock_find_libs):
     mock_find_libs.return_value = {
         "libfoo.so": "foo.out",
         "libfoo.6.so": "foo.out",
@@ -13,7 +13,7 @@ def test_create_ld_shell(mock_find_libs):
         "libquux.so": "quux.out",
     }
     assert (
-        ld_shell.create_ld_shell("xyz")
+        nix_ld.create_nix_ld_drv("xyz")
         == """\
 { pkgs ? import <nixpkgs> { } }:
 
@@ -36,8 +36,8 @@ pkgs.writeShellScriptBin "xyz" ''
     )
 
 
-@patch("nix_alien.ld_shell.subprocess")
-@patch("nix_alien.ld_shell.find_libs")
+@patch("nix_alien.nix_ld.subprocess")
+@patch("nix_alien.nix_ld.find_libs")
 def test_main_wo_args(mock_find_libs, mock_subprocess, monkeypatch, tmp_path):
     monkeypatch.setenv("HOME", str(tmp_path))
     mock_find_libs.return_value = {
@@ -46,15 +46,15 @@ def test_main_wo_args(mock_find_libs, mock_subprocess, monkeypatch, tmp_path):
         "libbar.so": "bar.out",
         "libquux.so": "quux.out",
     }
-    ld_shell.main(["xyz"])
+    nix_ld.main(["xyz"])
     shell_nix = next((tmp_path / ".cache/nix-alien").glob("*/nix-ld/default.nix"))
 
     assert shell_nix.is_file()
     assert mock_subprocess.run.call_count == 2
 
 
-@patch("nix_alien.ld_shell.subprocess")
-@patch("nix_alien.ld_shell.find_libs")
+@patch("nix_alien.nix_ld.subprocess")
+@patch("nix_alien.nix_ld.find_libs")
 def test_main_with_args(mock_find_libs, mock_subprocess, tmp_path):
     mock_find_libs.return_value = {
         "libfoo.so": "foo.out",
@@ -63,7 +63,7 @@ def test_main_with_args(mock_find_libs, mock_subprocess, tmp_path):
         "libquux.so": "quux.out",
     }
 
-    ld_shell.main(["xyz", "--destination", str(tmp_path), "--recreate"])
+    nix_ld.main(["xyz", "--destination", str(tmp_path), "--recreate"])
     shell_nix = tmp_path / "default.nix"
 
     assert shell_nix.is_file()
