@@ -11,35 +11,27 @@
 
   outputs = { self, nixpkgs, flake-utils, poetry2nix }:
     {
-      overlay = (final: prev: rec {
-        # Avoid shadowing nixpkgs's own poetry2nix derivation
-        poetry2nix' = import poetry2nix {
-          pkgs = final;
-          poetry = final.poetry;
-        };
-
-        # The application
-        nix-alien = import ./default.nix {
-          poetry2nix = poetry2nix';
-          pkgs = final;
-        };
-
-        nix-index-update = import ./nix-index-update.nix {
-          pkgs = final;
-          system = final.stdenv.hostPlatform.system;
-        };
+      overlay = (final: prev: {
+        inherit (self.packages.${final.stdenv.hostPlatform.system})
+          nix-alien nix-index-update;
       });
     } // (flake-utils.lib.eachDefaultSystem (system:
       let
-        pkgs = import nixpkgs {
-          inherit system;
-          overlays = [ self.overlay ];
+        pkgs = import nixpkgs { inherit system; };
+        poetry2nix' = import poetry2nix {
+          inherit pkgs;
+          poetry = pkgs.poetry;
         };
       in
       rec {
         packages = {
-          nix-alien = pkgs.nix-alien;
-          nix-index-update = pkgs.nix-index-update;
+          nix-alien = import ./default.nix {
+            inherit pkgs;
+            poetry2nix = poetry2nix';
+          };
+          nix-index-update = import ./nix-index-update.nix {
+            inherit pkgs system;
+          };
         };
 
         defaultPackage = packages.nix-alien;
@@ -59,7 +51,7 @@
 
         devShell = import ./shell.nix {
           inherit pkgs;
-          poetry2nix = pkgs.poetry2nix';
+          poetry2nix = poetry2nix';
         };
       }));
 }
