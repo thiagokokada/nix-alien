@@ -1,3 +1,6 @@
+#!/usr/bin/env nix-shell
+#!nix-shell shell.nix -i "make -f"
+
 PYTHON_RUN := python -m
 .PHONY = all ci format install test
 
