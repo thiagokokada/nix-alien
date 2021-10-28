@@ -124,8 +124,15 @@ def test_main_wo_args(mock_subprocess, mock_lddwrap, capsys):
     mock_subprocess.run.return_value = CompletedProcessMock(stdout="foo.out")
     libs.main(["xyz"])
 
-    captured = capsys.readouterr()
-    assert captured.out == "foo.out\n"
+    out, err = capsys.readouterr()
+    assert out == "foo.out\n"
+    assert (
+        err
+        == """\
+Selected candidate for 'libfoo.so': foo.out
+Selected candidate for 'libbar.so': foo.out
+"""
+    )
 
 
 @patch("nix_alien.libs.lddwrap", autospec=True)
@@ -138,8 +145,15 @@ def test_main_with_args(mock_subprocess, mock_lddwrap, capsys):
     mock_subprocess.run.return_value = CompletedProcessMock(stdout="foo.out")
     libs.main(["xyz", "--json"])
 
-    captured = capsys.readouterr()
-    assert json.loads(captured.out) == {
+    out, err = capsys.readouterr()
+    assert json.loads(out) == {
         "libfoo.so": "foo.out",
         "libbar.so": "foo.out",
     }
+    assert (
+        err
+        == """\
+Selected candidate for 'libfoo.so': foo.out
+Selected candidate for 'libbar.so': foo.out
+"""
+    )
