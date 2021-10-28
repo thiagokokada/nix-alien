@@ -28,16 +28,16 @@ Assuming you have `nix` already installed:
 
 ```sh
 $ nix-shell -p nixUnstable nix-index
-$ nix-index # this will take a long time
+$ nix-index # this will take a long time, see below how to speedup the process
 $ nix run --experimental-features 'nix-command flakes' "github:thiagokokada/nix-alien" -- ~/myapp
 ```
 
 This will run `nix-alien` on `~/myapp` binary with a `FHSUserEnv` including all
 shared library dependencies. The resulting `default.nix` file will be saved to
-`$XDG_CACHE_HOME/nix-alien/<path-uuid>/default.nix`, making the next evaluation
-faster. You can also pass `--recreate` flag to force the recreation of
-`default.nix` file, and `--destination` to change where `default.nix` file will
-be saved.
+`$XDG_CACHE_HOME/nix-alien/<path-uuid>/fhs-env/default.nix`, making the next
+evaluation faster. You can also pass `--recreate` flag to force the recreation
+of `default.nix` file, and `--destination` to change where `default.nix` file
+will be saved.
 
 You can edit your `/etc/nix/nix.conf` or `~/.config/nix/nix.conf` file and
 add the following line to avoid having to pass `--experimental-features` flag
@@ -62,12 +62,18 @@ In case you're using [`nix-ld`](https://github.com/Mic92/nix-ld), there is also
 $ nix run "github:thiagokokada/nix-alien#nix-alien-ld" -- ~/myapp 
 ```
 
-This will spawn a `mkShell` instead with `NIX_LD_LIBRARY_PATH` and `NIX_LD`
-setup. The resulting `shell.nix` file will be saved to
-`$XDG_CACHE_HOME/nix-alien/<path-uuid>/shell.nix`, making the next evaluation
-faster. You can also pass `--recreate` flag to force the recreation of
-`shell.nix` file, and `--destination` to  change where `shell.nix` file will
-be saved.
+This will spawn a wrapped binary with `NIX_LD_LIBRARY_PATH` and `NIX_LD` setup.
+The resulting `default.nix` file will be saved to
+`$XDG_CACHE_HOME/nix-alien/<path-uuid>/nix-ld/default.nix`, making the next
+evaluation faster. You can also pass `--recreate` flag to force the recreation
+of `default.nix` file, and `--destination` to change where `default.nix` file
+will be saved.
+
+To pass arguments to the app:
+
+```sh
+$ nix run "github:thiagokokada/nix-alien#nix-alien-ld" -- ~/myapp -- --help
+```
 
 If you want to use the `fzf` based menu to find the libraries for scripting
 purposes, you can run:
@@ -148,8 +154,8 @@ in
 
 Binaries loading shared libraries dynamically (e.g.: with `dlopen`) will
 probably not work with this script. However, this script can still be useful to
-create an initial `default.nix` or `shell.nix`, that can be populated later with
-the runtime dependencies of the program.
+create an initial `default.nix`, that can be populated later with the runtime
+dependencies of the program.
 
 ## Technical Description
 
