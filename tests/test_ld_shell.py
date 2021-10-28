@@ -1,4 +1,5 @@
-from unittest.mock import call, patch
+from pathlib import Path
+from unittest.mock import patch
 
 from nix_alien import ld_shell
 
@@ -17,18 +18,21 @@ def test_create_ld_shell(mock_find_libs):
 { pkgs ? import <nixpkgs> { } }:
 
 let
-  inherit (pkgs) mkShell lib stdenv;
-in
-mkShell {
-  name = "xyz-ld-shell";
+  inherit (pkgs) lib stdenv;
   NIX_LD_LIBRARY_PATH = with pkgs; lib.makeLibraryPath [
     bar.out
     foo.out
     quux.out
   ];
   NIX_LD = lib.fileContents "${stdenv.cc}/nix-support/dynamic-linker";
-}
+in
+pkgs.writeShellScriptBin "xyz" ''
+  export NIX_LD_LIBRARY_PATH='${NIX_LD_LIBRARY_PATH}'${"\\${NIX_LD_LIBRARY_PATH:+':'}$NIX_LD_LIBRARY_PATH"}
+  export NIX_LD='${NIX_LD}'${"\\${NIX_LD:+':'}$NIX_LD"}
+  "%s/xyz" "$@"
+''
 """
+        % Path(__file__).parent.parent.absolute()
     )
 
 
@@ -43,10 +47,10 @@ def test_main_wo_args(mock_find_libs, mock_subprocess, monkeypatch, tmp_path):
         "libquux.so": "quux.out",
     }
     ld_shell.main(["xyz"])
-    shell_nix = next((tmp_path / ".cache/nix-alien").glob("*/shell.nix"))
+    shell_nix = next((tmp_path / ".cache/nix-alien").glob("*/nix-ld/default.nix"))
 
     assert shell_nix.is_file()
-    mock_subprocess.run.assert_called_once_with(["nix-shell", str(shell_nix)])
+    assert mock_subprocess.run.call_count == 2
 
 
 @patch("nix_alien.ld_shell.subprocess")
@@ -60,8 +64,7 @@ def test_main_with_args(mock_find_libs, mock_subprocess, tmp_path):
     }
 
     ld_shell.main(["xyz", "--destination", str(tmp_path), "--recreate"])
-    shell_nix = tmp_path / "shell.nix"
+    shell_nix = tmp_path / "default.nix"
 
     assert shell_nix.is_file()
-
-    mock_subprocess.run.assert_called_once_with(["nix-shell", str(shell_nix)])
+    assert mock_subprocess.run.call_count == 2

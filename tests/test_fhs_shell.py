@@ -45,11 +45,10 @@ def test_main_wo_args(mock_find_libs, mock_subprocess, monkeypatch, tmp_path):
         "libquux.so": "quux.out",
     }
     fhs_shell.main(["xyz"])
-    shell_nix = next((tmp_path / ".cache/nix-alien").glob("*/default.nix"))
+    shell_nix = next((tmp_path / ".cache/nix-alien").glob("*/fhs-env/default.nix"))
 
     assert shell_nix.is_file()
-    # Quite difficult to assert the input for the second run call here
-    mock_subprocess.run.assert_called()
+    assert mock_subprocess.run.call_count == 2
 
 
 @patch("nix_alien.fhs_shell.subprocess")
@@ -66,6 +65,4 @@ def test_main_with_args(mock_find_libs, mock_subprocess, tmp_path):
     shell_nix = tmp_path / "default.nix"
 
     assert shell_nix.is_file()
-
-    # Quite difficult to assert the input for the second run call here
-    mock_subprocess.run.assert_called()
+    assert mock_subprocess.run.call_count == 2

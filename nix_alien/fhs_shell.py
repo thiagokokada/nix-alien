@@ -56,7 +56,7 @@ def main(args=sys.argv[1:]):
             Path(parsed_args.destination).expanduser().resolve() / "default.nix"
         )
     else:
-        destination = get_cache_path(parsed_args.program) / "default.nix"
+        destination = get_cache_path(parsed_args.program) / "fhs-env/default.nix"
 
     if parsed_args.recreate:
         destination.unlink(missing_ok=True)

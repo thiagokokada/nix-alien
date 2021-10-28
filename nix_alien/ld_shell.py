@@ -12,15 +12,17 @@ SHELL_TEMPLATE = Template(
 { pkgs ? import <nixpkgs> { } }:
 
 let
-  inherit (pkgs) mkShell lib stdenv;
-in
-mkShell {
-  name = "${name}-ld-shell";
+  inherit (pkgs) lib stdenv;
   NIX_LD_LIBRARY_PATH = with pkgs; lib.makeLibraryPath [
     ${packages}
   ];
   NIX_LD = lib.fileContents "$${stdenv.cc}/nix-support/dynamic-linker";
-}
+in
+pkgs.writeShellScriptBin "${name}" ''
+  export NIX_LD_LIBRARY_PATH='$${NIX_LD_LIBRARY_PATH}'$${"\\$${NIX_LD_LIBRARY_PATH:+':'}$$NIX_LD_LIBRARY_PATH"}
+  export NIX_LD='$${NIX_LD}'$${"\\$${NIX_LD:+':'}$$NIX_LD"}
+  "${program}" "$$@"
+''
 """
 )
 
@@ -32,6 +34,7 @@ def create_ld_shell(program: str) -> str:
     return SHELL_TEMPLATE.substitute(
         name=path.name,
         packages=("\n" + 4 * " ").join(get_unique_packages(libs)),
+        program=path.absolute(),
     )
 
 
@@ -49,11 +52,13 @@ def main(args=sys.argv[1:]):
         help="Path where 'shell.nix' file will be created",
     )
 
-    parsed_args = parser.parse_args(args=args)
+    parsed_args, program_args = parser.parse_known_args(args=args)
     if parsed_args.destination:
-        destination = Path(parsed_args.destination).expanduser().resolve() / "shell.nix"
+        destination = (
+            Path(parsed_args.destination).expanduser().resolve() / "default.nix"
+        )
     else:
-        destination = get_cache_path(parsed_args.program) / "shell.nix"
+        destination = get_cache_path(parsed_args.program) / "nix-ld/default.nix"
 
     if parsed_args.recreate:
         destination.unlink(missing_ok=True)
@@ -65,4 +70,14 @@ def main(args=sys.argv[1:]):
             f.write(ld_shell)
         print(f"File '{destination}' created successfuly!")
 
-    subprocess.run(["nix-shell", str(destination)])
+    build_path = Path(
+        subprocess.run(
+            ["nix-build", "--no-out-link", destination],
+            check=True,
+            capture_output=True,
+            text=True,
+        ).stdout.strip()
+    )
+
+    name = Path(parsed_args.program).name
+    subprocess.run([build_path / "bin" / name, *program_args])
