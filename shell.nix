@@ -5,6 +5,7 @@
 let
   appEnv = pkgs.poetry2nix.mkPoetryEnv {
     projectDir = ./.;
+    python = pkgs.python39;
 
     editablePackageSources = {
       nix-alien = ./nix-alien;
@@ -13,7 +14,7 @@ let
 
     overrides = poetry2nix.overrides.withDefaults (
       final: prev: {
-        # FIXME: conflict between icontract and pylddwrap files
+        # Fix conflict between icontract and pylddwrap files
         icontract = prev.icontract.overrideAttrs (oldAttrs: {
           postInstall = (oldAttrs.postInstall or "") + ''
             rm -f $out/*.rst $out/*.txt

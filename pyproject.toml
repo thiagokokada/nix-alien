@@ -6,9 +6,10 @@ authors = ["Thiago Kenji Okada <thiagokokada@gmail.com>"]
 license = "MIT"
 
 [tool.poetry.dependencies]
-python = "^3.8"
+# Setting it this way since this is the minimum version supported by python-fzf
+python = "^3.9.2"
 pylddwrap = "^1.2.1"
-pyfzf = "^0.2.2"
+python-fzf = "^0.1.1"
 
 [tool.poetry.dev-dependencies]
 black = "^21.9b0"

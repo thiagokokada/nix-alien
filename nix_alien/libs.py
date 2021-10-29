@@ -7,9 +7,7 @@ from typing import Dict, List, Optional, Union
 from shlex import join
 
 import lddwrap
-from pyfzf.pyfzf import FzfPrompt
-
-fzf = FzfPrompt()
+from fzf.app import fzf
 
 
 def find_lib_candidates(basename: str) -> List[str]:
@@ -44,14 +42,11 @@ def find_libs(path: Union[Path, str]) -> Dict[str, Optional[str]]:
                 # Can be any candidate really, lets pick the first one
                 selected_candidate = intersection.pop()
             else:
-                fzf_options = join(
-                    [
-                        "--cycle",
-                        "--prompt",
-                        f"Select candidate for '{dep.soname}'> ",
-                    ]
-                )
-                selected_candidate = fzf.prompt(candidates, fzf_options)[0]
+                selected_candidate = fzf(
+                    candidates,
+                    cycle=True,
+                    prompt=f"Select candidate for '${dep.soname}'> ",
+                )[0].output
 
         print(
             f"Selected candidate for '{dep.soname}': {selected_candidate}",

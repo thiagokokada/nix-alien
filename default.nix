@@ -5,6 +5,7 @@
 let
   app = poetry2nix.mkPoetryApplication {
     projectDir = ./.;
+    python = pkgs.python39;
 
     overrides = poetry2nix.overrides.withDefaults (
       final: prev: {
@@ -13,7 +14,7 @@ let
             pkgs.glibc.bin
           ];
         });
-        pyfzf = prev.pyfzf.overrideAttrs (oldAttrs: {
+        python-fzf = prev.python-fzf.overrideAttrs (oldAttrs: {
           propagatedBuildInputs = (oldAttrs.propagatedBuildInputs or [ ]) ++ [
             pkgs.fzf
           ];
@@ -32,10 +33,6 @@ in
 app.overrideAttrs (oldAttrs: {
   propagatedBuildInputs = (oldAttrs.propagatedBuildInputs or [ ]) ++ [
     pkgs.nix-index
-  ];
-
-  checkInputs = with pkgs.python3Packages; [
-    pkgs.fzf
   ];
 
   checkPhase = ''

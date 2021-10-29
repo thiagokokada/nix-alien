@@ -198,8 +198,8 @@ header using `ldd` (actually,
 equivalent library in `nixpkgs`. This is done by querying `nix-locate` locally.
 To solve possible conflicts, human intervation is needed, but thanks to
 [`fzf`](https://github.com/junegunn/fzf) and
-[`pyfzf`](https://github.com/nk412/pyfzf) this is made easy by showing an
-interactive list.
+[`python-fzf`](https://github.com/samedamci/python-fzf) this is made easy by
+showing an interactive list.
 
 To be able to use `nix-locate`, first, the index has to be build. This is done
 by running `nix-index` and waiting 10-15 minutes. To speed-up this process, this
