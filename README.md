@@ -17,19 +17,30 @@ Fear not, now there is `nix-alien` which will download necessary dependencies
 for you.
 
 ```sh
-$ ./nix-alien bb            --> Run the binary inside a FHS shell with all needed shared dependencies to execute the binary
-$ ./nix-alien-ld bb         --> Spawns you inside a shell with NIX_LD_LIBRARY_PATH set to the needed dependencies, to be used with nix-ld
-$ ./nix-alien-find-libs bb  --> Lists all libs needed for the binary
+$ nix-alien bb            --> Run the binary inside a FHS shell with all needed shared dependencies to execute the binary
+$ nix-alien-ld bb         --> Spawns you inside a shell with NIX_LD_LIBRARY_PATH set to the needed dependencies, to be used with nix-ld
+$ nix-alien-find-libs bb  --> Lists all libs needed for the binary
 ```
 
-## Usage (Flakes)
+## Usage
 
-Assuming you have `nix` already installed:
+Assuming you have `nix-alien` and `nix-index-update` installed, start by
+running:
+
+``` sh
+$ nix-index-update
+```
+
+This will avoid the slow startup of `nix-locate` by downloading it from a
+pre-computed index from
+[`nix-index-database`](https://github.com/Mic92/nix-index-database). You can
+also run `nix-index` command to compute the index locally (this will take a
+while).
+
+Afterwards, start by running:
 
 ```sh
-$ nix-shell -p nixUnstable nix-index
-$ nix-index # this will take a long time, see below how to speedup the process
-$ nix run --experimental-features 'nix-command flakes' "github:thiagokokada/nix-alien" -- ~/myapp
+$ nix-alien ~/myapp
 ```
 
 This will run `nix-alien` on `~/myapp` binary with a `FHSUserEnv` including all
@@ -39,27 +50,17 @@ evaluation faster. You can also pass `--recreate` flag to force the recreation
 of `default.nix` file, and `--destination` to change where `default.nix` file
 will be saved.
 
-You can edit your `/etc/nix/nix.conf` or `~/.config/nix/nix.conf` file and
-add the following line to avoid having to pass `--experimental-features` flag
-every time:
-
-```ini
-experimental-features = nix-command flakes
-```
-
-From here on this guide will assume the above configuration is done for brevity.
-
 To pass arguments to the app:
 
 ```sh
-$ nix run "github:thiagokokada/nix-alien" -- ~/myapp -- --help
+$ nix-alien ~/myapp -- --help
 ```
 
 In case you're using [`nix-ld`](https://github.com/Mic92/nix-ld), there is also
 `nix-alien-ld`:
 
 ``` sh
-$ nix run "github:thiagokokada/nix-alien#nix-alien-ld" -- ~/myapp 
+$ nix-alien-ld -- ~/myapp 
 ```
 
 This will spawn a wrapped binary with `NIX_LD_LIBRARY_PATH` and `NIX_LD` setup.
@@ -72,43 +73,84 @@ will be saved.
 To pass arguments to the app:
 
 ```sh
-$ nix run "github:thiagokokada/nix-alien#nix-alien-ld" -- ~/myapp -- --help
+$ nix-alien-ld ~/myapp -- --help
 ```
 
 If you want to use the `fzf` based menu to find the libraries for scripting
 purposes, you can run:
 
 ``` sh
-$ nix run "github:thiagokokada/nix-alien#nix-alien-find-libs" -- ~/myapp 
+$ nix-alien-find-libs ~/myapp 
 ```
 
 This will print the found libraries on the `stdout`. The informational messages
 are printed to `stderr`, so you can easily redirect them to `/dev/null` if
 needed. You can also use `--json` flag to print the result as a JSON instead.
 
-To avoid the slow startup of `nix-index`, you can also download a pre-computed
-index from [`nix-index-database`](https://github.com/Mic92/nix-index-database):
+### Usage without installing
+
+You can also run the scripts from this repo on any Nix/NixOS setup. However, in
+this case you will need to have a copy of this repository first:
 
 ``` sh
-$ nix run "github:thiagokokada/nix-alien#nix-index-update"
-```
-## Usage (non-Flakes)
-
-``` sh
-$ $(nix-build default.nix --no-out-link)/bin/nix-alien ~/myapp -- --arg foo
+$ git clone https://github.com/thiagokokada/nix-alien && cd nix-alien
+$ $(nix-build default.nix --no-out-link)/bin/nix-alien ~/myapp
 $ $(nix-build default.nix --no-out-link)/bin/nix-alien-ld ~/myapp
 $ $(nix-build default.nix --no-out-link)/bin/nix-alien-find-libs ~/myapp
 $ $(nix-build nix-index-update.nix --no-out-link)/bin/nix-index-update
 ```
 
-## Installation (Flakes)
+### Usage without installing with Flakes
+
+You can also run the scripts from this repo directly without clonning or
+installing them, assuming you're using [`nixUnstable` or `nixFlakes` and
+configured it correctly](https://nixos.wiki/wiki/Flakes#Installing_flakes).
+
+```sh
+$ nix run "github:thiagokokada/nix-alien#nix-alien" -- ~/myapp
+$ nix run "github:thiagokokada/nix-alien#nix-alien-ld" -- ~/myapp
+$ nix run "github:thiagokokada/nix-alien#nix-alien-find-libs" -- ~/myapp
+$ nix run "github:thiagokokada/nix-alien#nix-index-update"
+```
+
+## NixOS Installation
+
+You can add the following contents to a `/etc/nixos/nix-alien.nix` file:
+
+``` nix
+{ pkgs, ... }:
+
+let
+  nix-alien-src = fetchTarball "https://github.com/thiagokokada/nix-alien/tarball/master";
+  nix-alien = import (nix-alien-src) { };
+  nix-index-update = import (nix-alien-src + "/nix-index-update.nix") {};
+in
+{
+  environment.systemPackages = with pkgs; [
+    nix-alien
+    nix-index # not necessary, but recommended
+    nix-index-update
+  ];
+}
+```
+
+And afterwards, add it to `imports` section on `/etc/nixos/configuration.nix`
+file.
+
+### NixOS installation with Flakes
+
+If you're using NixOS with Flakes, you can do something similar to your NixOS
+setup to install `nix-alien` on system `PATH`:
 
 ```nix
 {
   description = "nix-alien-on-nixos";
 
-  inputs.nix-alien.url = "github:thiagokokada/nix-alien";
   inputs.nixpkgs.url = "github:NixOS/nixpkgs";
+  inputs.nix-alien {
+    url = "github:thiagokokada/nix-alien";
+    inputs.nixpkgs.follows = "nixpkgs"; # not mandatory but recommended
+  };
 
   outputs = { self, nixpkgs, nix-alien }: {
       nixosConfigurations.nix-alien-desktop = nixpkgs.lib.nixosSystem {
@@ -131,24 +173,15 @@ $ $(nix-build nix-index-update.nix --no-out-link)/bin/nix-index-update
 }
 ```
 
-## Installation (non-Flakes)
+## Development
 
-``` nix
-{ pkgs, ... }:
+On non-Flakes system, you can use `nix-shell` to start a development shell.
 
-let
-  nix-alien-src = fetchTarball "https://github.com/thiagokokada/nix-alien/tarball/master";
-  nix-alien = import (nix-alien-src) { };
-  nix-index-update = import (nix-alien-src + "/nix-index-update.nix") {};
-in
-{
-  environment.systemPackages = with pkgs; [
-    nix-alien
-    nix-index # not necessary, but recommended
-    nix-index-update
-  ];
-}
-```
+On Flakes enabled system, you can use `nix develop` instead.
+
+If you have [`nix-direnv`](https://github.com/nix-community/nix-direnv/)
+installed, there is a `.envrc` file configured to start the Flakes enabled setup
+automatically. Just run `direnv allow` inside this repo.
 
 ## Limitations
 
