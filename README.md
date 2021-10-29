@@ -147,7 +147,7 @@ setup to install `nix-alien` on system `PATH`:
   description = "nix-alien-on-nixos";
 
   inputs.nixpkgs.url = "github:NixOS/nixpkgs";
-  inputs.nix-alien {
+  inputs.nix-alien = {
     url = "github:thiagokokada/nix-alien";
     inputs.nixpkgs.follows = "nixpkgs"; # not mandatory but recommended
   };
