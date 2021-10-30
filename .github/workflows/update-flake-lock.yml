@@ -1,0 +1,55 @@
+name: update-flake-lock
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "40 4 1,15 * *"
+
+jobs:
+  update-flakes:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          # Nix Flakes doesn't work on shallow clones
+          fetch-depth: 0
+
+      - uses: cachix/install-nix-action@v14
+        with:
+          install_url: https://nixos-nix-install-tests.cachix.org/serve/vij683ly7sl95nnhb67bdjjfabclr85m/install
+          install_options: '--tarball-url-prefix https://nixos-nix-install-tests.cachix.org/serve'
+          extra_nix_config: |
+            experimental-features = nix-command flakes
+            access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
+
+      - name: Update flake.lock
+        run: |
+          git config user.name '${{ github.actor }}'
+          git config user.email '${{ github.actor }}@users.noreply.github.com'
+          nix flake update --commit-lock-file
+
+      - name: Set default git branch (to reduce log spam)
+        run: git config --global init.defaultBranch master
+
+      - name: CI
+        run: nix-shell --run "make ci"
+
+      - name: Build
+        run: |
+          nix build ".#nix-alien"
+          nix build ".#nix-index-update"
+
+      - name: Create Pull Request
+        id: cpr
+        uses: peter-evans/create-pull-request@v3
+        with:
+          branch: flake-updates
+          delete-branch: true
+          title: "Update flake.lock"
+          body: |
+            ## Run report
+            https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+      - name: Check outputs
+        run: |
+          echo "Pull Request Number - ${{ steps.cpr.outputs.pull-request-number }}"
+          echo "Pull Request URL - ${{ steps.cpr.outputs.pull-request-url }}"
