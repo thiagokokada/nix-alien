@@ -1,40 +1,24 @@
 import argparse
 import subprocess
 import sys
+from importlib.resources import read_text
 from pathlib import Path
 from string import Template
 
 from .libs import get_unique_packages, find_libs
 from .helpers import get_cache_path
 
-SHELL_TEMPLATE = Template(
-    """\
-{ pkgs ? import <nixpkgs> { } }:
-
-let
-  inherit (pkgs) lib stdenv;
-  NIX_LD_LIBRARY_PATH = with pkgs; lib.makeLibraryPath [
-    ${packages}
-  ];
-  NIX_LD = lib.fileContents "$${stdenv.cc}/nix-support/dynamic-linker";
-in
-pkgs.writeShellScriptBin "${name}" ''
-  export NIX_LD_LIBRARY_PATH='$${NIX_LD_LIBRARY_PATH}'$${"\\$${NIX_LD_LIBRARY_PATH:+':'}$$NIX_LD_LIBRARY_PATH"}
-  export NIX_LD='$${NIX_LD}'$${"\\$${NIX_LD:+':'}$$NIX_LD"}
-  "${program}" "$$@"
-''
-"""
-)
+SHELL_TEMPLATE = Template(read_text(__package__, "nix_ld.template.nix"))
 
 
 def create_nix_ld_drv(program: str) -> str:
     path = Path(program).expanduser()
     libs = find_libs(path)
 
-    return SHELL_TEMPLATE.substitute(
-        name=path.name,
-        packages=("\n" + 4 * " ").join(get_unique_packages(libs)),
-        program=path.absolute(),
+    return SHELL_TEMPLATE.safe_substitute(
+        __name__=path.name,
+        __packages__=("\n" + 4 * " ").join(get_unique_packages(libs)),
+        __program__=path.absolute(),
     )
 
 

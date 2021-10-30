@@ -1,38 +1,24 @@
 import argparse
 import subprocess
 import sys
+from importlib.resources import read_text
 from pathlib import Path
 from string import Template
 
 from .libs import get_unique_packages, find_libs
 from .helpers import get_cache_path
 
-FHS_TEMPLATE = Template(
-    """\
-{ pkgs ? import <nixpkgs> { } }:
-
-let
-  inherit (pkgs) buildFHSUserEnv;
-in
-buildFHSUserEnv {
-  name = "${name}-fhs";
-  targetPkgs = p: with p; [
-    ${packages}
-  ];
-  runScript = "${program}";
-}
-"""
-)
+FHS_TEMPLATE = Template(read_text(__package__, "fhs_env.template.nix"))
 
 
 def create_fhs_env_drv(program: str) -> str:
     path = Path(program).expanduser()
     libs = find_libs(path)
 
-    return FHS_TEMPLATE.substitute(
-        name=path.name,
-        packages=("\n" + 4 * " ").join(get_unique_packages(libs)),
-        program=path.absolute(),
+    return FHS_TEMPLATE.safe_substitute(
+        __name__=path.name,
+        __packages__=("\n" + 4 * " ").join(get_unique_packages(libs)),
+        __program__=path.absolute(),
     )
 
 
