@@ -8,7 +8,7 @@
 
 You are running nix/NixOS and have ever encountered the following problem?
 
-```sh
+```console
 $ ./bb
 bash: ./bb: No such file or directory
 ```
@@ -16,10 +16,10 @@ bash: ./bb: No such file or directory
 Fear not, now there is `nix-alien` which will download necessary dependencies
 for you.
 
-```sh
-$ nix-alien bb            --> Run the binary inside a FHS shell with all needed shared dependencies to execute the binary
-$ nix-alien-ld bb         --> Spawns you inside a shell with NIX_LD_LIBRARY_PATH set to the needed dependencies, to be used with nix-ld
-$ nix-alien-find-libs bb  --> Lists all libs needed for the binary
+```console
+$ nix-alien bb            # Run the binary inside a FHS shell with all needed shared dependencies to execute the binary
+$ nix-alien-ld bb         # Spawns you inside a shell with NIX_LD_LIBRARY_PATH set to the needed dependencies, to be used with nix-ld
+$ nix-alien-find-libs bb  # Lists all libs needed for the binary
 ```
 
 ## Usage
@@ -27,7 +27,7 @@ $ nix-alien-find-libs bb  --> Lists all libs needed for the binary
 Assuming you have `nix-alien` and `nix-index-update` installed, start by
 running:
 
-``` sh
+```console
 $ nix-index-update
 ```
 
@@ -39,7 +39,7 @@ while).
 
 Afterwards, start by running:
 
-```sh
+```console
 $ nix-alien ~/myapp
 ```
 
@@ -52,14 +52,14 @@ will be saved.
 
 To pass arguments to the app:
 
-```sh
+```console
 $ nix-alien ~/myapp -- --help
 ```
 
 In case you're using [`nix-ld`](https://github.com/Mic92/nix-ld), there is also
 `nix-alien-ld`:
 
-``` sh
+```console
 $ nix-alien-ld -- ~/myapp 
 ```
 
@@ -72,14 +72,14 @@ will be saved.
 
 To pass arguments to the app:
 
-```sh
+```console
 $ nix-alien-ld ~/myapp -- --help
 ```
 
 If you want to use the `fzf` based menu to find the libraries for scripting
 purposes, you can run:
 
-``` sh
+```console
 $ nix-alien-find-libs ~/myapp 
 ```
 
@@ -92,7 +92,7 @@ needed. You can also use `--json` flag to print the result as a JSON instead.
 You can also run the scripts from this repo on any Nix/NixOS setup. However, in
 this case you will need to have a copy of this repository first:
 
-``` sh
+```console
 $ git clone https://github.com/thiagokokada/nix-alien && cd nix-alien
 $ $(nix-build default.nix --no-out-link)/bin/nix-alien ~/myapp
 $ $(nix-build default.nix --no-out-link)/bin/nix-alien-ld ~/myapp
@@ -106,7 +106,7 @@ You can also run the scripts from this repo directly without clonning or
 installing them, assuming you're using [`nixUnstable` or `nixFlakes` and
 configured it correctly](https://nixos.wiki/wiki/Flakes#Installing_flakes).
 
-```sh
+```console
 $ nix run "github:thiagokokada/nix-alien#nix-alien" -- ~/myapp
 $ nix run "github:thiagokokada/nix-alien#nix-alien-ld" -- ~/myapp
 $ nix run "github:thiagokokada/nix-alien#nix-alien-find-libs" -- ~/myapp
