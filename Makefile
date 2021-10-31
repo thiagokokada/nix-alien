@@ -14,7 +14,7 @@ ci:
 	${PYTHON_RUN} mypy --ignore-missing-imports .
 	${PYTHON_RUN} pytest -vvv
 	find -name '*.nix' -exec nixpkgs-fmt --check {} \+
-	NIXPKGS_ALLOW_UNSUPPORTED_SYSTEM=1 nix --experimental-features 'nix-command flakes' flake check --impure
+	nix --experimental-features 'nix-command flakes' flake check
 
 format:
 	${PYTHON_RUN} black .
