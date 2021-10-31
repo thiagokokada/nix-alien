@@ -5,9 +5,10 @@ from importlib.resources import read_text
 from pathlib import Path
 from platform import machine
 from string import Template
+from typing import List, Optional
 
 from .libs import get_unique_packages, find_libs
-from .helpers import get_cache_path
+from .helpers import get_dest_path
 
 NIX_LD_TEMPLATE = Template(read_text(__package__, "nix_ld.template.nix"))
 NIX_LD_FLAKE_TEMPLATE = Template(read_text(__package__, "nix_ld_flake.template.nix"))
@@ -24,6 +25,37 @@ def create_nix_ld_drv(program: str) -> str:
     )
 
 
+def create_nix_ld(
+    program: str,
+    args: List[str],
+    destination: Optional[str],
+    recreate: bool = False,
+) -> None:
+    dest_path = get_dest_path(destination, program, "nix-ld", "default.nix")
+
+    if recreate:
+        dest_path.unlink(missing_ok=True)
+
+    if not dest_path.exists():
+        dest_path.parent.mkdir(parents=True, exist_ok=True)
+        ld_shell = create_nix_ld_drv(program)
+        with open(dest_path, "w") as f:
+            f.write(ld_shell)
+        print(f"File '{dest_path}' created successfuly!")
+
+    build_path = Path(
+        subprocess.run(
+            ["nix-build", "--no-out-link", dest_path],
+            check=True,
+            capture_output=True,
+            text=True,
+        ).stdout.strip()
+    )
+
+    name = Path(program).name
+    subprocess.run([build_path / "bin" / name, *args])
+
+
 def create_nix_ld_drv_flake(program: str) -> str:
     path = Path(program).expanduser()
     libs = find_libs(path)
@@ -33,6 +65,37 @@ def create_nix_ld_drv_flake(program: str) -> str:
         __packages__=("\n" + 12 * " ").join(get_unique_packages(libs)),
         __program__=path.absolute(),
         __system__=f"{machine()}-linux",
+    )
+
+
+def create_nix_ld_flake(
+    program: str,
+    args: List[str],
+    destination: Optional[str],
+    recreate: bool = False,
+) -> None:
+    dest_path = get_dest_path(destination, program, "nix-ld", "flake.nix")
+
+    if recreate:
+        dest_path.unlink(missing_ok=True)
+
+    if not dest_path.exists():
+        dest_path.parent.mkdir(parents=True, exist_ok=True)
+        ld_shell = create_nix_ld_drv_flake(program)
+        with open(dest_path, "w") as f:
+            f.write(ld_shell)
+        print(f"File '{dest_path}' created successfuly!")
+
+    subprocess.run(
+        [
+            "nix",
+            "run",
+            "--experimental-features",
+            "nix-command flakes",
+            dest_path.parent,
+            "--",
+            *args,
+        ]
     )
 
 
@@ -64,51 +127,17 @@ def main(args=sys.argv[1:]):
     )
     parsed_args = parser.parse_args(args=args)
 
-    # TODO: this code is a mess, refactor it
     if parsed_args.flake:
-        filename = "flake.nix"
-    else:
-        filename = "default.nix"
-
-    if parsed_args.destination:
-        destination = Path(parsed_args.destination).expanduser().resolve() / filename
-    else:
-        destination = get_cache_path(parsed_args.program) / "nix-ld" / filename
-
-    if parsed_args.recreate:
-        destination.unlink(missing_ok=True)
-
-    if not destination.exists():
-        destination.parent.mkdir(parents=True, exist_ok=True)
-        if parsed_args.flake:
-            ld_shell = create_nix_ld_drv_flake(parsed_args.program)
-        else:
-            ld_shell = create_nix_ld_drv(parsed_args.program)
-        with open(destination, "w") as f:
-            f.write(ld_shell)
-        print(f"File '{destination}' created successfuly!")
-
-    if parsed_args.flake:
-        subprocess.run(
-            [
-                "nix",
-                "run",
-                "--experimental-features",
-                "nix-command flakes",
-                destination.parent,
-                "--",
-                *parsed_args.args,
-            ]
+        create_nix_ld_flake(
+            program=parsed_args.program,
+            args=parsed_args.args,
+            destination=parsed_args.destination,
+            recreate=parsed_args.recreate,
         )
     else:
-        build_path = Path(
-            subprocess.run(
-                ["nix-build", "--no-out-link", destination],
-                check=True,
-                capture_output=True,
-                text=True,
-            ).stdout.strip()
+        create_nix_ld(
+            program=parsed_args.program,
+            args=parsed_args.args,
+            destination=parsed_args.destination,
+            recreate=parsed_args.recreate,
         )
-
-        name = Path(parsed_args.program).name
-        subprocess.run([build_path / "bin" / name, *parsed_args.args])
