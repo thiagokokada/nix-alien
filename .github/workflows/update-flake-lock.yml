@@ -2,7 +2,7 @@ name: update-flake-lock
 on:
   workflow_dispatch:
   schedule:
-    - cron: "40 4 1,15 * *"
+    - cron: "40 4 15 * *"
 
 jobs:
   update-flakes:
