@@ -8,15 +8,15 @@ from string import Template
 from typing import Optional
 
 from .libs import get_unique_packages, find_libs
-from .helpers import get_dest_path
+from .helpers import get_dest_path, get_print
 
 NIX_LD_TEMPLATE = Template(read_text(__package__, "nix_ld.template.nix"))
 NIX_LD_FLAKE_TEMPLATE = Template(read_text(__package__, "nix_ld_flake.template.nix"))
 
 
-def create_nix_ld_drv(program: str) -> str:
+def create_nix_ld_drv(program: str, silent: bool = False) -> str:
     path = Path(program).expanduser()
-    libs = find_libs(path)
+    libs = find_libs(path, silent)
 
     return NIX_LD_TEMPLATE.safe_substitute(
         __name__=path.name,
@@ -30,6 +30,7 @@ def create_nix_ld(
     args: list[str],
     destination: Optional[str],
     recreate: bool = False,
+    silent: bool = False,
 ) -> None:
     dest_path = get_dest_path(destination, program, "nix-ld", "default.nix")
 
@@ -38,10 +39,10 @@ def create_nix_ld(
 
     if not dest_path.exists():
         dest_path.parent.mkdir(parents=True, exist_ok=True)
-        ld_shell = create_nix_ld_drv(program)
+        ld_shell = create_nix_ld_drv(program, silent)
         with open(dest_path, "w") as f:
             f.write(ld_shell)
-        print(f"File '{dest_path}' created successfuly!")
+        get_print(silent)(f"File '{dest_path}' created successfuly!", file=sys.stderr)
 
     build_path = Path(
         subprocess.run(
@@ -56,9 +57,9 @@ def create_nix_ld(
     subprocess.run([build_path / "bin" / name, *args])
 
 
-def create_nix_ld_drv_flake(program: str) -> str:
+def create_nix_ld_drv_flake(program: str, silent: bool = False) -> str:
     path = Path(program).expanduser()
-    libs = find_libs(path)
+    libs = find_libs(path, silent)
 
     return NIX_LD_FLAKE_TEMPLATE.safe_substitute(
         __name__=path.name,
@@ -73,6 +74,7 @@ def create_nix_ld_flake(
     args: list[str],
     destination: Optional[str],
     recreate: bool = False,
+    silent: bool = False,
 ) -> None:
     dest_path = get_dest_path(destination, program, "nix-ld", "flake.nix")
 
@@ -81,10 +83,10 @@ def create_nix_ld_flake(
 
     if not dest_path.exists():
         dest_path.parent.mkdir(parents=True, exist_ok=True)
-        ld_shell = create_nix_ld_drv_flake(program)
+        ld_shell = create_nix_ld_drv_flake(program, silent)
         with open(dest_path, "w") as f:
             f.write(ld_shell)
-        print(f"File '{dest_path}' created successfuly!")
+        get_print(silent)(f"File '{dest_path}' created successfuly!", file=sys.stderr)
 
     subprocess.run(
         [
@@ -115,6 +117,12 @@ def main(args=sys.argv[1:]):
         help="Path where 'default.nix' file will be created",
     )
     parser.add_argument(
+        "-s",
+        "--silent",
+        help="Silence informational messages",
+        action="store_true",
+    )
+    parser.add_argument(
         "-f",
         "--flake",
         help="Create and use 'flake.nix' file instead (experimental)",
@@ -133,6 +141,7 @@ def main(args=sys.argv[1:]):
             args=parsed_args.args,
             destination=parsed_args.destination,
             recreate=parsed_args.recreate,
+            silent=parsed_args.silent,
         )
     else:
         create_nix_ld(
@@ -140,4 +149,5 @@ def main(args=sys.argv[1:]):
             args=parsed_args.args,
             destination=parsed_args.destination,
             recreate=parsed_args.recreate,
+            silent=parsed_args.silent,
         )

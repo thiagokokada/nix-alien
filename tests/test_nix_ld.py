@@ -88,7 +88,7 @@ def test_create_nix_ld_drv_flake(mock_machine, mock_find_libs, pytestconfig):
 
 @patch("nix_alien.nix_ld.subprocess")
 @patch("nix_alien.nix_ld.find_libs")
-def test_main_wo_args(mock_find_libs, mock_subprocess, monkeypatch, tmp_path):
+def test_main_wo_args(mock_find_libs, mock_subprocess, monkeypatch, tmp_path, capsys):
     monkeypatch.setenv("HOME", str(tmp_path))
     mock_find_libs.return_value = {
         "libfoo.so": "foo.out",
@@ -97,15 +97,24 @@ def test_main_wo_args(mock_find_libs, mock_subprocess, monkeypatch, tmp_path):
         "libquux.so": "quux.out",
     }
     nix_ld.main(["xyz"])
-    shell_nix = next((tmp_path / ".cache/nix-alien").glob("*/nix-ld/default.nix"))
+    default_nix = next((tmp_path / ".cache/nix-alien").glob("*/nix-ld/default.nix"))
 
-    assert shell_nix.is_file()
+    assert default_nix.is_file()
     assert mock_subprocess.run.call_count == 2
+
+    _, err = capsys.readouterr()
+    # Not showing messages from find_libs since it is mocked
+    assert (
+        err
+        == f"""\
+File '{default_nix}' created successfuly!
+"""
+    )
 
 
 @patch("nix_alien.nix_ld.subprocess")
 @patch("nix_alien.nix_ld.find_libs")
-def test_main_with_args(mock_find_libs, mock_subprocess, tmp_path):
+def test_main_with_args(mock_find_libs, mock_subprocess, tmp_path, capsys):
     mock_find_libs.return_value = {
         "libfoo.so": "foo.out",
         "libfoo.6.so": "foo.out",
@@ -113,16 +122,29 @@ def test_main_with_args(mock_find_libs, mock_subprocess, tmp_path):
         "libquux.so": "quux.out",
     }
 
-    nix_ld.main(["--destination", str(tmp_path), "--recreate", "xyz", "--foo", "bar"])
-    shell_nix = tmp_path / "default.nix"
+    nix_ld.main(
+        [
+            "--destination",
+            str(tmp_path),
+            "--recreate",
+            "--silent",
+            "xyz",
+            "--foo",
+            "bar",
+        ]
+    )
+    default_nix = tmp_path / "default.nix"
 
-    assert shell_nix.is_file()
+    assert default_nix.is_file()
     assert mock_subprocess.run.call_count == 2
+
+    _, err = capsys.readouterr()
+    assert err == ""
 
 
 @patch("nix_alien.nix_ld.subprocess")
 @patch("nix_alien.nix_ld.find_libs")
-def test_main_with_flake(mock_find_libs, mock_subprocess, tmp_path):
+def test_main_with_flake(mock_find_libs, mock_subprocess, tmp_path, capsys):
     mock_find_libs.return_value = {
         "libfoo.so": "foo.out",
         "libfoo.6.so": "foo.out",
@@ -131,7 +153,16 @@ def test_main_with_flake(mock_find_libs, mock_subprocess, tmp_path):
     }
 
     nix_ld.main(["--destination", str(tmp_path), "--flake", "xyz", "--foo", "bar"])
-    shell_nix = tmp_path / "flake.nix"
+    flake_nix = tmp_path / "flake.nix"
 
-    assert shell_nix.is_file()
+    assert flake_nix.is_file()
     assert mock_subprocess.run.call_count == 1
+
+    _, err = capsys.readouterr()
+    # Not showing messages from find_libs since it is mocked
+    assert (
+        err
+        == f"""\
+File '{flake_nix}' created successfuly!
+"""
+    )

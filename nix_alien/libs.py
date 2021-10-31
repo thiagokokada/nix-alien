@@ -8,6 +8,8 @@ from typing import Optional, Union
 import lddwrap
 from fzf import fzf
 
+from .helpers import get_print
+
 
 def find_lib_candidates(basename: str) -> list[str]:
     result = subprocess.run(
@@ -21,11 +23,7 @@ def find_lib_candidates(basename: str) -> list[str]:
 
 
 def find_libs(path: Union[Path, str], silent: bool = False) -> dict[str, Optional[str]]:
-    if silent:
-        _print = lambda *_, **__: None
-    else:
-        _print = print  # type: ignore
-
+    _print = get_print(silent)
     path = Path(path).expanduser()
     deps = lddwrap.list_dependencies(path=path)
     resolved_deps: dict[str, Optional[str]] = {}
