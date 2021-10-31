@@ -114,3 +114,20 @@ def test_main_with_args(mock_find_libs, mock_subprocess, tmp_path):
 
     assert shell_nix.is_file()
     assert mock_subprocess.run.call_count == 2
+
+
+@patch("nix_alien.fhs_env.subprocess")
+@patch("nix_alien.fhs_env.find_libs")
+def test_main_with_flake(mock_find_libs, mock_subprocess, tmp_path):
+    mock_find_libs.return_value = {
+        "libfoo.so": "foo.out",
+        "libfoo.6.so": "foo.out",
+        "libbar.so": "bar.out",
+        "libquux.so": "quux.out",
+    }
+
+    fhs_env.main(["--destination", str(tmp_path), "--flake", "xyz", "--foo", "bar"])
+    shell_nix = tmp_path / "flake.nix"
+
+    assert shell_nix.is_file()
+    assert mock_subprocess.run.call_count == 1
