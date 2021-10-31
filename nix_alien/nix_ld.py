@@ -95,8 +95,6 @@ def main(args=sys.argv[1:]):
                 "run",
                 "--experimental-features",
                 "nix-command flakes",
-                # TODO: how to remove --impure here?
-                "--impure",
                 destination.parent,
                 "--",
                 *parsed_args.args,
