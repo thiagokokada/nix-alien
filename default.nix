@@ -33,6 +33,7 @@ in
 app.overrideAttrs (oldAttrs: {
   propagatedBuildInputs = (oldAttrs.propagatedBuildInputs or [ ]) ++ [
     pkgs.nix-index
+    pkgs.nixUnstable
   ];
 
   checkPhase = ''
