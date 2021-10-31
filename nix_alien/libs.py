@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import Optional, Union
 
 import lddwrap
-from fzf.app import fzf
+from fzf import fzf
 
 
 def find_lib_candidates(basename: str) -> list[str]:
