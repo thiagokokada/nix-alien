@@ -1,11 +1,10 @@
-from pathlib import Path
 from unittest.mock import patch
 
 from nix_alien import nix_ld
 
 
 @patch("nix_alien.nix_ld.find_libs")
-def test_create_nix_ld(mock_find_libs):
+def test_create_nix_ld(mock_find_libs, pytestconfig):
     mock_find_libs.return_value = {
         "libfoo.so": "foo.out",
         "libfoo.6.so": "foo.out",
@@ -32,13 +31,13 @@ pkgs.writeShellScriptBin "xyz" ''
   "%s/xyz" "$@"
 ''
 """
-        % Path(__file__).parent.parent.absolute()
+        % pytestconfig.rootpath.absolute()
     )
 
 
 @patch("nix_alien.nix_ld.find_libs")
 @patch("nix_alien.nix_ld.machine")
-def test_create_nix_ld_flake(mock_machine, mock_find_libs):
+def test_create_nix_ld_flake(mock_machine, mock_find_libs, pytestconfig):
     mock_machine.return_value = "x86_64"
     mock_find_libs.return_value = {
         "libfoo.so": "foo.out",
@@ -83,7 +82,7 @@ def test_create_nix_ld_flake(mock_machine, mock_find_libs):
     };
 }
 """
-        % Path(__file__).parent.parent.absolute()
+        % pytestconfig.rootpath.absolute()
     )
 
 

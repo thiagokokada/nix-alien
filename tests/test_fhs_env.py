@@ -1,11 +1,10 @@
-from pathlib import Path
 from unittest.mock import patch
 
 from nix_alien import fhs_env
 
 
 @patch("nix_alien.fhs_env.find_libs")
-def test_create_fhs_env(mock_find_libs):
+def test_create_fhs_env(mock_find_libs, pytestconfig):
     mock_find_libs.return_value = {
         "libfoo.so": "foo.out",
         "libfoo.6.so": "foo.out",
@@ -30,13 +29,13 @@ buildFHSUserEnv {
   runScript = "%s/xyz";
 }
 """
-        % Path(__file__).parent.parent.absolute()
+        % pytestconfig.rootpath.absolute()
     )
 
 
 @patch("nix_alien.fhs_env.find_libs")
 @patch("nix_alien.nix_ld.machine")
-def test_create_fhs_env_flake(mock_machine, mock_find_libs):
+def test_create_fhs_env_flake(mock_machine, mock_find_libs, pytestconfig):
     mock_machine.return_value = "x86_64"
     mock_find_libs.return_value = {
         "libfoo.so": "foo.out",
@@ -79,7 +78,7 @@ def test_create_fhs_env_flake(mock_machine, mock_find_libs):
     };
 }
 """
-        % Path(__file__).parent.parent.absolute()
+        % pytestconfig.rootpath.absolute()
     )
 
 
