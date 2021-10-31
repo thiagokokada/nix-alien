@@ -3,14 +3,13 @@ import json
 import subprocess
 import sys
 from pathlib import Path
-from typing import Dict, List, Optional, Union
-from shlex import join
+from typing import Optional, Union
 
 import lddwrap
 from fzf.app import fzf
 
 
-def find_lib_candidates(basename: str) -> List[str]:
+def find_lib_candidates(basename: str) -> list[str]:
     result = subprocess.run(
         ["nix-locate", "--minimal", "--whole-name", "--top-level", basename],
         check=True,
@@ -21,10 +20,10 @@ def find_lib_candidates(basename: str) -> List[str]:
     return [c for c in candidates if c != ""]
 
 
-def find_libs(path: Union[Path, str]) -> Dict[str, Optional[str]]:
+def find_libs(path: Union[Path, str]) -> dict[str, Optional[str]]:
     path = Path(path).expanduser()
     deps = lddwrap.list_dependencies(path=path)
-    resolved_deps: Dict[str, Optional[str]] = {}
+    resolved_deps: dict[str, Optional[str]] = {}
 
     for dep in deps:
         if not dep.soname or dep.found:
@@ -57,7 +56,7 @@ def find_libs(path: Union[Path, str]) -> Dict[str, Optional[str]]:
     return resolved_deps
 
 
-def get_unique_packages(libs: Dict[str, Optional[str]]) -> List[str]:
+def get_unique_packages(libs: dict[str, Optional[str]]) -> list[str]:
     # remove None values
     unique_packages = set([l for l in libs.values() if l])
     return sorted(unique_packages)

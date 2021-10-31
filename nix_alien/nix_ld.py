@@ -5,7 +5,7 @@ from importlib.resources import read_text
 from pathlib import Path
 from platform import machine
 from string import Template
-from typing import List, Optional
+from typing import Optional
 
 from .libs import get_unique_packages, find_libs
 from .helpers import get_dest_path
@@ -27,7 +27,7 @@ def create_nix_ld_drv(program: str) -> str:
 
 def create_nix_ld(
     program: str,
-    args: List[str],
+    args: list[str],
     destination: Optional[str],
     recreate: bool = False,
 ) -> None:
@@ -70,7 +70,7 @@ def create_nix_ld_drv_flake(program: str) -> str:
 
 def create_nix_ld_flake(
     program: str,
-    args: List[str],
+    args: list[str],
     destination: Optional[str],
     recreate: bool = False,
 ) -> None:
