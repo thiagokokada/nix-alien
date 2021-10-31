@@ -36,7 +36,7 @@ bar.out
 
 @patch("nix_alien.libs.lddwrap", autospec=True)
 @patch("nix_alien.libs.subprocess", autospec=True)
-def test_find_libs_when_no_candidates_found(mock_subprocess, mock_lddwrap):
+def test_find_libs_when_no_candidates_found(mock_subprocess, mock_lddwrap, capsys):
     mock_lddwrap.list_dependencies.return_value = [
         DependencyMock(soname="libfoo.so", path="/lib/libfoo.so", found=False),
         DependencyMock(soname="libbar.so", path="/lib/libbar.so", found=False),
@@ -47,6 +47,17 @@ def test_find_libs_when_no_candidates_found(mock_subprocess, mock_lddwrap):
         "libbar.so": None,
     }
 
+    _, err = capsys.readouterr()
+    assert (
+        err
+        == """\
+No candidate found for 'libfoo.so'
+Selected candidate for 'libfoo.so': None
+No candidate found for 'libbar.so'
+Selected candidate for 'libbar.so': None
+"""
+    )
+
 
 @patch("nix_alien.libs.lddwrap", autospec=True)
 @patch("nix_alien.libs.subprocess", autospec=True)
@@ -55,6 +66,7 @@ def test_find_libs_when_one_candidate_found(
     mock_fzf,
     mock_subprocess,
     mock_lddwrap,
+    capsys,
 ):
     mock_lddwrap.list_dependencies.return_value = [
         DependencyMock(soname="libfoo.so", path="/lib/libfoo.so", found=False),
@@ -67,6 +79,15 @@ def test_find_libs_when_one_candidate_found(
         "libbar.so": "foo.out",
     }
 
+    _, err = capsys.readouterr()
+    assert (
+        err
+        == """\
+Selected candidate for 'libfoo.so': foo.out
+Selected candidate for 'libbar.so': foo.out
+"""
+    )
+
 
 @patch("nix_alien.libs.lddwrap", autospec=True)
 @patch("nix_alien.libs.subprocess", autospec=True)
@@ -75,6 +96,7 @@ def test_find_libs_when_multiple_candidates_found(
     mock_fzf,
     mock_subprocess,
     mock_lddwrap,
+    capsys,
 ):
     mock_lddwrap.list_dependencies.return_value = [
         DependencyMock(soname="libfoo.so", path="/lib/libfoo.so", found=False),
@@ -86,10 +108,13 @@ def test_find_libs_when_multiple_candidates_found(
         [ResultMock(index=0, output="foo.out")],
         Exception("This shouldn't happen!"),
     ]
-    assert libs.find_libs("xyz") == {
+    assert libs.find_libs("xyz", silent=True) == {
         "libfoo.so": "foo.out",
         "libbar.so": "foo.out",
     }
+
+    _, err = capsys.readouterr()
+    assert err == ""
 
 
 def test_get_unique_packages():
@@ -147,17 +172,11 @@ def test_main_with_args(mock_subprocess, mock_lddwrap, capsys):
         DependencyMock(soname="libbar.so", path="/lib/libbar.so", found=False),
     ]
     mock_subprocess.run.return_value = CompletedProcessMock(stdout="foo.out")
-    libs.main(["xyz", "--json"])
+    libs.main(["xyz", "--json", "--silent"])
 
     out, err = capsys.readouterr()
     assert json.loads(out) == {
         "libfoo.so": "foo.out",
         "libbar.so": "foo.out",
     }
-    assert (
-        err
-        == """\
-Selected candidate for 'libfoo.so': foo.out
-Selected candidate for 'libbar.so': foo.out
-"""
-    )
+    assert err == ""
