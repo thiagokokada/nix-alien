@@ -61,7 +61,7 @@ def find_libs(path: Union[Path, str], silent: bool = False) -> dict[str, Optiona
 
 def get_unique_packages(libs: dict[str, Optional[str]]) -> list[str]:
     # remove None values
-    unique_packages = set([l for l in libs.values() if l])
+    unique_packages = set([l for l in libs.values() if l is not None])
     return sorted(unique_packages)
 
 
