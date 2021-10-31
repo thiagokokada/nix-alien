@@ -36,6 +36,57 @@ pkgs.writeShellScriptBin "xyz" ''
     )
 
 
+@patch("nix_alien.nix_ld.find_libs")
+@patch("nix_alien.nix_ld.machine")
+def test_create_nix_ld_flake(mock_machine, mock_find_libs):
+    mock_machine.return_value = "x86_64"
+    mock_find_libs.return_value = {
+        "libfoo.so": "foo.out",
+        "libfoo.6.so": "foo.out",
+        "libbar.so": "bar.out",
+        "libquux.so": "quux.out",
+    }
+    assert (
+        nix_ld.create_nix_ld_drv_flake("xyz")
+        == """\
+{
+  description = "xyz-nix-ld";
+
+  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+
+  outputs = { self, nixpkgs }:
+    let
+      system = "x86_64-linux";
+      pkgs = import nixpkgs { inherit system; };
+    in
+    rec {
+      defaultPackage.${system} =
+        let
+          inherit (pkgs) lib stdenv;
+          NIX_LD_LIBRARY_PATH = with pkgs; lib.makeLibraryPath [
+            bar.out
+            foo.out
+            quux.out
+          ];
+          NIX_LD = lib.fileContents "${stdenv.cc}/nix-support/dynamic-linker";
+        in
+        pkgs.writeShellScriptBin "xyz" ''
+          export NIX_LD_LIBRARY_PATH='${NIX_LD_LIBRARY_PATH}'${"\\${NIX_LD_LIBRARY_PATH:+':'}$NIX_LD_LIBRARY_PATH"}
+          export NIX_LD='${NIX_LD}'${"\\${NIX_LD:+':'}$NIX_LD"}
+          "%s/xyz" "$@"
+        '';
+
+      defaultApp.${system} = {
+        type = "app";
+        program = "${defaultPackage.${system}}/bin/xyz";
+      };
+    };
+}
+"""
+        % Path(__file__).parent.parent.absolute()
+    )
+
+
 @patch("nix_alien.nix_ld.subprocess")
 @patch("nix_alien.nix_ld.find_libs")
 def test_main_wo_args(mock_find_libs, mock_subprocess, monkeypatch, tmp_path):
