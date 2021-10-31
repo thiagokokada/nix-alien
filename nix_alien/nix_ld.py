@@ -26,11 +26,13 @@ def main(args=sys.argv[1:]):
     parser = argparse.ArgumentParser()
     parser.add_argument("program", help="Program to run")
     parser.add_argument(
+        "-r",
         "--recreate",
         help="Recreate 'shell.nix' file if exists",
         action="store_true",
     )
     parser.add_argument(
+        "-d",
         "--destination",
         metavar="PATH",
         help="Path where 'shell.nix' file will be created",
