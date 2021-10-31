@@ -5,7 +5,7 @@ from importlib.resources import read_text
 from pathlib import Path
 from platform import machine
 from string import Template
-from typing import Optional
+from typing import Iterable, Optional
 
 from .libs import get_unique_packages, find_libs
 from .helpers import get_dest_path, get_print
@@ -27,7 +27,7 @@ def create_fhs_env_drv(program: str, silent: bool = False) -> str:
 
 def create_fhs_env(
     program: str,
-    args: list[str],
+    args: Iterable[str],
     destination: Optional[str],
     recreate: bool = False,
     silent: bool = False,
@@ -71,7 +71,7 @@ def create_fhs_env_drv_flake(program: str, silent: bool = False) -> str:
 
 def create_fhs_env_flake(
     program: str,
-    args: list[str],
+    args: Iterable[str],
     destination: Optional[str],
     recreate: bool = False,
     silent: bool = False,
