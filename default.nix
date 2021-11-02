@@ -1,6 +1,6 @@
 { pkgs ? (import ./compat.nix).pkgs
 , poetry2nix ? (import ./compat.nix).poetry2nix
-# TODO: make it work with non-flakes
+  # TODO: make it work with non-flakes
 , rev ? "unknown"
 }:
 
@@ -39,7 +39,7 @@ app.overrideAttrs (oldAttrs: {
   ];
 
   preBuild = ''
-    echo "__version__ = \"${rev}\"" > nix_alien/_version.py
+    echo "__version__ = '${rev}'" > nix_alien/_version.py
   '';
 
   checkPhase = ''

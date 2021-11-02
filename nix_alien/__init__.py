@@ -1,3 +1,4 @@
+from ._version import __version__
 from .fhs_env import (
     create_fhs_env,
     create_fhs_env_drv,
@@ -13,6 +14,7 @@ from .nix_ld import (
 )
 
 __all__ = [
+    "__version__",
     "create_fhs_env",
     "create_fhs_env_drv",
     "create_fhs_env_drv_flake",
