@@ -8,6 +8,7 @@ from typing import Optional, Union
 import lddwrap
 from fzf import fzf
 
+from ._version import __version__
 from .helpers import get_print
 
 
@@ -68,6 +69,7 @@ def get_unique_packages(libs: dict[str, Optional[str]]) -> list[str]:
 def main(args=sys.argv[1:]):
     parser = argparse.ArgumentParser()
     parser.add_argument("program", help="Program to analyze")
+    parser.add_argument("--version", action="version", version=__version__)
     parser.add_argument("-j", "--json", help="Output as json", action="store_true")
     parser.add_argument(
         "-s",

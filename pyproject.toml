@@ -4,7 +4,7 @@ version = "0.1.0"
 description = "Run unpatched binaries on Nix/NixOS"
 authors = ["Thiago Kenji Okada <thiagokokada@gmail.com>"]
 license = "MIT"
-include = ["nix_alien/*.nix"]
+include = ["nix_alien/*.nix", "nix_alien/version"]
 
 [tool.poetry.dependencies]
 # Setting it this way since this is the minimum version supported by python-fzf

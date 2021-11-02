@@ -7,6 +7,7 @@ from platform import machine
 from string import Template
 from typing import Iterable, Optional
 
+from ._version import __version__
 from .libs import get_unique_packages, find_libs
 from .helpers import get_dest_path, get_print
 
@@ -104,6 +105,7 @@ def create_fhs_env_flake(
 def main(args=sys.argv[1:]):
     parser = argparse.ArgumentParser()
     parser.add_argument("program", help="Program to run")
+    parser.add_argument("--version", action="version", version=__version__)
     parser.add_argument(
         "-r",
         "--recreate",

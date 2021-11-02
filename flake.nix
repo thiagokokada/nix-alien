@@ -28,6 +28,7 @@
           nix-alien = import ./default.nix {
             inherit pkgs;
             poetry2nix = poetry2nix';
+            rev = if (self ? rev) then self.rev else "dirty";
           };
           nix-index-update = import ./nix-index-update.nix {
             inherit pkgs system;
