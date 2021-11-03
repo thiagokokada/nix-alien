@@ -96,7 +96,7 @@ usage: nix-alien [-h] [--version] [-r] [-d PATH] [-s] [-f] program ...
 
 positional arguments:
   program               Program to run
-  args                  Arguments to be passed to the program
+  ellipsis              Arguments to be passed to the program
 
 optional arguments:
   -h, --help            show this help message and exit

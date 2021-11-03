@@ -130,8 +130,9 @@ def main(args=sys.argv[1:]):
         help="Create and use 'flake.nix' file instead (experimental)",
         action="store_true",
     )
+    # argparse.REMAINDER is represented as '...'
     parser.add_argument(
-        "args",
+        "ellipsis",
         nargs=argparse.REMAINDER,
         help="Arguments to be passed to the program",
     )
@@ -140,7 +141,7 @@ def main(args=sys.argv[1:]):
     if parsed_args.flake:
         create_nix_ld_flake(
             program=parsed_args.program,
-            args=parsed_args.args,
+            args=parsed_args.ellipsis,
             destination=parsed_args.destination,
             recreate=parsed_args.recreate,
             silent=parsed_args.silent,
@@ -148,7 +149,7 @@ def main(args=sys.argv[1:]):
     else:
         create_nix_ld(
             program=parsed_args.program,
-            args=parsed_args.args,
+            args=parsed_args.ellipsis,
             destination=parsed_args.destination,
             recreate=parsed_args.recreate,
             silent=parsed_args.silent,
