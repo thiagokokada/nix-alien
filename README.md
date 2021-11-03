@@ -53,7 +53,7 @@ will be saved.
 To pass arguments to the app:
 
 ```console
-$ nix-alien ~/myapp -- --help
+$ nix-alien ~/myapp -- --foo bar
 ```
 
 In case you're using [`nix-ld`](https://github.com/Mic92/nix-ld), there is also
@@ -73,7 +73,7 @@ will be saved.
 To pass arguments to the app:
 
 ```console
-$ nix-alien-ld ~/myapp -- --help
+$ nix-alien-ld ~/myapp -- --foo bar
 ```
 
 If you want to use the `fzf` based menu to find the libraries for scripting
@@ -86,6 +86,27 @@ $ nix-alien-find-libs ~/myapp
 This will print the found libraries on the `stdout`. The informational messages
 are printed to `stderr`, so you can easily redirect them to `/dev/null` if
 needed. You can also use `--json` flag to print the result as a JSON instead.
+
+There are also some other options, check them using `--help` flag on each
+program. Example for `nix-alien`:
+
+```console
+$ nix-alien --help
+usage: nix-alien [-h] [--version] [-r] [-d PATH] [-s] [-f] program ...
+
+positional arguments:
+  program               Program to run
+  args                  Arguments to be passed to the program
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --version             show program's version number and exit
+  -r, --recreate        Recreate 'default.nix' file if exists
+  -d PATH, --destination PATH
+                        Path where 'default.nix' file will be created
+  -s, --silent          Silence informational messages
+  -f, --flake           Create and use 'flake.nix' file instead (experimental)
+```
 
 ### Usage without installing
 
