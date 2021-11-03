@@ -3,12 +3,12 @@
 }:
 
 let
-  inherit (pkgs) stdenv coreutils wget;
+  inherit (pkgs) coreutils stdenv substituteAll wget;
 in
 stdenv.mkDerivation {
   name = "nix-index-update";
 
-  src = with pkgs; substituteAll {
+  src = substituteAll {
     src = ./nix-index-update.sh;
     isExecutable = true;
     inherit coreutils wget system;
