@@ -142,7 +142,9 @@ You can add the following contents to a `/etc/nixos/nix-alien.nix` file:
 { pkgs, ... }:
 
 let
-  nix-alien-pkgs = import (fetchTarball "https://github.com/thiagokokada/nix-alien/tarball/master") { };
+  nix-alien-pkgs = import (
+    fetchTarball "https://github.com/thiagokokada/nix-alien/tarball/master"
+  ) { };
 in
 {
   # Optional, but this is needed for `nix-alien-ld` command
