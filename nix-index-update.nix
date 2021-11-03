@@ -3,21 +3,21 @@
 }:
 
 let
-  inherit (pkgs) coreutils wget;
+  inherit (pkgs) stdenv coreutils wget;
 in
-pkgs.writeShellScriptBin "nix-index-update" ''
-  set -euo pipefail
+stdenv.mkDerivation {
+  name = "nix-index-update";
 
-  readonly filename="index-${system}"
-  readonly dest_dir="$HOME/.cache/nix-index"
+  src = with pkgs; substituteAll {
+    src = ./nix-index-update.sh;
+    isExecutable = true;
+    inherit coreutils wget system;
+  };
 
-  ${coreutils}/bin/mkdir -p "$dest_dir"
-  pushd "$dest_dir" >/dev/null
-  trap "popd >/dev/null" EXIT
+  dontUnpack = true;
 
-  # -N will only download a new version if there is an update.
-  ${wget}/bin/wget -q -N "https://github.com/Mic92/nix-index-database/releases/latest/download/$filename"
-  ${coreutils}/bin/ln -f "$filename" files
+  installPhase = ''
+    install -Dm755 "$src" "$out/bin/nix-index-update"
+  '';
 
-  echo "Done!"
-''
+}
