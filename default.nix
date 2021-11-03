@@ -2,6 +2,7 @@
 , poetry2nix ? (import ./compat.nix).poetry2nix
 , rev ? "unknown"
 , system ? builtins.currentSystem
+, ...
 }:
 
 {

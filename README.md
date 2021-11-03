@@ -142,9 +142,16 @@ You can add the following contents to a `/etc/nixos/nix-alien.nix` file:
 { pkgs, ... }:
 
 let
-  nix-alien-pkgs = import (fetchTarball "https://github.com/thiagokokada/nix-alien/tarball/master");
+  nix-alien-pkgs = import (fetchTarball "https://github.com/thiagokokada/nix-alien/tarball/master") { };
 in
 {
+  # Optional, but this is needed for `nix-alien-ld` command
+  # See https://github.com/Mic92/nix-ld#installation for how to setup `nix-ld`
+  # channel
+  imports = [
+    <nix-ld/modules/nix-ld.nix>
+  ];
+
   environment.systemPackages = with nix-alien-pkgs; [
     nix-alien
     nix-index-update
@@ -170,6 +177,11 @@ setup to install `nix-alien` on system `PATH`:
     url = "github:thiagokokada/nix-alien";
     inputs.nixpkgs.follows = "nixpkgs"; # not mandatory but recommended
   };
+  inputs.nix-ld = {
+    url = "github:Mic92/nix-ld/main";
+    inputs.nixpkgs.follows = "nixpkgs"; # not mandatory but recommended
+  };
+
 
   outputs = { self, nixpkgs, nix-alien }: {
       nixosConfigurations.nix-alien-desktop = nixpkgs.lib.nixosSystem {
@@ -179,6 +191,8 @@ setup to install `nix-alien` on system `PATH`:
         ({ self, ... }: {
           nixpkgs.overlays = [
             self.inputs.nix-alien.overlay
+            # Optional, but this is needed for `nix-alien-ld` command
+            self.inputs.nix-ld.nixosModules.nix-ld
           ];
           environment.systemPackages = with pkgs; [
             nix-alien
