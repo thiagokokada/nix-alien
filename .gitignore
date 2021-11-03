@@ -2,4 +2,4 @@
 .mypy_cache
 .pytest_cache
 __pycache__
-result
+result*

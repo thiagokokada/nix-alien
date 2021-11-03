@@ -115,9 +115,9 @@ this case you will need to have a copy of this repository first:
 
 ```console
 $ git clone https://github.com/thiagokokada/nix-alien && cd nix-alien
-$ $(nix-build default.nix --no-out-link)/bin/nix-alien ~/myapp
-$ $(nix-build default.nix --no-out-link)/bin/nix-alien-ld ~/myapp
-$ $(nix-build default.nix --no-out-link)/bin/nix-alien-find-libs ~/myapp
+$ $(nix-build nix-alien.nix --no-out-link)/bin/nix-alien ~/myapp
+$ $(nix-build nix-alien.nix --no-out-link)/bin/nix-alien-ld ~/myapp
+$ $(nix-build nix-alien.nix --no-out-link)/bin/nix-alien-find-libs ~/myapp
 $ $(nix-build nix-index-update.nix --no-out-link)/bin/nix-index-update
 ```
 
@@ -142,15 +142,13 @@ You can add the following contents to a `/etc/nixos/nix-alien.nix` file:
 { pkgs, ... }:
 
 let
-  nix-alien-src = fetchTarball "https://github.com/thiagokokada/nix-alien/tarball/master";
-  nix-alien = import (nix-alien-src) { };
-  nix-index-update = import (nix-alien-src + "/nix-index-update.nix") {};
+  nix-alien-pkgs = import (fetchTarball "https://github.com/thiagokokada/nix-alien/tarball/master");
 in
 {
-  environment.systemPackages = with pkgs; [
+  environment.systemPackages = with nix-alien-pkgs; [
     nix-alien
-    nix-index # not necessary, but recommended
     nix-index-update
+    pkgs.nix-index # not necessary, but recommended
   ];
 }
 ```
