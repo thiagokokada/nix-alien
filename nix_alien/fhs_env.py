@@ -57,6 +57,8 @@ def create_fhs_env(
     )
 
     process_name = f"{Path(program).name}-fhs"
+
+    sys.stderr.flush()
     sys.stdout.flush()
     os.execv(build_path / "bin" / process_name, [process_name, *args])
 
@@ -92,6 +94,7 @@ def create_fhs_env_flake(
             f.write(fhs_shell)
         get_print(silent)(f"File '{dest_path}' created successfuly!", file=sys.stderr)
 
+    sys.stderr.flush()
     sys.stdout.flush()
     os.execvp(
         "nix",
