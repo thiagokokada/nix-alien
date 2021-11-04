@@ -91,8 +91,7 @@ There are also some other options, check them using `--help` flag on each
 program. Example for `nix-alien`:
 
 ```console
-$ nix-alien --help
-usage: nix-alien [-h] [--version] [-r] [-d PATH] [-s] [-f] program ...
+usage: nix-alien [-h] [--version] [-r] [-d PATH] [-p] [-s] [-f] program ...
 
 positional arguments:
   program               Program to run
@@ -104,6 +103,8 @@ optional arguments:
   -r, --recreate        Recreate 'default.nix' file if exists
   -d PATH, --destination PATH
                         Path where 'default.nix' file will be created
+  -p, --print-destination
+                        Print where 'default.nix' file is located and exit
   -s, --silent          Silence informational messages
   -f, --flake           Create and use 'flake.nix' file instead (experimental)
 ```

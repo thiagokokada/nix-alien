@@ -13,6 +13,7 @@ from .helpers import get_dest_path, get_print
 
 FHS_TEMPLATE = Template(read_text(__package__, "fhs_env.template.nix"))
 FHS_FLAKE_TEMPLATE = Template(read_text(__package__, "fhs_env_flake.template.nix"))
+MODULE = "fhs-env"
 
 
 def create_fhs_env_drv(program: str, silent: bool = False) -> str:
@@ -33,7 +34,7 @@ def create_fhs_env(
     recreate: bool = False,
     silent: bool = False,
 ) -> None:
-    dest_path = get_dest_path(destination, program, "fhs-env", "default.nix")
+    dest_path = get_dest_path(destination, program, MODULE, "default.nix")
 
     if recreate:
         dest_path.unlink(missing_ok=True)
@@ -77,7 +78,7 @@ def create_fhs_env_flake(
     recreate: bool = False,
     silent: bool = False,
 ) -> None:
-    dest_path = get_dest_path(destination, program, "fhs-env", "flake.nix")
+    dest_path = get_dest_path(destination, program, MODULE, "flake.nix")
 
     if recreate:
         dest_path.unlink(missing_ok=True)
@@ -119,6 +120,12 @@ def main(args=sys.argv[1:]):
         help="Path where 'default.nix' file will be created",
     )
     parser.add_argument(
+        "-p",
+        "--print-destination",
+        help="Print where 'default.nix' file is located and exit",
+        action="store_true",
+    )
+    parser.add_argument(
         "-s",
         "--silent",
         help="Silence informational messages",
@@ -138,19 +145,39 @@ def main(args=sys.argv[1:]):
     )
     parsed_args = parser.parse_args(args=args)
 
-    if parsed_args.flake:
-        create_fhs_env_flake(
-            program=parsed_args.program,
-            args=parsed_args.ellipsis,
-            destination=parsed_args.destination,
-            recreate=parsed_args.recreate,
-            silent=parsed_args.silent,
-        )
+    if parsed_args.print_destination:
+        if parsed_args.flake:
+            print(
+                get_dest_path(
+                    parsed_args.destination,
+                    parsed_args.program,
+                    MODULE,
+                    "flake.nix",
+                )
+            )
+        else:
+            print(
+                get_dest_path(
+                    parsed_args.destination,
+                    parsed_args.program,
+                    MODULE,
+                    "default.nix",
+                )
+            )
     else:
-        create_fhs_env(
-            program=parsed_args.program,
-            args=parsed_args.ellipsis,
-            destination=parsed_args.destination,
-            recreate=parsed_args.recreate,
-            silent=parsed_args.silent,
-        )
+        if parsed_args.flake:
+            create_fhs_env_flake(
+                program=parsed_args.program,
+                args=parsed_args.ellipsis,
+                destination=parsed_args.destination,
+                recreate=parsed_args.recreate,
+                silent=parsed_args.silent,
+            )
+        else:
+            create_fhs_env(
+                program=parsed_args.program,
+                args=parsed_args.ellipsis,
+                destination=parsed_args.destination,
+                recreate=parsed_args.recreate,
+                silent=parsed_args.silent,
+            )

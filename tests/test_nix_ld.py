@@ -166,3 +166,26 @@ def test_main_with_flake(mock_find_libs, mock_subprocess, tmp_path, capsys):
 File '{flake_nix}' created successfuly!
 """
     )
+
+
+def test_main_with_print(monkeypatch, capsys):
+    monkeypatch.setenv("HOME", "/home/nameless-shelter")
+    nix_ld.main(["--print", "/xyz"])
+
+    out, _ = capsys.readouterr()
+    assert (
+        out
+        == f"""\
+/home/nameless-shelter/.cache/nix-alien/b5ae45f6-276c-53a3-93ab-4a44f35976a4/nix-ld/default.nix
+"""
+    )
+
+    nix_ld.main(["--flake", "--print", "/xyz"])
+
+    out, _ = capsys.readouterr()
+    assert (
+        out
+        == f"""\
+/home/nameless-shelter/.cache/nix-alien/b5ae45f6-276c-53a3-93ab-4a44f35976a4/nix-ld/flake.nix
+"""
+    )
