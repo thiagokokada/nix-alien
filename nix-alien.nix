@@ -43,6 +43,7 @@ app.overrideAttrs (oldAttrs: {
   '';
 
   checkPhase = ''
+    mypy --ignore-missing-imports .
     pytest -vvv
   '';
 
