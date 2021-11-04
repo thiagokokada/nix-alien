@@ -46,9 +46,9 @@ $ nix-alien ~/myapp
 This will run `nix-alien` on `~/myapp` binary with a `FHSUserEnv` including all
 shared library dependencies. The resulting `default.nix` file will be saved to
 `$XDG_CACHE_HOME/nix-alien/<path-uuid>/fhs-env/default.nix`, making the next
-evaluation faster. You can also pass `--recreate` flag to force the recreation
-of `default.nix` file, and `--destination` to change where `default.nix` file
-will be saved.
+evaluation faster. The cache is based on the binary absolute path. You can also
+pass `--recreate` flag to force the recreation of `default.nix` file, and
+`--destination` to change where `default.nix` file will be saved.
 
 To pass arguments to the app:
 
@@ -66,9 +66,9 @@ $ nix-alien-ld -- ~/myapp
 This will spawn a wrapped binary with `NIX_LD_LIBRARY_PATH` and `NIX_LD` setup.
 The resulting `default.nix` file will be saved to
 `$XDG_CACHE_HOME/nix-alien/<path-uuid>/nix-ld/default.nix`, making the next
-evaluation faster. You can also pass `--recreate` flag to force the recreation
-of `default.nix` file, and `--destination` to change where `default.nix` file
-will be saved.
+evaluation faster. The cache is based on the binary absolute path. You can also
+pass `--recreate` flag to force the recreation of `default.nix` file, and
+`--destination` to change where `default.nix` file will be saved.
 
 To pass arguments to the app:
 
