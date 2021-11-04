@@ -57,6 +57,7 @@ def create_nix_ld(
     )
 
     process_name = Path(program).name
+    sys.stdout.flush()
     os.execv(build_path / "bin" / process_name, [process_name, *args])
 
 
@@ -91,6 +92,7 @@ def create_nix_ld_flake(
             f.write(ld_shell)
         get_print(silent)(f"File '{dest_path}' created successfuly!", file=sys.stderr)
 
+    sys.stdout.flush()
     os.execvp(
         "nix",
         [
