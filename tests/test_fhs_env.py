@@ -83,8 +83,16 @@ def test_create_fhs_env_drv_flake(mock_machine, mock_find_libs, pytestconfig):
 
 
 @patch("nix_alien.fhs_env.subprocess")
+@patch("nix_alien.fhs_env.os")
 @patch("nix_alien.fhs_env.find_libs")
-def test_main_wo_args(mock_find_libs, mock_subprocess, monkeypatch, tmp_path, capsys):
+def test_main_wo_args(
+    mock_find_libs,
+    mock_os,
+    mock_subprocess,
+    monkeypatch,
+    tmp_path,
+    capsys,
+):
     monkeypatch.setenv("HOME", str(tmp_path))
     mock_find_libs.return_value = {
         "libfoo.so": "foo.out",
@@ -96,7 +104,8 @@ def test_main_wo_args(mock_find_libs, mock_subprocess, monkeypatch, tmp_path, ca
     default_nix = next((tmp_path / ".cache/nix-alien").glob("*/fhs-env/default.nix"))
 
     assert default_nix.is_file()
-    assert mock_subprocess.run.call_count == 2
+    assert mock_subprocess.run.call_count == 1
+    assert mock_os.execv.call_count == 1
 
     _, err = capsys.readouterr()
     # Not showing messages from find_libs since it is mocked
@@ -109,8 +118,15 @@ File '{default_nix}' created successfuly!
 
 
 @patch("nix_alien.fhs_env.subprocess")
+@patch("nix_alien.fhs_env.os")
 @patch("nix_alien.fhs_env.find_libs")
-def test_main_with_args(mock_find_libs, mock_subprocess, tmp_path, capsys):
+def test_main_with_args(
+    mock_find_libs,
+    mock_os,
+    mock_subprocess,
+    tmp_path,
+    capsys,
+):
     mock_find_libs.return_value = {
         "libfoo.so": "foo.out",
         "libfoo.6.so": "foo.out",
@@ -132,15 +148,16 @@ def test_main_with_args(mock_find_libs, mock_subprocess, tmp_path, capsys):
     default_nix = tmp_path / "default.nix"
 
     assert default_nix.is_file()
-    assert mock_subprocess.run.call_count == 2
+    assert mock_subprocess.run.call_count == 1
+    assert mock_os.execv.call_count == 1
 
     _, err = capsys.readouterr()
     assert err == ""
 
 
-@patch("nix_alien.fhs_env.subprocess")
+@patch("nix_alien.fhs_env.os")
 @patch("nix_alien.fhs_env.find_libs")
-def test_main_with_flake(mock_find_libs, mock_subprocess, tmp_path, capsys):
+def test_main_with_flake(mock_find_libs, mock_os, tmp_path, capsys):
     mock_find_libs.return_value = {
         "libfoo.so": "foo.out",
         "libfoo.6.so": "foo.out",
@@ -152,7 +169,7 @@ def test_main_with_flake(mock_find_libs, mock_subprocess, tmp_path, capsys):
     flake_nix = tmp_path / "flake.nix"
 
     assert flake_nix.is_file()
-    assert mock_subprocess.run.call_count == 1
+    assert mock_os.execvp.call_count == 1
 
     _, err = capsys.readouterr()
     # Not showing messages from find_libs since it is mocked
@@ -171,7 +188,7 @@ def test_main_with_print(monkeypatch, capsys):
     out, _ = capsys.readouterr()
     assert (
         out
-        == f"""\
+        == """\
 /home/nameless-shelter/.cache/nix-alien/b5ae45f6-276c-53a3-93ab-4a44f35976a4/fhs-env/default.nix
 """
     )
@@ -181,7 +198,7 @@ def test_main_with_print(monkeypatch, capsys):
     out, _ = capsys.readouterr()
     assert (
         out
-        == f"""\
+        == """\
 /home/nameless-shelter/.cache/nix-alien/b5ae45f6-276c-53a3-93ab-4a44f35976a4/fhs-env/flake.nix
 """
     )

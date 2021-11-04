@@ -1,4 +1,5 @@
 import argparse
+import os
 import subprocess
 import sys
 from importlib.resources import read_text
@@ -55,8 +56,8 @@ def create_nix_ld(
         ).stdout.strip()
     )
 
-    name = Path(program).name
-    subprocess.run([build_path / "bin" / name, *args])
+    process_name = Path(program).name
+    os.execv(build_path / "bin" / process_name, [process_name, *args])
 
 
 def create_nix_ld_drv_flake(program: str, silent: bool = False) -> str:
@@ -90,16 +91,17 @@ def create_nix_ld_flake(
             f.write(ld_shell)
         get_print(silent)(f"File '{dest_path}' created successfuly!", file=sys.stderr)
 
-    subprocess.run(
+    os.execvp(
+        "nix",
         [
             "nix",
             "run",
             "--experimental-features",
             "nix-command flakes",
-            dest_path.parent,
+            str(dest_path.parent),
             "--",
             *args,
-        ]
+        ],
     )
 
 
