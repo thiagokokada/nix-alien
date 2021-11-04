@@ -51,8 +51,8 @@ def create_nix_ld(
         subprocess.run(
             ["nix-build", "--no-out-link", dest_path],
             check=True,
-            capture_output=True,
             text=True,
+            stdout=subprocess.PIPE,
         ).stdout.strip()
     )
 
