@@ -34,10 +34,14 @@ bar.out
     assert libs.find_lib_candidates("xyz") == ["foo.out", "bar.out", "quux.out"]
 
 
-@patch("nix_alien.libs.lddwrap", autospec=True)
+@patch("nix_alien.libs.list_dependencies", autospec=True)
 @patch("nix_alien.libs.subprocess", autospec=True)
-def test_find_libs_when_no_candidates_found(mock_subprocess, mock_lddwrap, capsys):
-    mock_lddwrap.list_dependencies.return_value = [
+def test_find_libs_when_no_candidates_found(
+    mock_subprocess,
+    mock_list_dependencies,
+    capsys,
+):
+    mock_list_dependencies.return_value = [
         DependencyMock(soname="libfoo.so", path="/lib/libfoo.so", found=False),
         DependencyMock(soname="libbar.so", path="/lib/libbar.so", found=False),
     ]
@@ -59,24 +63,26 @@ Selected candidate for 'libbar.so': None
     )
 
 
-@patch("nix_alien.libs.lddwrap", autospec=True)
+@patch("nix_alien.libs.list_dependencies", autospec=True)
 @patch("nix_alien.libs.subprocess", autospec=True)
 @patch("nix_alien.libs.fzf", autospec=True)
 def test_find_libs_when_one_candidate_found(
     mock_fzf,
     mock_subprocess,
-    mock_lddwrap,
+    mock_list_dependencies,
     capsys,
 ):
-    mock_lddwrap.list_dependencies.return_value = [
+    mock_list_dependencies.return_value = [
         DependencyMock(soname="libfoo.so", path="/lib/libfoo.so", found=False),
         DependencyMock(soname="libbar.so", path="/lib/libbar.so", found=False),
+        DependencyMock(soname="libquux.so", path="/lib/libbar.so", found=False),
     ]
     mock_subprocess.run.return_value = CompletedProcessMock(stdout="foo.out")
     mock_fzf.return_value = [ResultMock(index=0, output="foo.out")]
     assert libs.find_libs("xyz") == {
         "libfoo.so": "foo.out",
         "libbar.so": "foo.out",
+        "libquux.so": "foo.out",
     }
 
     _, err = capsys.readouterr()
@@ -85,21 +91,23 @@ def test_find_libs_when_one_candidate_found(
         == """\
 Selected candidate for 'libfoo.so': foo.out
 Selected candidate for 'libbar.so': foo.out
+Selected candidate for 'libquux.so': foo.out
 """
     )
 
 
-@patch("nix_alien.libs.lddwrap", autospec=True)
+@patch("nix_alien.libs.list_dependencies", autospec=True)
 @patch("nix_alien.libs.subprocess", autospec=True)
 @patch("nix_alien.libs.fzf", autospec=True)
 def test_find_libs_when_multiple_candidates_found(
     mock_fzf,
     mock_subprocess,
-    mock_lddwrap,
+    mock_list_dependencies,
     capsys,
 ):
-    mock_lddwrap.list_dependencies.return_value = [
+    mock_list_dependencies.return_value = [
         DependencyMock(soname="libfoo.so", path="/lib/libfoo.so", found=False),
+        DependencyMock(soname="libbar.so", path="/lib/libbar.so", found=False),
         DependencyMock(soname="libbar.so", path="/lib/libbar.so", found=False),
     ]
     mock_subprocess.run.return_value = CompletedProcessMock(stdout="foo.out\nbar.out")
@@ -108,9 +116,10 @@ def test_find_libs_when_multiple_candidates_found(
         [ResultMock(index=0, output="foo.out")],
         Exception("This shouldn't happen!"),
     ]
-    assert libs.find_libs("xyz", silent=True) == {
+    assert libs.find_libs("xyz", silent=True, additional_libs=["libquux.so"]) == {
         "libfoo.so": "foo.out",
         "libbar.so": "foo.out",
+        "libquux.so": "foo.out",
     }
 
     _, err = capsys.readouterr()
@@ -143,10 +152,10 @@ def test_get_unique_packages():
     )
 
 
-@patch("nix_alien.libs.lddwrap", autospec=True)
+@patch("nix_alien.libs.list_dependencies", autospec=True)
 @patch("nix_alien.libs.subprocess", autospec=True)
-def test_main_wo_args(mock_subprocess, mock_lddwrap, capsys):
-    mock_lddwrap.list_dependencies.return_value = [
+def test_main_wo_args(mock_subprocess, mock_list_dependencies, capsys):
+    mock_list_dependencies.return_value = [
         DependencyMock(soname="libfoo.so", path="/lib/libfoo.so", found=False),
         DependencyMock(soname="libbar.so", path="/lib/libbar.so", found=False),
     ]
@@ -164,19 +173,21 @@ Selected candidate for 'libbar.so': foo.out
     )
 
 
-@patch("nix_alien.libs.lddwrap", autospec=True)
+@patch("nix_alien.libs.list_dependencies", autospec=True)
 @patch("nix_alien.libs.subprocess", autospec=True)
-def test_main_with_args(mock_subprocess, mock_lddwrap, capsys):
-    mock_lddwrap.list_dependencies.return_value = [
+def test_main_with_args(mock_subprocess, mock_list_dependencies, capsys):
+    mock_list_dependencies.return_value = [
         DependencyMock(soname="libfoo.so", path="/lib/libfoo.so", found=False),
         DependencyMock(soname="libbar.so", path="/lib/libbar.so", found=False),
     ]
     mock_subprocess.run.return_value = CompletedProcessMock(stdout="foo.out")
-    libs.main(["xyz", "--json", "--silent"])
+    libs.main(["xyz", "--json", "--silent", "-l", "libqux.so", "-l", "libquux.so"])
 
     out, err = capsys.readouterr()
     assert json.loads(out) == {
         "libfoo.so": "foo.out",
         "libbar.so": "foo.out",
+        "libqux.so": "foo.out",
+        "libquux.so": "foo.out",
     }
     assert err == ""

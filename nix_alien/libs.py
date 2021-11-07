@@ -5,8 +5,8 @@ import sys
 from pathlib import Path
 from typing import Optional, Union
 
-import lddwrap
 from fzf import fzf
+from lddwrap import Dependency, list_dependencies
 
 from ._version import __version__
 from .helpers import get_print
@@ -23,10 +23,19 @@ def find_lib_candidates(basename: str) -> list[str]:
     return [c for c in candidates if c != ""]
 
 
-def find_libs(path: Union[Path, str], silent: bool = False) -> dict[str, Optional[str]]:
+def find_libs(
+    path: Union[Path, str],
+    silent: bool = False,
+    additional_libs: list[str] = [],
+) -> dict[str, Optional[str]]:
     _print = get_print(silent)
     path = Path(path).expanduser()
-    deps = lddwrap.list_dependencies(path=path)
+    deps = list_dependencies(path=path)
+
+    for additional_lib in additional_libs:
+        dep = Dependency(soname=additional_lib, found=False)
+        deps.append(dep)
+
     resolved_deps: dict[str, Optional[str]] = {}
 
     for dep in deps:
@@ -70,6 +79,14 @@ def main(args=sys.argv[1:]):
     parser = argparse.ArgumentParser()
     parser.add_argument("program", help="Program to analyze")
     parser.add_argument("--version", action="version", version=__version__)
+    parser.add_argument(
+        "-l",
+        "--additional-libs",
+        metavar="LIBRARY",
+        help="Additional libraries to search. May be passed multiple times",
+        action="append",
+        default=[],
+    )
     parser.add_argument("-j", "--json", help="Output as json", action="store_true")
     parser.add_argument(
         "-s",
@@ -79,7 +96,11 @@ def main(args=sys.argv[1:]):
     )
 
     parsed_args = parser.parse_args(args=args)
-    libs = find_libs(parsed_args.program, silent=parsed_args.silent)
+    libs = find_libs(
+        parsed_args.program,
+        silent=parsed_args.silent,
+        additional_libs=parsed_args.additional_libs,
+    )
 
     if parsed_args.json:
         print(json.dumps(libs, indent=2))

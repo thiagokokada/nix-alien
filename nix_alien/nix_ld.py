@@ -17,9 +17,13 @@ NIX_LD_FLAKE_TEMPLATE = Template(read_text(__package__, "nix_ld_flake.template.n
 MODULE = "nix-ld"
 
 
-def create_nix_ld_drv(program: str, silent: bool = False) -> str:
+def create_nix_ld_drv(
+    program: str,
+    silent: bool = False,
+    additional_libs: list[str] = [],
+) -> str:
     path = Path(program).expanduser()
-    libs = find_libs(path, silent)
+    libs = find_libs(path, silent, additional_libs)
 
     return NIX_LD_TEMPLATE.safe_substitute(
         __name__=path.name,
@@ -34,6 +38,7 @@ def create_nix_ld(
     destination: Optional[str],
     recreate: bool = False,
     silent: bool = False,
+    additional_libs: list[str] = [],
 ) -> None:
     dest_path = get_dest_path(destination, program, MODULE, "default.nix")
 
@@ -42,7 +47,7 @@ def create_nix_ld(
 
     if not dest_path.exists():
         dest_path.parent.mkdir(parents=True, exist_ok=True)
-        ld_shell = create_nix_ld_drv(program, silent)
+        ld_shell = create_nix_ld_drv(program, silent, additional_libs)
         with open(dest_path, "w") as f:
             f.write(ld_shell)
         get_print(silent)(f"File '{dest_path}' created successfuly!", file=sys.stderr)
@@ -63,9 +68,13 @@ def create_nix_ld(
     os.execv(build_path / "bin" / process_name, [process_name, *args])
 
 
-def create_nix_ld_drv_flake(program: str, silent: bool = False) -> str:
+def create_nix_ld_drv_flake(
+    program: str,
+    silent: bool = False,
+    additional_libs: list[str] = [],
+) -> str:
     path = Path(program).expanduser()
-    libs = find_libs(path, silent)
+    libs = find_libs(path, silent, additional_libs)
 
     return NIX_LD_FLAKE_TEMPLATE.safe_substitute(
         __name__=path.name,
@@ -81,6 +90,7 @@ def create_nix_ld_flake(
     destination: Optional[str],
     recreate: bool = False,
     silent: bool = False,
+    additional_libs: list[str] = [],
 ) -> None:
     dest_path = get_dest_path(destination, program, MODULE, "flake.nix")
 
@@ -89,7 +99,7 @@ def create_nix_ld_flake(
 
     if not dest_path.exists():
         dest_path.parent.mkdir(parents=True, exist_ok=True)
-        ld_shell = create_nix_ld_drv_flake(program, silent)
+        ld_shell = create_nix_ld_drv_flake(program, silent, additional_libs)
         with open(dest_path, "w") as f:
             f.write(ld_shell)
         get_print(silent)(f"File '{dest_path}' created successfuly!", file=sys.stderr)
@@ -114,6 +124,14 @@ def main(args=sys.argv[1:]):
     parser = argparse.ArgumentParser()
     parser.add_argument("program", help="Program to run")
     parser.add_argument("--version", action="version", version=__version__)
+    parser.add_argument(
+        "-l",
+        "--additional-libs",
+        metavar="LIBRARY",
+        help="Additional libraries to search. May be passed multiple times",
+        action="append",
+        default=[],
+    )
     parser.add_argument(
         "-r",
         "--recreate",
@@ -178,6 +196,7 @@ def main(args=sys.argv[1:]):
                 args=parsed_args.ellipsis,
                 destination=parsed_args.destination,
                 recreate=parsed_args.recreate,
+                additional_libs=parsed_args.additional_libs,
                 silent=parsed_args.silent,
             )
         else:
@@ -186,5 +205,6 @@ def main(args=sys.argv[1:]):
                 args=parsed_args.ellipsis,
                 destination=parsed_args.destination,
                 recreate=parsed_args.recreate,
+                additional_libs=parsed_args.additional_libs,
                 silent=parsed_args.silent,
             )
