@@ -20,6 +20,12 @@ let
           propagatedBuildInputs = (oldAttrs.propagatedBuildInputs or [ ]) ++ [
             pkgs.fzf
           ];
+
+          # https://github.com/samedamci/python-fzf/issues/1
+          prePatch = ''
+            substituteInPlace pyproject.toml \
+              --replace 'python = "^3.9.2"' 'python = "^3.9"'
+          '';
         });
       }
     );
