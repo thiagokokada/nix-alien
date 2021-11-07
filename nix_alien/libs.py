@@ -57,7 +57,7 @@ def find_libs(
                 selected_candidate = fzf(
                     candidates,
                     cycle=True,
-                    prompt=f"Select candidate for '${dep.soname}'> ",
+                    prompt=f"Select candidate for '{dep.soname}'> ",
                 )[0].output
 
         _print(
