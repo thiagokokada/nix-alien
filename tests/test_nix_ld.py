@@ -12,7 +12,7 @@ def test_create_nix_ld_drv(mock_find_libs, pytestconfig):
         "libquux.so": "quux.out",
     }
     assert (
-        nix_ld.create_nix_ld_drv("xyz")
+        nix_ld.create_nix_ld_drv("xyz", additional_packages=["libGL"])
         == """\
 { pkgs ? import <nixpkgs> { } }:
 
@@ -22,6 +22,7 @@ let
     bar.out
     foo.out
     quux.out
+    libGL
   ];
   NIX_LD = lib.fileContents "${stdenv.cc}/nix-support/dynamic-linker";
 in
@@ -46,7 +47,7 @@ def test_create_nix_ld_drv_flake(mock_machine, mock_find_libs, pytestconfig):
         "libquux.so": "quux.out",
     }
     assert (
-        nix_ld.create_nix_ld_drv_flake("xyz")
+        nix_ld.create_nix_ld_drv_flake("xyz", additional_packages=["libGL"])
         == """\
 {
   description = "xyz-nix-ld";
@@ -66,6 +67,7 @@ def test_create_nix_ld_drv_flake(mock_machine, mock_find_libs, pytestconfig):
             bar.out
             foo.out
             quux.out
+            libGL
           ];
           NIX_LD = "${stdenv.cc}/nix-support/dynamic-linker";
         in

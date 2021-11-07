@@ -21,13 +21,16 @@ def create_nix_ld_drv(
     program: str,
     silent: bool = False,
     additional_libs: list[str] = [],
+    additional_packages: list[str] = [],
 ) -> str:
     path = Path(program).expanduser()
-    libs = find_libs(path, silent, additional_libs)
+    packages = find_libs(path, silent, additional_libs)
 
     return NIX_LD_TEMPLATE.safe_substitute(
         __name__=path.name,
-        __packages__=("\n" + 4 * " ").join(get_unique_packages(libs)),
+        __packages__=("\n" + 4 * " ").join(
+            get_unique_packages(packages) + additional_packages
+        ),
         __program__=path.absolute(),
     )
 
@@ -39,6 +42,7 @@ def create_nix_ld(
     recreate: bool = False,
     silent: bool = False,
     additional_libs: list[str] = [],
+    additional_packages: list[str] = [],
 ) -> None:
     dest_path = get_dest_path(destination, program, MODULE, "default.nix")
 
@@ -47,7 +51,9 @@ def create_nix_ld(
 
     if not dest_path.exists():
         dest_path.parent.mkdir(parents=True, exist_ok=True)
-        ld_shell = create_nix_ld_drv(program, silent, additional_libs)
+        ld_shell = create_nix_ld_drv(
+            program, silent, additional_libs, additional_packages
+        )
         with open(dest_path, "w") as f:
             f.write(ld_shell)
         get_print(silent)(f"File '{dest_path}' created successfuly!", file=sys.stderr)
@@ -72,13 +78,16 @@ def create_nix_ld_drv_flake(
     program: str,
     silent: bool = False,
     additional_libs: list[str] = [],
+    additional_packages: list[str] = [],
 ) -> str:
     path = Path(program).expanduser()
     libs = find_libs(path, silent, additional_libs)
 
     return NIX_LD_FLAKE_TEMPLATE.safe_substitute(
         __name__=path.name,
-        __packages__=("\n" + 12 * " ").join(get_unique_packages(libs)),
+        __packages__=("\n" + 12 * " ").join(
+            get_unique_packages(libs) + additional_packages
+        ),
         __program__=path.absolute(),
         __system__=f"{machine()}-linux",
     )
@@ -91,6 +100,7 @@ def create_nix_ld_flake(
     recreate: bool = False,
     silent: bool = False,
     additional_libs: list[str] = [],
+    additional_packages: list[str] = [],
 ) -> None:
     dest_path = get_dest_path(destination, program, MODULE, "flake.nix")
 
@@ -99,7 +109,9 @@ def create_nix_ld_flake(
 
     if not dest_path.exists():
         dest_path.parent.mkdir(parents=True, exist_ok=True)
-        ld_shell = create_nix_ld_drv_flake(program, silent, additional_libs)
+        ld_shell = create_nix_ld_drv_flake(
+            program, silent, additional_libs, additional_packages
+        )
         with open(dest_path, "w") as f:
             f.write(ld_shell)
         get_print(silent)(f"File '{dest_path}' created successfuly!", file=sys.stderr)
@@ -128,7 +140,15 @@ def main(args=sys.argv[1:]):
         "-l",
         "--additional-libs",
         metavar="LIBRARY",
-        help="Additional libraries to search. May be passed multiple times",
+        help="Additional library to search. May be passed multiple times",
+        action="append",
+        default=[],
+    )
+    parser.add_argument(
+        "-p",
+        "--additional-packages",
+        metavar="PACKAGE",
+        help="Additional package to add. May be passed multiple times",
         action="append",
         default=[],
     )
@@ -145,7 +165,7 @@ def main(args=sys.argv[1:]):
         help="Path where 'default.nix' file will be created",
     )
     parser.add_argument(
-        "-p",
+        "-P",
         "--print-destination",
         help="Print where 'default.nix' file is located and exit",
         action="store_true",
@@ -197,6 +217,7 @@ def main(args=sys.argv[1:]):
                 destination=parsed_args.destination,
                 recreate=parsed_args.recreate,
                 additional_libs=parsed_args.additional_libs,
+                additional_packages=parsed_args.additional_packages,
                 silent=parsed_args.silent,
             )
         else:
@@ -206,5 +227,6 @@ def main(args=sys.argv[1:]):
                 destination=parsed_args.destination,
                 recreate=parsed_args.recreate,
                 additional_libs=parsed_args.additional_libs,
+                additional_packages=parsed_args.additional_packages,
                 silent=parsed_args.silent,
             )

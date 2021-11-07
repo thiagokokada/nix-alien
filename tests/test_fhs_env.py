@@ -12,7 +12,7 @@ def test_create_fhs_env_drv(mock_find_libs, pytestconfig):
         "libquux.so": "quux.out",
     }
     assert (
-        fhs_env.create_fhs_env_drv("xyz")
+        fhs_env.create_fhs_env_drv("xyz", additional_packages=["libGL"])
         == """\
 { pkgs ? import <nixpkgs> { } }:
 
@@ -25,6 +25,7 @@ buildFHSUserEnv {
     bar.out
     foo.out
     quux.out
+    libGL
   ];
   runScript = "%s/xyz";
 }
@@ -44,7 +45,7 @@ def test_create_fhs_env_drv_flake(mock_machine, mock_find_libs, pytestconfig):
         "libquux.so": "quux.out",
     }
     assert (
-        fhs_env.create_fhs_env_drv_flake("xyz")
+        fhs_env.create_fhs_env_drv_flake("xyz", additional_packages=["libGL"])
         == """\
 {
   description = "xyz-fhs";
@@ -67,6 +68,7 @@ def test_create_fhs_env_drv_flake(mock_machine, mock_find_libs, pytestconfig):
             bar.out
             foo.out
             quux.out
+            libGL
           ];
           runScript = "%s/xyz";
         };
