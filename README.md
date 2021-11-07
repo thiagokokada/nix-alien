@@ -9,17 +9,17 @@
 You are running nix/NixOS and have ever encountered the following problem?
 
 ```console
-$ ./bb
-bash: ./bb: No such file or directory
+$ ./myapp
+bash: ./myapp: No such file or directory
 ```
 
 Fear not, now there is `nix-alien` which will download necessary dependencies
 for you.
 
 ```console
-$ nix-alien bb            # Run the binary inside a FHS shell with all needed shared dependencies to execute the binary
-$ nix-alien-ld bb         # Spawns you inside a shell with NIX_LD_LIBRARY_PATH set to the needed dependencies, to be used with nix-ld
-$ nix-alien-find-libs bb  # Lists all libs needed for the binary
+$ nix-alien myapp            # Run the binary inside a FHS shell with all needed shared dependencies to execute the binary
+$ nix-alien-ld myapp         # Spawns you inside a shell with NIX_LD_LIBRARY_PATH set to the needed dependencies, to be used with nix-ld
+$ nix-alien-find-libs myapp  # Lists all libs needed for the binary
 ```
 
 ## Usage
@@ -91,7 +91,7 @@ There are also some other options, check them using `--help` flag on each
 program. Example for `nix-alien`:
 
 ```console
-usage: nix-alien [-h] [--version] [-r] [-d PATH] [-p] [-s] [-f] program ...
+usage: nix-alien [-h] [--version] [-l LIBRARY] [-p PACKAGE] [-r] [-d PATH] [-P] [-s] [-f] program ...
 
 positional arguments:
   program               Program to run
@@ -100,10 +100,14 @@ positional arguments:
 optional arguments:
   -h, --help            show this help message and exit
   --version             show program's version number and exit
+  -l LIBRARY, --additional-libs LIBRARY
+                        Additional library to search. May be passed multiple times
+  -p PACKAGE, --additional-packages PACKAGE
+                        Additional package to add. May be passed multiple times
   -r, --recreate        Recreate 'default.nix' file if exists
   -d PATH, --destination PATH
                         Path where 'default.nix' file will be created
-  -p, --print-destination
+  -P, --print-destination
                         Print where 'default.nix' file is located and exit
   -s, --silent          Silence informational messages
   -f, --flake           Create and use 'flake.nix' file instead (experimental)
@@ -222,9 +226,24 @@ automatically. Just run `direnv allow` inside this repo.
 ## Limitations
 
 Binaries loading shared libraries dynamically (e.g.: with `dlopen`) will
-probably not work with this script. However, this script can still be useful to
-create an initial `default.nix`, that can be populated later with the runtime
-dependencies of the program.
+probably not work with this script. However, this can be workarounded using
+either `--additional-libs/-l` or `--additional-packages/-p` flag. The first one
+can be used as:
+
+``` console
+$ nix-alien -l libGL.so.1 -l libz.so.1 ~/myapp
+```
+
+And this will be searched using `nix-locate` in a similar way as the other
+libraries found in the binary. The second one can be used as:
+
+``` console
+$ nix-alien -p libGL -p zlib ~/myapp
+```
+
+To direct add the package to `default.nix` file. Warning: there is no
+validation, so you can receive an `undefied variable` error in case of
+an inexistent package.
 
 ## Technical Description
 
