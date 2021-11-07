@@ -2,7 +2,7 @@
 #!nix-shell shell.nix -i "make -f"
 
 PYTHON_RUN := python -m
-.PHONY = all ci format install test
+.PHONY = all ci format install test update
 
 all: test
 
@@ -19,3 +19,7 @@ ci:
 format:
 	${PYTHON_RUN} black .
 	find -name '*.nix' -exec nixpkgs-fmt {} \+
+
+update:
+	poetry update
+	touch flake.nix
