@@ -3,9 +3,10 @@
 }:
 
 let
+  python = pkgs.python39;
   appEnv = pkgs.poetry2nix.mkPoetryEnv {
     projectDir = ./.;
-    python = pkgs.python39;
+    inherit python;
 
     editablePackageSources = {
       nix-alien = ./nix-alien;
@@ -33,6 +34,6 @@ appEnv.env.overrideAttrs (oldAttrs: {
     nix-index
     nixUnstable
     nixpkgs-fmt
-    poetry
+    python.pkgs.poetry
   ];
 })

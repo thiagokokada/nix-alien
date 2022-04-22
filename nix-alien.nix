@@ -5,7 +5,7 @@
 }:
 
 let
-  app = poetry2nix.mkPoetryApplication {
+  app = poetry2nix.mkPoetryApplication rec {
     projectDir = ./.;
     python = pkgs.python39;
 
@@ -20,6 +20,7 @@ let
           propagatedBuildInputs = (oldAttrs.propagatedBuildInputs or [ ]) ++ [
             pkgs.fzf
           ];
+          buildInputs = (oldAttrs.buildInputs or [ ]) ++ [ python.pkgs.poetry-core ];
         });
       }
     );
@@ -43,6 +44,7 @@ app.overrideAttrs (oldAttrs: {
   '';
 
   checkPhase = ''
+    # black --check .
     mypy --ignore-missing-imports .
     pytest -vvv
   '';
