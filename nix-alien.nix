@@ -5,9 +5,10 @@
 }:
 
 let
+  python = pkgs.python39;
   app = poetry2nix.mkPoetryApplication rec {
     projectDir = ./.;
-    python = pkgs.python39;
+    inherit python;
 
     overrides = poetry2nix.overrides.withDefaults (
       final: prev: {
@@ -16,11 +17,10 @@ let
             pkgs.glibc.bin
           ];
         });
-        python-fzf = prev.python-fzf.overrideAttrs (oldAttrs: {
+        pyfzf = prev.pyfzf.overrideAttrs (oldAttrs: {
           propagatedBuildInputs = (oldAttrs.propagatedBuildInputs or [ ]) ++ [
             pkgs.fzf
           ];
-          buildInputs = (oldAttrs.buildInputs or [ ]) ++ [ python.pkgs.poetry-core ];
         });
       }
     );
@@ -42,6 +42,10 @@ app.overrideAttrs (oldAttrs: {
   preBuild = ''
     echo "__version__ = '${rev}'" > nix_alien/_version.py
   '';
+
+  checkInputs = [
+    pkgs.fzf
+  ];
 
   checkPhase = ''
     # black --check .

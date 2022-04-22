@@ -2,14 +2,18 @@ import argparse
 import json
 import subprocess
 import sys
+from shlex import join
 from pathlib import Path
 from typing import Optional, Union
 
-from fzf import fzf
+from pyfzf.pyfzf import FzfPrompt
+
 from lddwrap import Dependency, list_dependencies
 
 from ._version import __version__
 from .helpers import get_print
+
+fzf = FzfPrompt()
 
 
 def find_lib_candidates(basename: str) -> list[str]:
@@ -54,11 +58,14 @@ def find_libs(
                 # Can be any candidate really, lets pick the first one
                 selected_candidate = intersection.pop()
             else:
-                selected_candidate = fzf(
-                    candidates,
-                    cycle=True,
-                    prompt=f"Select candidate for '{dep.soname}'> ",
-                )[0].output
+                fzf_options = join(
+                    [
+                        "--cycle",
+                        "--prompt",
+                        f"Select candidate for '{dep.soname}'> ",
+                    ]
+                )
+                selected_candidate = fzf.prompt(candidates, fzf_options)[0]
 
         _print(
             f"Selected candidate for '{dep.soname}': {selected_candidate}",

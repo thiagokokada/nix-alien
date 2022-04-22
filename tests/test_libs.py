@@ -6,7 +6,6 @@ from nix_alien import libs
 
 CompletedProcessMock = namedtuple("CompletedProcessMock", ["stdout"])
 DependencyMock = namedtuple("DependencyMock", ["soname", "path", "found"])
-ResultMock = namedtuple("ResultMock", ["index", "output"])
 
 
 @patch("nix_alien.libs.subprocess", autospec=True)
@@ -78,7 +77,7 @@ def test_find_libs_when_one_candidate_found(
         DependencyMock(soname="libquux.so", path="/lib/libbar.so", found=False),
     ]
     mock_subprocess.run.return_value = CompletedProcessMock(stdout="foo.out")
-    mock_fzf.return_value = [ResultMock(index=0, output="foo.out")]
+    mock_fzf.prompt.return_value = ["foo.out"]
     assert libs.find_libs("xyz") == {
         "libfoo.so": "foo.out",
         "libbar.so": "foo.out",
@@ -112,10 +111,7 @@ def test_find_libs_when_multiple_candidates_found(
     ]
     mock_subprocess.run.return_value = CompletedProcessMock(stdout="foo.out\nbar.out")
     # On the second time, this will take the candidate from intersection
-    mock_fzf.side_effect = [
-        [ResultMock(index=0, output="foo.out")],
-        Exception("This shouldn't happen!"),
-    ]
+    mock_fzf.prompt.side_effect = [["foo.out"]]
     assert libs.find_libs("xyz", silent=True, additional_libs=["libquux.so"]) == {
         "libfoo.so": "foo.out",
         "libbar.so": "foo.out",

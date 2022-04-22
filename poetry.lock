@@ -180,6 +180,14 @@ optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 
 [[package]]
+name = "pyfzf"
+version = "0.3.1"
+description = "Python wrapper for junegunn's fuzzyfinder (fzf)"
+category = "main"
+optional = false
+python-versions = "*"
+
+[[package]]
 name = "pylddwrap"
 version = "1.2.1"
 description = "Wrap ldd *nix utility to determine shared libraries required by a program."
@@ -227,14 +235,6 @@ toml = "*"
 testing = ["argcomplete", "hypothesis (>=3.56)", "mock", "nose", "requests", "xmlschema"]
 
 [[package]]
-name = "python-fzf"
-version = "0.1.1"
-description = "Python wrapper for fzf."
-category = "main"
-optional = false
-python-versions = ">=3.9.2,<4.0.0"
-
-[[package]]
 name = "six"
 version = "1.16.0"
 description = "Python 2 and 3 compatibility utilities"
@@ -268,8 +268,8 @@ python-versions = ">=3.7"
 
 [metadata]
 lock-version = "1.1"
-python-versions = "^3.9.2"
-content-hash = "cd90aa4a863b23bf8b7f4de24d09ddb907f10ade4c4a15d894a23c20095478a2"
+python-versions = "^3.9"
+content-hash = "02e8111faeaf18f4545b127b4ffb5b8645a3f88c86f60861bbaa1389cd7eee66"
 
 [metadata.files]
 asttokens = [
@@ -352,6 +352,10 @@ py = [
     {file = "py-1.11.0-py2.py3-none-any.whl", hash = "sha256:607c53218732647dff4acdfcd50cb62615cedf612e72d1724fb1a0cc6405b378"},
     {file = "py-1.11.0.tar.gz", hash = "sha256:51c75c4126074b472f746a24399ad32f6053d1b34b68d2fa41e558e6f4a98719"},
 ]
+pyfzf = [
+    {file = "pyfzf-0.3.1-py3-none-any.whl", hash = "sha256:736f71563461b75f6f85b55345bdc638fa0dc14c32c857c59e8b1ca1cfa3cf4a"},
+    {file = "pyfzf-0.3.1.tar.gz", hash = "sha256:dd902e34cffeca9c3082f96131593dd20b4b3a9bba5b9dde1b0688e424b46bd2"},
+]
 pylddwrap = [
     {file = "pylddwrap-1.2.1.tar.gz", hash = "sha256:e5608063e3f6122db255acde636255f9c0da3a8e6b7edd35498b95280ff18961"},
 ]
@@ -362,10 +366,6 @@ pyparsing = [
 pytest = [
     {file = "pytest-6.2.5-py3-none-any.whl", hash = "sha256:7310f8d27bc79ced999e760ca304d69f6ba6c6649c0b60fb0e04a4a77cacc134"},
     {file = "pytest-6.2.5.tar.gz", hash = "sha256:131b36680866a76e6781d13f101efb86cf674ebb9762eb70d3082b6f29889e89"},
-]
-python-fzf = [
-    {file = "python-fzf-0.1.1.tar.gz", hash = "sha256:771a81763d7e1872566ef681ff770ecfd7117df2d5837daf09e652142ae94bb0"},
-    {file = "python_fzf-0.1.1-py3-none-any.whl", hash = "sha256:60ed1545c6e1e9f6ac1ebf1d3fc83764a977e1adcfdb05ab5d53f7ba2c295b85"},
 ]
 six = [
     {file = "six-1.16.0-py2.py3-none-any.whl", hash = "sha256:8abb2f1d86890a2dfb989f9a77cfcfd3e47c2a354b01111771326f8aa26e0254"},
