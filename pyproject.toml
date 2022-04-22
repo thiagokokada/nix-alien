@@ -15,9 +15,6 @@ pyfzf = "^0.3.1"
 black = "^21.9b0"
 pytest = "^6.2.5"
 mypy = "^0.940"
-# TODO: remove after this issue is fixed
-# https://github.com/nix-community/poetry2nix/pull/600
-platformdirs = "2.5.1"
 
 [tool.poetry.scripts]
 nix-alien = "nix_alien.fhs_env:main"
