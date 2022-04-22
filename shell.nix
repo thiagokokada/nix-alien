@@ -32,7 +32,7 @@ appEnv.env.overrideAttrs (oldAttrs: {
     glibc.bin
     gnumake
     nix-index
-    nixUnstable
+    nixFlakes
     nixpkgs-fmt
     python.pkgs.poetry
   ];
