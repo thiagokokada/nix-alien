@@ -189,7 +189,6 @@ setup to install `nix-alien` on system `PATH`:
     inputs.nixpkgs.follows = "nixpkgs"; # not mandatory but recommended
   };
 
-
   outputs = { self, nixpkgs, nix-alien }: {
       nixosConfigurations.nix-alien-desktop = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";

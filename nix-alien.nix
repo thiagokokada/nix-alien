@@ -40,7 +40,7 @@ app.overrideAttrs (oldAttrs: {
   ];
 
   preBuild = ''
-    echo "__version__ = '${rev}'" > nix_alien/_version.py
+    echo "__version__ = \"${rev}\"" > nix_alien/_version.py
   '';
 
   checkInputs = [
@@ -48,7 +48,7 @@ app.overrideAttrs (oldAttrs: {
   ];
 
   checkPhase = ''
-    # black --check .
+    black --check .
     mypy --ignore-missing-imports .
     pytest -vvv
   '';

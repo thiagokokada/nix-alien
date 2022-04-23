@@ -47,22 +47,16 @@ def test_get_dest_path(monkeypatch):
     )
 
     monkeypatch.setenv("XDG_CACHE_HOME", "/")
-    assert (
-        helpers.get_dest_path(
-            destination=None,
-            program="/abc",
-            directory="bar",
-            filename="foo.nix",
-        )
-        == Path("/nix-alien/f52177f5-def5-5d9e-91fc-ef1283fc54b1/bar/foo.nix")
-    )
+    assert helpers.get_dest_path(
+        destination=None,
+        program="/abc",
+        directory="bar",
+        filename="foo.nix",
+    ) == Path("/nix-alien/f52177f5-def5-5d9e-91fc-ef1283fc54b1/bar/foo.nix")
 
-    assert (
-        helpers.get_dest_path(
-            destination="/quux",
-            program="/abc",
-            directory="bar",
-            filename="foo.nix",
-        )
-        == Path("/quux/foo.nix")
-    )
+    assert helpers.get_dest_path(
+        destination="/quux",
+        program="/abc",
+        directory="bar",
+        filename="foo.nix",
+    ) == Path("/quux/foo.nix")

@@ -12,9 +12,9 @@ pylddwrap = "^1.2.1"
 pyfzf = "^0.3.1"
 
 [tool.poetry.dev-dependencies]
-black = "^21.9b0"
-pytest = "^6.2.5"
-mypy = "^0.940"
+black = "^22.3.0"
+pytest = "^7.1.1"
+mypy = "^0.942"
 # TODO: remove after this issue is fixed
 # https://github.com/nix-community/poetry2nix/pull/600
 platformdirs = "2.5.1"
