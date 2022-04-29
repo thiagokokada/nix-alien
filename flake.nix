@@ -22,14 +22,14 @@
           inherit pkgs;
           poetry = pkgs.poetry;
         };
-        default = import ./default.nix {
+        packages = import ./default.nix {
           inherit pkgs system;
           poetry2nix = poetry2nix';
           rev = if (self ? rev) then self.rev else "dirty";
         };
       in
       rec {
-        packages = { inherit (default) nix-alien nix-index-update; };
+        inherit packages;
 
         defaultPackage = packages.nix-alien;
 

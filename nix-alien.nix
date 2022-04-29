@@ -2,6 +2,7 @@
 , poetry2nix ? (import ./compat.nix).poetry2nix
   # TODO: make it work with non-flakes
 , rev ? "unknown"
+, ci ? false
 }:
 
 let
@@ -22,7 +23,11 @@ let
             pkgs.fzf
           ];
         });
-      }
+      } // (pkgs.lib.optionalAttrs (!ci) {
+        # We want to run tests in non-CI builds but not black/mypy
+        black = pkgs.writeShellScriptBin "black" "exit 0";
+        mypy = pkgs.writeShellScriptBin "mypy" "exit 0";
+      })
     );
 
     meta = with pkgs.lib; {
