@@ -11,7 +11,7 @@ test:
 
 ci:
 	find -name '*.nix' -exec nixpkgs-fmt --check {} \+
-	nix --experimental-features 'nix-command flakes' build
+	nix --experimental-features 'nix-command flakes' build .#packages.x86_64-linux._nix-alien-ci
 	nix --experimental-features 'nix-command flakes' flake check
 
 format:
