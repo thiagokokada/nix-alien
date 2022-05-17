@@ -14,7 +14,8 @@
       overlay = final: prev: import ./default.nix {
         inherit (prev.stdenv.hostPlatform) system;
         poetry2nix = (poetry2nix.overlay final prev).poetry2nix;
-        pkgs = prev;
+        # FIXME: using `prev` here results in a glibc rebuild on every Python deps change
+        pkgs = final;
         rev = if (self ? rev) then self.rev else "dirty";
       };
     } // (flake-utils.lib.eachSystem [ "aarch64-linux" "i686-linux" "x86_64-linux" ] (system:
