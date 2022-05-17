@@ -13,7 +13,7 @@
     {
       overlay = final: prev: import ./default.nix {
         inherit (prev.stdenv.hostPlatform) system;
-        poetry2nix = (poetry2nix.overlay prev final).poetry2nix;
+        poetry2nix = (poetry2nix.overlay final prev).poetry2nix;
         pkgs = prev;
         rev = if (self ? rev) then self.rev else "dirty";
       };
