@@ -15,7 +15,6 @@
         poetry2nix.overlay
         (final: prev: import ./default.nix {
           inherit (prev) poetry2nix;
-          inherit (prev.stdenv.hostPlatform) system;
           # FIXME: using `prev` here results in a glibc rebuild on every Python deps change
           pkgs = final;
           rev = if (self ? rev) then self.rev else "dirty";
