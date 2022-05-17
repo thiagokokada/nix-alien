@@ -11,15 +11,12 @@
 
   outputs = { self, nixpkgs, flake-utils, poetry2nix }:
     {
-      overlay = nixpkgs.lib.composeManyExtensions [
-        poetry2nix.overlay
-        (final: prev: import ./default.nix {
-          inherit (prev) poetry2nix;
-          # FIXME: using `prev` here results in a glibc rebuild on every Python deps change
-          pkgs = final;
-          rev = if (self ? rev) then self.rev else "dirty";
-        })
-      ];
+      overlay = final: prev: import ./default.nix {
+        inherit (prev.stdenv.hostPlatform) system;
+        poetry2nix = (poetry2nix.overlay prev final).poetry2nix;
+        pkgs = prev;
+        rev = if (self ? rev) then self.rev else "dirty";
+      };
     } // (flake-utils.lib.eachSystem [ "aarch64-linux" "i686-linux" "x86_64-linux" ] (system:
       let
         pkgs = import nixpkgs {
