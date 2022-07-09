@@ -197,6 +197,8 @@ setup to install `nix-alien` on system `PATH`:
         ({ self, ... }: {
           nixpkgs.overlays = [
             self.inputs.nix-alien.overlay
+          ];
+	  imports = [
             # Optional, but this is needed for `nix-alien-ld` command
             self.inputs.nix-ld.nixosModules.nix-ld
           ];
