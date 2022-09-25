@@ -11,41 +11,52 @@
 
   outputs = { self, nixpkgs, flake-utils, poetry2nix }:
     {
-      overlay = final: prev: import ./default.nix {
-        inherit (prev.stdenv.hostPlatform) system;
+      overlays.default = final: prev: import ./default.nix {
         poetry2nix = (poetry2nix.overlay final prev).poetry2nix;
         # FIXME: using `prev` here results in a glibc rebuild on every Python deps change
         pkgs = final;
         rev = if (self ? rev) then self.rev else "dirty";
       };
+
+      # For backwards compat, will be removed in the future
+      overlay = self.outputs.overlays.default;
     } // (flake-utils.lib.eachSystem [ "aarch64-linux" "i686-linux" "x86_64-linux" ] (system:
       let
         pkgs = import nixpkgs {
           inherit system;
-          overlays = [ self.overlay ];
+          overlays = [ self.overlays.default ];
         };
       in
-      rec {
-        packages = { inherit (pkgs) _nix-alien-ci nix-alien nix-index-update; };
+      {
+        packages = {
+          inherit (pkgs) nix-alien nix-index-update;
+          default = self.outputs.packages.${system}.nix-alien;
+        };
 
-        defaultPackage = packages.nix-alien;
+        checks.nix-alien-ci = pkgs.nix-alien.override {
+          ci = true;
+        };
 
         apps =
           let
             inherit (flake-utils.lib) mkApp;
           in
           {
-            nix-alien = mkApp { drv = packages.nix-alien; };
-            nix-alien-ld = mkApp { drv = packages.nix-alien; name = "nix-alien-ld"; };
-            nix-alien-find-libs = mkApp { drv = packages.nix-alien; name = "nix-alien-find-libs"; };
-            nix-index-update = mkApp { drv = packages.nix-index-update; };
+            default = self.outputs.apps.${system}.nix-alien;
+            nix-alien = mkApp { drv = self.outputs.${system}.packages.nix-alien; };
+            nix-alien-ld = mkApp { drv = self.outputs.${system}.packages.nix-alien; name = "nix-alien-ld"; };
+            nix-alien-find-libs = mkApp { drv = self.outputs.${system}.packages.nix-alien; name = "nix-alien-find-libs"; };
+            nix-index-update = mkApp { drv = self.outputs.${system}.packages.nix-index-update; };
           };
 
-        defaultApp = apps.nix-alien;
-
-        devShell = import ./shell.nix {
+        devShells.default = import ./shell.nix {
           inherit pkgs;
           inherit (pkgs) poetry2nix;
         };
+
+        # For backwards compat, will be removed in the future
+        defaultPackage = self.outputs.packages.${system}.default;
+        defaultApp = self.outputs.apps.${system}.default;
+        devShell = self.outputs.devShells.${system}.default;
       }));
 }

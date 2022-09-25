@@ -1,9 +1,7 @@
-{ pkgs ? (import ./compat.nix).pkgs
-, system ? builtins.currentSystem
-}:
+{ pkgs ? (import ./compat.nix).pkgs }:
 
 let
-  inherit (pkgs) coreutils stdenv substituteAll wget;
+  inherit (pkgs) coreutils stdenv substituteAll system wget;
 in
 stdenv.mkDerivation {
   name = "nix-index-update";
