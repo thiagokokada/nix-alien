@@ -15,7 +15,7 @@
         poetry2nix = (poetry2nix.overlay final prev).poetry2nix;
         # FIXME: using `prev` here results in a glibc rebuild on every Python deps change
         pkgs = final;
-        rev = if (self ? rev) then self.rev else "dirty";
+        rev = self.shortRev or self.rev or "dirty";
       };
 
       # For backwards compat, will be removed in the future
