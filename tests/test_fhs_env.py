@@ -35,7 +35,7 @@ buildFHSUserEnv {
 
 
 @patch("nix_alien.fhs_env.find_libs")
-@patch("nix_alien.nix_ld.machine")
+@patch("nix_alien.fhs_env.machine")
 def test_create_fhs_env_drv_flake(mock_machine, mock_find_libs, pytestconfig):
     mock_machine.return_value = "x86_64"
     mock_find_libs.return_value = {
