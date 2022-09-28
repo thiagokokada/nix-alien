@@ -129,8 +129,8 @@ $ $(nix-build nix-index-update.nix --no-out-link)/bin/nix-index-update
 ### Usage without installing with Flakes
 
 You can also run the scripts from this repo directly without clonning or
-installing them, assuming you're using [`nixUnstable` or `nixFlakes` and
-configured it correctly](https://nixos.wiki/wiki/Flakes#Installing_flakes).
+installing them, assuming you're using [a resonable up-to-date nix and enabled
+experimental Flakes support](https://nixos.wiki/wiki/Flakes#Enable_flakes).
 
 ```console
 $ nix run "github:thiagokokada/nix-alien#nix-alien" -- ~/myapp
