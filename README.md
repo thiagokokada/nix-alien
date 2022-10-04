@@ -182,11 +182,9 @@ setup to install `nix-alien` on system `PATH`:
   inputs.nixpkgs.url = "github:NixOS/nixpkgs";
   inputs.nix-alien = {
     url = "github:thiagokokada/nix-alien";
-    inputs.nixpkgs.follows = "nixpkgs"; # not mandatory but recommended
   };
   inputs.nix-ld = {
     url = "github:Mic92/nix-ld/main";
-    inputs.nixpkgs.follows = "nixpkgs"; # not mandatory but recommended
   };
 
   outputs = { self, nixpkgs, nix-alien }: {
@@ -196,7 +194,7 @@ setup to install `nix-alien` on system `PATH`:
       modules = [
         ({ self, ... }: {
           nixpkgs.overlays = [
-            self.inputs.nix-alien.overlay
+            self.inputs.nix-alien.overlays.default
           ];
 	  imports = [
             # Optional, but this is needed for `nix-alien-ld` command
