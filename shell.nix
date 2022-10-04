@@ -14,14 +14,7 @@ let
     };
 
     overrides = poetry2nix.overrides.withDefaults (
-      final: prev: {
-        # Fix conflict between icontract and pylddwrap files
-        icontract = prev.icontract.overrideAttrs (oldAttrs: {
-          postInstall = (oldAttrs.postInstall or "") + ''
-            rm -f $out/*.rst $out/*.txt
-          '';
-        });
-      }
+      (import ./overrides.nix pkgs)
     );
   };
 in

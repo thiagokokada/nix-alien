@@ -12,22 +12,13 @@ let
     inherit python;
 
     overrides = poetry2nix.overrides.withDefaults (
-      final: prev: {
-        pylddwrap = prev.pylddwrap.overrideAttrs (oldAttrs: {
-          propagatedBuildInputs = (oldAttrs.propagatedBuildInputs or [ ]) ++ [
-            pkgs.glibc.bin
-          ];
-        });
-        pyfzf = prev.pyfzf.overrideAttrs (oldAttrs: {
-          propagatedBuildInputs = (oldAttrs.propagatedBuildInputs or [ ]) ++ [
-            pkgs.fzf
-          ];
-        });
-      } // (pkgs.lib.optionalAttrs (!ci) {
-        # We want to run tests in non-CI builds but not black/mypy
-        black = pkgs.writeShellScriptBin "black" "exit 0";
-        mypy = pkgs.writeShellScriptBin "mypy" "exit 0";
-      })
+      final: prev:
+        (import ./overrides.nix pkgs final prev)
+        // (pkgs.lib.optionalAttrs (!ci) {
+          # We want to run tests in non-CI builds but not black/mypy
+          black = pkgs.writeShellScriptBin "black" "exit 0";
+          mypy = pkgs.writeShellScriptBin "mypy" "exit 0";
+        })
     );
 
     meta = with pkgs.lib; {

@@ -14,10 +14,7 @@ pyfzf = "^0.3.1"
 [tool.poetry.dev-dependencies]
 black = "^22.3.0"
 pytest = "^7.1.1"
-mypy = "^0.942"
-# TODO: remove after this issue is fixed
-# https://github.com/nix-community/poetry2nix/pull/600
-platformdirs = "2.5.1"
+mypy = "^0.982"
 
 [tool.poetry.scripts]
 nix-alien = "nix_alien.fhs_env:main"
