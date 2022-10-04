@@ -180,12 +180,8 @@ setup to install `nix-alien` on system `PATH`:
   description = "nix-alien-on-nixos";
 
   inputs.nixpkgs.url = "github:NixOS/nixpkgs";
-  inputs.nix-alien = {
-    url = "github:thiagokokada/nix-alien";
-  };
-  inputs.nix-ld = {
-    url = "github:Mic92/nix-ld/main";
-  };
+  inputs.nix-alien.url = "github:thiagokokada/nix-alien";
+  inputs.nix-ld.url = "github:Mic92/nix-ld/main";
 
   outputs = { self, nixpkgs, nix-alien }: {
       nixosConfigurations.nix-alien-desktop = nixpkgs.lib.nixosSystem {
