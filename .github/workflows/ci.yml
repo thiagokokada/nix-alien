@@ -22,9 +22,4 @@ jobs:
             access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
 
       - name: CI
-        run: nix-shell --run "make ci"
-
-      - name: Build
-        run: |
-          nix build ".#nix-alien"
-          nix build ".#nix-index-update"
+        run: nix flake check
