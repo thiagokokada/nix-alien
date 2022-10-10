@@ -1,6 +1,8 @@
 pkgs: final: prev:
 {
   pylddwrap = prev.pylddwrap.overrideAttrs (oldAttrs: {
+    buildInputs = [ final.setuptools ];
+
     propagatedBuildInputs = (oldAttrs.propagatedBuildInputs or [ ]) ++ [
       pkgs.glibc.bin
     ];
