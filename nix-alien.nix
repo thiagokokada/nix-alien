@@ -44,9 +44,13 @@ app.overrideAttrs (oldAttrs: {
   ];
 
   checkPhase = ''
+    runHook preCheck
+
     black --check .
     mypy --ignore-missing-imports .
     pytest -vvv
+
+    runHook postCheck
   '';
 
   doCheck = true;
