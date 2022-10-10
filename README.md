@@ -184,25 +184,63 @@ setup to install `nix-alien` on system `PATH`:
   inputs.nix-ld.url = "github:Mic92/nix-ld/main";
 
   outputs = { self, nixpkgs, nix-alien }: {
+      nixosConfigurations.nix-alien-desktop = nixpkgs.lib.nixosSystem rec {
+        system = "x86_64-linux";
+        specialArgs = { inherit self system; };
+        modules = [
+          ({ self, system, ... }: {
+            imports = [
+              # Optional, but this is needed for `nix-alien-ld` command
+              self.inputs.nix-ld.nixosModules.nix-ld
+            ];
+            environment.systemPackages = with pkgs; with self.inputs.nix-alien.packages.${system}; [
+              nix-alien
+              nix-index # not necessary, but recommended
+              nix-index-update
+            ];
+          })
+        ];
+    };
+  };
+}
+```
+
+Alternatively, you can also use the included overlay. Keep in mind that the
+overlay will use your current `nixpkgs` pin instead the one included in this
+project `flake.lock` file.
+
+This has the advantage of reducing the general size of your `/nix/store`,
+however since the version of `nixpkgs` you currently have is not tested this may
+cause issues.
+
+```nix
+{
+  description = "nix-alien-on-nixos";
+
+  inputs.nixpkgs.url = "github:NixOS/nixpkgs";
+  inputs.nix-alien.url = "github:thiagokokada/nix-alien";
+  inputs.nix-ld.url = "github:Mic92/nix-ld/main";
+
+  outputs = { self, nixpkgs, nix-alien }: {
       nixosConfigurations.nix-alien-desktop = nixpkgs.lib.nixosSystem {
-      system = "x86_64-linux";
-      specialArgs = { inherit self; };
-      modules = [
-        ({ self, ... }: {
-          nixpkgs.overlays = [
-            self.inputs.nix-alien.overlays.default
-          ];
-	  imports = [
-            # Optional, but this is needed for `nix-alien-ld` command
-            self.inputs.nix-ld.nixosModules.nix-ld
-          ];
-          environment.systemPackages = with pkgs; [
-            nix-alien
-            nix-index # not necessary, but recommended
-            nix-index-update
-          ];
-        })
-      ];
+        system = "x86_64-linux";
+        specialArgs = { inherit self; };
+        modules = [
+          ({ self, ... }: {
+            nixpkgs.overlays = [
+              self.inputs.nix-alien.overlays.default
+            ];
+            imports = [
+              # Optional, but this is needed for `nix-alien-ld` command
+              self.inputs.nix-ld.nixosModules.nix-ld
+            ];
+            environment.systemPackages = with pkgs; [
+              nix-alien
+              nix-index # not necessary, but recommended
+              nix-index-update
+            ];
+          })
+        ];
     };
   };
 }
