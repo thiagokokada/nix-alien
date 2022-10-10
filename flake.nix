@@ -33,8 +33,9 @@
           default = self.outputs.packages.${system}.nix-alien;
         };
 
-        checks.nix-alien-ci = pkgs.nix-alien.override {
-          ci = true;
+        checks = {
+          nix-alien-ci = pkgs.nix-alien.override { ci = true; };
+          check-format-nix = pkgs.check-format-nix;
         };
 
         apps =
@@ -47,6 +48,7 @@
             nix-alien-ld = mkApp { drv = self.outputs.${system}.packages.nix-alien; name = "nix-alien-ld"; };
             nix-alien-find-libs = mkApp { drv = self.outputs.${system}.packages.nix-alien; name = "nix-alien-find-libs"; };
             nix-index-update = mkApp { drv = self.outputs.${system}.packages.nix-index-update; };
+            poetry = mkApp { drv = pkgs.poetry; };
           };
 
         devShells.default = import ./shell.nix {
