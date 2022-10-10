@@ -35,6 +35,7 @@
 
         checks = {
           nix-alien-ci = pkgs.nix-alien.override { ci = true; };
+          nix-index-update-ci = pkgs.nix-index-update;
           check-format-nix = pkgs.check-format-nix;
         };
 

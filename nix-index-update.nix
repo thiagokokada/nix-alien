@@ -15,7 +15,10 @@ stdenv.mkDerivation {
   dontUnpack = true;
 
   installPhase = ''
-    install -Dm755 "$src" "$out/bin/nix-index-update"
-  '';
+    runHook preInstall
 
+    install -Dm755 "$src" "$out/bin/nix-index-update"
+
+    runHook postInstall
+  '';
 }
