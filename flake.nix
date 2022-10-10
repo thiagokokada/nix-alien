@@ -20,7 +20,7 @@
 
       # For backwards compat, will be removed in the future
       overlay = self.outputs.overlays.default;
-    } // (flake-utils.lib.eachSystem [ "aarch64-linux" "i686-linux" "x86_64-linux" ] (system:
+    } // (flake-utils.lib.eachSystem [ "aarch64-linux" "x86_64-linux" ] (system:
       let
         pkgs = import nixpkgs {
           inherit system;
