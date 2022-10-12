@@ -4,7 +4,7 @@ on:
   push:
 
 jobs:
-  build-linux:
+  build-linux-amd64:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -12,13 +12,10 @@ jobs:
           # Nix Flakes doesn't work on shallow clones
           fetch-depth: 0
 
-      - uses: cachix/install-nix-action@v17
+      - uses: cachix/install-nix-action@v18
         with:
-          install_url: https://nixos-nix-install-tests.cachix.org/serve/vij683ly7sl95nnhb67bdjjfabclr85m/install
-          install_options: '--tarball-url-prefix https://nixos-nix-install-tests.cachix.org/serve'
           nix_path: nixpkgs=channel:nixos-unstable
           extra_nix_config: |
-            experimental-features = nix-command flakes
             access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
 
       - name: CI
