@@ -6,7 +6,7 @@
 }:
 
 let
-  python = pkgs.python39;
+  python = pkgs.python310;
   app = poetry2nix.mkPoetryApplication rec {
     projectDir = ./.;
     inherit python;

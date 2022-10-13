@@ -7,7 +7,7 @@ license = "MIT"
 include = ["nix_alien/*.nix", "nix_alien/version"]
 
 [tool.poetry.dependencies]
-python = "^3.9"
+python = "^3.10"
 pylddwrap = "^1.2.1"
 pyfzf = "^0.3.1"
 
