@@ -1,12 +1,12 @@
 { pkgs ? (import ./compat.nix).pkgs
 , poetry2nix ? (import ./compat.nix).poetry2nix
+, python ? pkgs.python310
   # TODO: make it work with non-flakes
 , rev ? "unknown"
 , ci ? false
 }:
 
 let
-  python = pkgs.python310;
   app = poetry2nix.mkPoetryApplication rec {
     projectDir = ./.;
     inherit python;
