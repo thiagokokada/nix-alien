@@ -10,11 +10,27 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - name: Cache /nix/store
+        id: nix-cache
+        uses: actions/cache@v3
+        with:
+          path: /tmp/nix-cache
+          key: ${{ runner.os }}-x86_64-${{ hashFiles('flake.*') }}
+          restore-keys: |
+            ${{ runner.os }}-x86_64-${{ hashFiles('flake.*') }}
+            ${{ runner.os }}-x86_64-
+
       - uses: cachix/install-nix-action@v18
         with:
           nix_path: nixpkgs=channel:nixos-unstable
           extra_nix_config: |
             access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
+
+      - name: Import Nix store cache
+        run: |
+          if [[ -f /tmp/nix-cache ]]; then
+            nix-store --import < /tmp/nix-cache
+          fi
 
       - name: Set default git branch (to reduce log spam)
         run: git config --global init.defaultBranch master
@@ -27,6 +43,9 @@ jobs:
 
       - name: CI
         run: nix flake check
+
+      - name: Export Nix store cache
+        run: nix-store --export $(find /nix/store -maxdepth 1 -name '*-*') > /tmp/nix-cache
 
       - name: Create Pull Request
         id: cpr
