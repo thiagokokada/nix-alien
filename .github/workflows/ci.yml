@@ -14,7 +14,10 @@ jobs:
         uses: actions/cache@v3
         with:
           path: /tmp/nix-cache
-          key: ${{ runner.os }}-x86_64-${{ hashFiles('flake.lock') }}
+          key: ${{ runner.os }}-x86_64-${{ hashFiles('flake.*') }}
+          restore-keys: |
+            ${{ runner.os }}-x86_64-${{ hashFiles('flake.*') }}
+            ${{ runner.os }}-x86_64-
 
       - uses: cachix/install-nix-action@v18
         with:
@@ -23,8 +26,8 @@ jobs:
             access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
 
       - name: Import Nix store cache
-        if: steps.nix-cache.outputs.cache-hit == 'true'
-        run: nix-store --import < /tmp/nix-cache
+        run: |
+          [[ -f /tmp/nix-cache ]] && nix-store --import < /tmp/nix-cache
 
       - name: CI
         run: nix flake check
@@ -48,7 +51,10 @@ jobs:
         uses: actions/cache@v3
         with:
           path: /tmp/nix-cache
-          key: ${{ runner.os }}-aarch64-${{ hashFiles('flake.lock') }}
+          key: ${{ runner.os }}-aarch64-${{ hashFiles('flake.*') }}
+          restore-keys: |
+            ${{ runner.os }}-aarch64-${{ hashFiles('flake.*') }}
+            ${{ runner.os }}-aarch64-
 
       - uses: cachix/install-nix-action@v18
         with:
@@ -58,8 +64,8 @@ jobs:
             extra-platforms = aarch64-linux
 
       - name: Import Nix store cache
-        if: steps.nix-cache.outputs.cache-hit == 'true'
-        run: nix-store --import < /tmp/nix-cache
+        run: |
+          [[ -f /tmp/nix-cache ]] && nix-store --import < /tmp/nix-cache
 
       - name: CI
         # We are running all linters in x86_64 already, no need to rerun them here
