@@ -14,7 +14,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: /tmp/nix-cache
-          key: ${{ runner.os }}-${{ hashFiles('flake.lock') }}
+          key: ${{ runner.os }}-x86_64-${{ hashFiles('flake.lock') }}
 
       - uses: cachix/install-nix-action@v18
         with:
@@ -48,7 +48,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: /tmp/nix-cache
-          key: ${{ runner.os }}-${{ hashFiles('flake.lock') }}
+          key: ${{ runner.os }}-aarch64-${{ hashFiles('flake.lock') }}
 
       - uses: cachix/install-nix-action@v18
         with:
