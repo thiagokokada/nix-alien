@@ -8,8 +8,9 @@
 
 let
   app = poetry2nix.mkPoetryApplication rec {
-    projectDir = ./.;
     inherit python;
+
+    projectDir = ./.;
 
     overrides = poetry2nix.overrides.withDefaults (
       final: prev:

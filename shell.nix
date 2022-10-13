@@ -5,8 +5,9 @@
 
 let
   appEnv = pkgs.poetry2nix.mkPoetryEnv {
-    projectDir = ./.;
     inherit python;
+
+    projectDir = ./.;
 
     editablePackageSources = {
       nix-alien = ./nix-alien;
@@ -29,4 +30,8 @@ appEnv.env.overrideAttrs (oldAttrs: {
     nixpkgs-fmt
     python.pkgs.poetry
   ];
+
+  # TODO: remove once this issue is fixed:
+  # https://github.com/python-poetry/poetry/issues/1917
+  PYTHON_KEYRING_BACKEND = "keyring.backends.null.Keyring";
 })
