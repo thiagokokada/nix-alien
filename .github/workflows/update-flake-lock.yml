@@ -9,18 +9,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-        with:
-          # Nix Flakes doesn't work on shallow clones
-          fetch-depth: 0
 
-      - uses: cachix/install-nix-action@v17
+      - uses: cachix/install-nix-action@v18
         with:
-          install_url: https://nixos-nix-install-tests.cachix.org/serve/vij683ly7sl95nnhb67bdjjfabclr85m/install
-          install_options: '--tarball-url-prefix https://nixos-nix-install-tests.cachix.org/serve'
           nix_path: nixpkgs=channel:nixos-unstable
           extra_nix_config: |
-            experimental-features = nix-command flakes
             access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set default git branch (to reduce log spam)
+        run: git config --global init.defaultBranch master
 
       - name: Update flake.lock
         run: |
@@ -28,16 +25,8 @@ jobs:
           git config user.email '${{ github.actor }}@users.noreply.github.com'
           nix flake update --commit-lock-file
 
-      - name: Set default git branch (to reduce log spam)
-        run: git config --global init.defaultBranch master
-
       - name: CI
-        run: nix-shell --run "make ci"
-
-      - name: Build
-        run: |
-          nix build ".#nix-alien"
-          nix build ".#nix-index-update"
+        run: nix flake check
 
       - name: Create Pull Request
         id: cpr
