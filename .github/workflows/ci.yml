@@ -27,7 +27,9 @@ jobs:
 
       - name: Import Nix store cache
         run: |
-          [[ -f /tmp/nix-cache ]] && nix-store --import < /tmp/nix-cache
+          if [[ -f /tmp/nix-cache ]]; then
+            nix-store --import < /tmp/nix-cache
+          fi
 
       - name: CI
         run: nix flake check
@@ -65,7 +67,9 @@ jobs:
 
       - name: Import Nix store cache
         run: |
-          [[ -f /tmp/nix-cache ]] && nix-store --import < /tmp/nix-cache
+          if [[ -f /tmp/nix-cache ]]; then
+            nix-store --import < /tmp/nix-cache
+          fi
 
       - name: CI
         # We are running all linters in x86_64 already, no need to rerun them here
