@@ -1,7 +1,8 @@
 import os
-from typing import Callable, Optional
 import uuid
+from functools import partial
 from pathlib import Path
+from typing import Callable, Optional
 
 UUID_NAMESPACE = uuid.UUID("f318d4a6-dd46-47ce-995d-e95c17cadcc0")
 
@@ -32,4 +33,4 @@ def get_print(silent: bool = False) -> Callable[..., None]:
     if silent:
         return lambda *_, **__: None
     else:
-        return print
+        return partial(print, "[nix-alien]")

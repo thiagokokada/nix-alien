@@ -54,10 +54,10 @@ def test_find_libs_when_no_candidates_found(
     assert (
         err
         == """\
-No candidate found for 'libfoo.so'
-Selected candidate for 'libfoo.so': None
-No candidate found for 'libbar.so'
-Selected candidate for 'libbar.so': None
+[nix-alien] No candidate found for 'libfoo.so'
+[nix-alien] Selected candidate for 'libfoo.so': None
+[nix-alien] No candidate found for 'libbar.so'
+[nix-alien] Selected candidate for 'libbar.so': None
 """
     )
 
@@ -88,9 +88,9 @@ def test_find_libs_when_one_candidate_found(
     assert (
         err
         == """\
-Selected candidate for 'libfoo.so': foo.out
-Selected candidate for 'libbar.so': foo.out
-Selected candidate for 'libquux.so': foo.out
+[nix-alien] Selected candidate for 'libfoo.so': foo.out
+[nix-alien] Selected candidate for 'libbar.so': foo.out
+[nix-alien] Selected candidate for 'libquux.so': foo.out
 """
     )
 
@@ -157,8 +157,8 @@ def test_main_wo_args(mock_subprocess, mock_list_dependencies, capsys):
     assert (
         err
         == """\
-Selected candidate for 'libfoo.so': foo.out
-Selected candidate for 'libbar.so': foo.out
+[nix-alien] Selected candidate for 'libfoo.so': foo.out
+[nix-alien] Selected candidate for 'libbar.so': foo.out
 """
     )
 

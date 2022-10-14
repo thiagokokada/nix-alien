@@ -32,7 +32,7 @@ jobs:
           fi
 
       - name: CI
-        run: nix flake check
+        run: nix flake check --print-build-logs
 
       - name: Export Nix store cache
         run: nix-store --export $(find /nix/store -maxdepth 1 -name '*-*') > /tmp/nix-cache
@@ -73,7 +73,7 @@ jobs:
 
       - name: CI
         # We are running all linters in x86_64 already, no need to rerun them here
-        run: nix build --option system aarch64-linux
+        run: nix build --print-build-logs --option system aarch64-linux
 
       - name: Export Nix store cache
         run: nix-store --export $(find /nix/store -maxdepth 1 -name '*-*') > /tmp/nix-cache
