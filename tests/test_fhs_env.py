@@ -114,7 +114,7 @@ def test_main_wo_args(
     assert (
         err
         == f"""\
-File '{default_nix}' created successfuly!
+[nix-alien] File '{default_nix}' created successfuly!
 """
     )
 
@@ -178,7 +178,7 @@ def test_main_with_flake(mock_find_libs, mock_os, tmp_path, capsys):
     assert (
         err
         == f"""\
-File '{flake_nix}' created successfuly!
+[nix-alien] File '{flake_nix}' created successfuly!
 """
     )
 
