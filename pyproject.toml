@@ -7,7 +7,7 @@ license = "MIT"
 include = ["nix_alien/*.nix", "nix_alien/version"]
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "^3.9"
 # TODO: go back to version once a new release is cut
 pylddwrap = { git = "https://github.com/Parquery/pylddwrap.git", rev = "4022994d5557a421ec344a074c53ba58a0241e43" }
 pyfzf = "^0.3.1"

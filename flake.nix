@@ -33,12 +33,9 @@
           default = self.outputs.packages.${system}.nix-alien;
         };
 
-        checks = {
-          nix-alien-ci = pkgs.nix-alien.override { ci = true; };
-          nix-alien-ci-py39 = pkgs.nix-alien.override { ci = true; python = pkgs.python39; };
-          nix-alien-ci-py38 = pkgs.nix-alien.override { ci = true; python = pkgs.python38; };
-          nix-index-update-ci = pkgs.nix-index-update;
-          check-format-nix = pkgs.check-format-nix;
+        checks = import ./checks.nix {
+          inherit pkgs;
+          inherit (pkgs) poetry2nix;
         };
 
         apps =
