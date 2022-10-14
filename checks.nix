@@ -3,7 +3,7 @@
 , rev ? "ci"
 }:
 
-rec {
+{
   nix-alien-ci = import ./nix-alien.nix {
     inherit pkgs poetry2nix rev;
     ci = true;
@@ -19,19 +19,12 @@ rec {
     inherit pkgs;
   };
 
-  check-format-nix = pkgs.stdenv.mkDerivation {
-    name = "check-format-nix";
-    src = ./.;
-    nativeBuildInputs = [ pkgs.nixpkgs-fmt ];
-
-    dontConfigure = true;
-    dontBuild = true;
-    doCheck = true;
-
-    installPhase = "touch $out";
-
-    checkPhase = ''
-      nixpkgs-fmt --check .
-    '';
-  };
+  check-format-nix = pkgs.runCommand "check-format-nix"
+    {
+      src = ./.;
+      nativeBuildInputs = [ pkgs.nixpkgs-fmt ];
+    } ''
+    touch $out
+    nixpkgs-fmt --check $src
+  '';
 }
