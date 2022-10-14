@@ -1,5 +1,6 @@
 import argparse
 import json
+import os
 import subprocess
 import sys
 from shlex import join
@@ -18,7 +19,14 @@ fzf = FzfPrompt()
 
 def find_lib_candidates(basename: str) -> list[str]:
     result = subprocess.run(
-        ["nix-locate", "--minimal", "--whole-name", "--top-level", basename],
+        [
+            "nix-locate",
+            "--minimal",
+            "--at-root",
+            "--whole-name",
+            "--top-level",
+            os.path.join("/lib", basename),
+        ],
         check=True,
         text=True,
         stdout=subprocess.PIPE,
