@@ -45,7 +45,9 @@ jobs:
         run: nix flake check --print-build-logs
 
       - name: Export Nix store cache
-        run: nix-store --export $(find /nix/store -maxdepth 1 -name '*-*') > /tmp/nix-cache
+        run: |
+          nix-collect-garbage --delete-older-than 15d
+          nix-store --export $(find /nix/store -maxdepth 1 -name '*-*') > /tmp/nix-cache
 
       - name: Create Pull Request
         id: cpr
