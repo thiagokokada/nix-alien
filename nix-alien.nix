@@ -13,13 +13,7 @@ let
     projectDir = ./.;
 
     overrides = poetry2nix.overrides.withDefaults (
-      final: prev:
-        (import ./overrides.nix pkgs final prev)
-        // (pkgs.lib.optionalAttrs (!ci) {
-          # We want to run tests in non-CI builds but not black/mypy
-          black = pkgs.writeShellScriptBin "black" "exit 0";
-          mypy = pkgs.writeShellScriptBin "mypy" "exit 0";
-        })
+      (import ./overrides.nix pkgs)
     );
 
     meta = with pkgs.lib; {
