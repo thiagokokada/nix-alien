@@ -15,11 +15,6 @@ let
     overrides = poetry2nix.overrides.withDefaults (
       final: prev:
         (import ./overrides.nix pkgs final prev)
-        // (pkgs.lib.optionalAttrs (!ci) {
-          # We want to run tests in non-CI builds but not black/mypy
-          black = pkgs.writeShellScriptBin "black" "exit 0";
-          mypy = pkgs.writeShellScriptBin "mypy" "exit 0";
-        })
     );
 
     meta = with pkgs.lib; {
@@ -40,6 +35,9 @@ app.overrideAttrs (oldAttrs: {
     echo "__version__ = \"${rev}\"" > nix_alien/_version.py
   '';
 
+  # We want to run tests in non-CI builds but not black/mypy
+  checkBlackAndMypy = ci;
+
   checkInputs = [
     pkgs.fzf
   ];
@@ -47,8 +45,10 @@ app.overrideAttrs (oldAttrs: {
   checkPhase = ''
     runHook preCheck
 
-    black --check .
-    mypy --ignore-missing-imports .
+    if [ -n "$checkBlackAndMypy" ]; then
+      black --check .
+      mypy --ignore-missing-imports .
+    fi
     pytest -vvv
 
     runHook postCheck
