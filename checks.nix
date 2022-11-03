@@ -1,7 +1,9 @@
 { pkgs ? (import ./compat.nix).pkgs
-, rev ? "ci"
 }:
 
+let
+  rev = "0.1.0+ci";
+in
 {
   nix-alien-ci = pkgs.callPackage ./nix-alien.nix {
     inherit rev;

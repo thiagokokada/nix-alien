@@ -7,8 +7,8 @@
   outputs = { self, nixpkgs, flake-utils }:
     {
       overlays.default = final: prev: import ./default.nix {
+        inherit self;
         pkgs = prev;
-        rev = self.shortRev or self.rev or "dirty";
       };
 
       # For backwards compat, will be removed in the future
