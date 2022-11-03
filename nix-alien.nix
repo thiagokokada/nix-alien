@@ -3,11 +3,12 @@
 , python3
 , fzf
 , rev ? "unknown"
+, dev ? false
 , ci ? false
 }:
 
 let
-  pylddwrap =  callPackage ./pylddwrap.nix { };
+  pylddwrap = callPackage ./pylddwrap.nix { };
 in
 python3.pkgs.buildPythonApplication {
   pname = "nix-alien";
@@ -25,6 +26,8 @@ python3.pkgs.buildPythonApplication {
   preBuild = ''
     echo "__version__ = \"${rev}\"" > nix_alien/_version.py
   '';
+
+  doCheck = !dev;
 
   checkInputs = with python3.pkgs; [
     fzf
