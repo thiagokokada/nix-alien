@@ -6,10 +6,7 @@
 
   outputs = { self, nixpkgs, flake-utils }:
     {
-      overlays.default = final: prev: import ./default.nix {
-        inherit self;
-        pkgs = prev;
-      };
+      overlays.default = final: prev: import ./overlay.nix { inherit self final prev; };
 
       # For backwards compat, will be removed in the future
       overlay = self.outputs.overlays.default;
