@@ -1,34 +1,31 @@
 { lib
-, stdenvNoCC
+, writeShellApplication
 , coreutils
 , substituteAll
 , system
 , wget
 }:
 
-stdenvNoCC.mkDerivation {
-  pname = "nix-index-update";
-  version = "0.0.1";
+writeShellApplication {
+  name = "nix-index-update";
 
-  src = substituteAll {
-    src = ./nix-index-update.sh;
-    isExecutable = true;
-    inherit coreutils wget system;
-  };
+  runtimeInputs = [
+    coreutils
+    wget
+  ];
 
-  dontUnpack = true;
+  text = ''
+    readonly filename="index-${system}"
+    readonly dest_dir="$HOME/.cache/nix-index"
 
-  installPhase = ''
-    runHook preInstall
+    mkdir -p "$dest_dir"
+    pushd "$dest_dir" >/dev/null
+    trap "popd >/dev/null" EXIT
 
-    install -Dm755 "$src" "$out/bin/nix-index-update"
+    # -N will only download a new version if there is an update.
+    wget -q -N "https://github.com/Mic92/nix-index-database/releases/latest/download/$filename"
+    ln -f "$filename" files
 
-    runHook postInstall
+    echo "Done!"
   '';
-
-  meta = with lib; {
-    description = "Update nix-index cache using https://github.com/Mic92/nix-index-database";
-    homepage = "https://github.com/thiagokokada/nix-alien";
-    license = licenses.mit;
-  };
 }
