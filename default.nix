@@ -1,5 +1,5 @@
 { pkgs ? (import ./compat.nix).pkgs
-, rev
+, rev ? "unknown"
 }:
 
 {
