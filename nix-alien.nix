@@ -2,7 +2,7 @@
 , callPackage
 , python3
 , fzf
-, rev ? "unknown"
+, rev ? null
 , dev ? false
 , ci ? false
 }:
@@ -23,7 +23,7 @@ python3.pkgs.buildPythonApplication {
     setuptools
   ];
 
-  preBuild = ''
+  preBuild = lib.optionalString (rev != null) ''
     echo "__version__ = \"${rev}\"" > nix_alien/_version.py
   '';
 
