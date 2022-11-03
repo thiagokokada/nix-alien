@@ -1,27 +1,34 @@
-[tool.poetry]
-name = "nix-alien"
+[build-system]
+requires = ["setuptools", "setuptools-scm"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "nix_alien"
 version = "0.1.0"
 description = "Run unpatched binaries on Nix/NixOS"
-authors = ["Thiago Kenji Okada <thiagokokada@gmail.com>"]
-license = "MIT"
-include = ["nix_alien/*.nix", "nix_alien/version"]
+readme = "README.md"
+requires-python = ">=3.9"
+keywords = ["nix", "nixos"]
+license = {text = "MIT"}
+classifiers = [
+    "Programming Language :: Python :: 3",
+]
+dependencies = [
+    "pylddwrap",
+    "pyfzf",
+]
 
-[tool.poetry.dependencies]
-python = "^3.9"
-# TODO: go back to version once a new release is cut
-pylddwrap = { git = "https://github.com/Parquery/pylddwrap.git", rev = "4022994d5557a421ec344a074c53ba58a0241e43" }
-pyfzf = "^0.3.1"
+[project.optional-dependencies]
+dev = [
+    "black",
+    "mypy",
+    "pytest",
+]
 
-[tool.poetry.dev-dependencies]
-black = "^22.3.0"
-pytest = "^7.1.1"
-mypy = "^0.982"
-
-[tool.poetry.scripts]
+[project.scripts]
 nix-alien = "nix_alien.fhs_env:main"
 nix-alien-ld = "nix_alien.nix_ld:main"
 nix-alien-find-libs = "nix_alien.libs:main"
 
-[build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
+[tool.setuptools.package-data]
+nix_alien = ["*.nix"]

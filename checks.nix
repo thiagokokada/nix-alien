@@ -1,23 +1,14 @@
 { pkgs ? (import ./compat.nix).pkgs
-, poetry2nix ? (import ./compat.nix).poetry2nix
 , rev ? "ci"
 }:
 
 {
-  nix-alien-ci = import ./nix-alien.nix {
-    inherit pkgs poetry2nix rev;
+  nix-alien-ci = pkgs.callPackage ./nix-alien.nix {
+    inherit rev;
     ci = true;
   };
 
-  nix-alien-ci-py39 = import ./nix-alien.nix {
-    inherit pkgs poetry2nix rev;
-    ci = true;
-    python = pkgs.python39;
-  };
-
-  nix-index-update-ci = import ./nix-index-update.nix {
-    inherit pkgs;
-  };
+  nix-index-update-ci = pkgs.callPackage ./nix-index-update.nix { };
 
   check-format-nix = pkgs.runCommand "check-format-nix"
     {
