@@ -1,52 +1,49 @@
-{ pkgs ? (import ./compat.nix).pkgs
-, poetry2nix ? (import ./compat.nix).poetry2nix
-, python ? pkgs.python310
-  # TODO: make it work with non-flakes
-, rev ? "unknown"
+{ lib
+, callPackage
+, python3
+, fzf
+, rev
 , ci ? false
 }:
 
 let
-  app = poetry2nix.mkPoetryApplication rec {
-    inherit python;
-
-    projectDir = ./.;
-
-    overrides = poetry2nix.overrides.withDefaults (
-      (import ./overrides.nix pkgs)
-    );
-
-    meta = with pkgs.lib; {
-      description = "Run unpatched binaries on Nix/NixOS";
-      homepage = "https://github.com/thiagokokada/nix-alien";
-      license = licenses.mit;
-      platforms = platforms.linux;
-    };
-  };
+  pylddwrap =  callPackage ./pylddwrap.nix { };
 in
-app.overrideAttrs (oldAttrs: {
-  propagatedBuildInputs = (oldAttrs.propagatedBuildInputs or [ ]) ++ [
-    pkgs.nix-index
-    pkgs.nixVersions.stable
+python3.pkgs.buildPythonApplication {
+  pname = "nix-alien";
+  version = rev;
+  format = "pyproject";
+
+  src = ./.;
+
+  propagatedBuildInputs = with python3.pkgs; [
+    pyfzf
+    pylddwrap
+    setuptools
   ];
 
   preBuild = ''
     echo "__version__ = \"${rev}\"" > nix_alien/_version.py
   '';
 
-  checkInputs = [
-    pkgs.fzf
+  checkInputs = with python3.pkgs; [
+    fzf
+    pytestCheckHook
+  ]
+  ++ lib.optionals ci [
+    black
+    mypy
   ];
 
-  checkPhase = ''
-    runHook preCheck
-
-    black --check .
-    mypy --ignore-missing-imports .
-    pytest -vvv
-
-    runHook postCheck
+  preCheck = lib.optionalString ci ''
+    black --check ./nix_alien
+    mypy --ignore-missing-imports ./nix_alien
   '';
 
-  doCheck = true;
-})
+  meta = with lib; {
+    description = "Run unpatched binaries on Nix/NixOS";
+    homepage = "https://github.com/thiagokokada/nix-alien";
+    license = licenses.mit;
+    platforms = platforms.linux;
+  };
+}

@@ -13,17 +13,4 @@ rec {
         sha256 = narHash;
       })
       { };
-  poetry2nix =
-    let
-      inherit (flakeLock.nodes.poetry2nix.locked) rev narHash;
-    in
-    import
-      (fetchTarball {
-        url = "https://github.com/nix-community/poetry2nix/archive/${rev}.tar.gz";
-        sha256 = narHash;
-      })
-      {
-        inherit pkgs;
-        poetry = pkgs.poetry;
-      };
 }

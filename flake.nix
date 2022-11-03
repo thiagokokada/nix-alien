@@ -3,18 +3,11 @@
 
   inputs.flake-utils.url = "github:numtide/flake-utils";
   inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
-  inputs.poetry2nix = {
-    url = "github:nix-community/poetry2nix";
-    inputs.nixpkgs.follows = "nixpkgs";
-    inputs.flake-utils.follows = "flake-utils";
-  };
 
-  outputs = { self, nixpkgs, flake-utils, poetry2nix }:
+  outputs = { self, nixpkgs, flake-utils }:
     {
       overlays.default = final: prev: import ./default.nix {
-        poetry2nix = (poetry2nix.overlay final prev).poetry2nix;
-        # FIXME: using `prev` here results in a glibc rebuild on every Python deps change
-        pkgs = final;
+        pkgs = prev;
         rev = self.shortRev or self.rev or "dirty";
       };
 
@@ -33,10 +26,7 @@
           default = self.outputs.packages.${system}.nix-alien;
         };
 
-        checks = import ./checks.nix {
-          inherit pkgs;
-          inherit (pkgs) poetry2nix;
-        };
+        checks = import ./checks.nix { inherit pkgs; };
 
         apps =
           let
@@ -51,10 +41,7 @@
             poetry = mkApp { drv = pkgs.poetry; };
           };
 
-        devShells.default = import ./shell.nix {
-          inherit pkgs;
-          inherit (pkgs) poetry2nix;
-        };
+        devShells.default = import ./shell.nix { inherit pkgs; };
 
         # For backwards compat, will be removed in the future
         defaultPackage = self.outputs.packages.${system}.default;
