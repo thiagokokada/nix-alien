@@ -2,7 +2,7 @@
 , callPackage
 , python3
 , fzf
-, rev
+, rev ? "unknown"
 , ci ? false
 }:
 
