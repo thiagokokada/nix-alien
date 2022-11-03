@@ -7,12 +7,15 @@
 , ci ? false
 }:
 
+assert dev -> (ci == false);
 let
   pylddwrap = callPackage ./pylddwrap.nix { };
+  version = if (rev != null) then rev else "dev";
 in
 python3.pkgs.buildPythonApplication {
+  inherit version;
+
   pname = "nix-alien";
-  version = rev;
   format = "pyproject";
 
   src = ./.;

@@ -34,4 +34,4 @@ nix-alien-find-libs = "nix_alien.libs:main"
 nix_alien = ["*.nix"]
 
 [tool.setuptools.dynamic]
-version = {attr = "nix_alien.__version__"}
+version = {attr = "nix_alien._version.__version__"}
