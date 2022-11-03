@@ -34,11 +34,10 @@
           in
           {
             default = self.outputs.apps.${system}.nix-alien;
-            nix-alien = mkApp { drv = self.outputs.${system}.packages.nix-alien; };
-            nix-alien-ld = mkApp { drv = self.outputs.${system}.packages.nix-alien; name = "nix-alien-ld"; };
-            nix-alien-find-libs = mkApp { drv = self.outputs.${system}.packages.nix-alien; name = "nix-alien-find-libs"; };
-            nix-index-update = mkApp { drv = self.outputs.${system}.packages.nix-index-update; };
-            poetry = mkApp { drv = pkgs.poetry; };
+            nix-alien = mkApp { drv = self.outputs.packages.${system}.nix-alien; };
+            nix-alien-ld = mkApp { drv = self.outputs.packages.${system}.nix-alien; name = "nix-alien-ld"; };
+            nix-alien-find-libs = mkApp { drv = self.outputs.packages.${system}.nix-alien; name = "nix-alien-find-libs"; };
+            nix-index-update = mkApp { drv = self.outputs.packages.${system}.nix-index-update; };
           };
 
         devShells.default = import ./shell.nix { inherit pkgs; };
