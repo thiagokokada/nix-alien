@@ -8,9 +8,7 @@
     ci = true;
   };
 
-  nix-index-update-ci = import ./nix-index-update.nix {
-    inherit pkgs;
-  };
+  nix-index-update-ci = pkgs.callPackage ./nix-index-update.nix { };
 
   check-format-nix = pkgs.runCommand "check-format-nix"
     {

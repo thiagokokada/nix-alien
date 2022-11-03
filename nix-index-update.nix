@@ -1,10 +1,14 @@
-{ pkgs ? (import ./compat.nix).pkgs }:
+{ lib
+, stdenvNoCC
+, coreutils
+, substituteAll
+, system
+, wget
+}:
 
-let
-  inherit (pkgs) coreutils stdenv substituteAll system wget;
-in
-stdenv.mkDerivation {
-  name = "nix-index-update";
+stdenvNoCC.mkDerivation {
+  pname = "nix-index-update";
+  version = "0.0.1";
 
   src = substituteAll {
     src = ./nix-index-update.sh;
@@ -21,4 +25,10 @@ stdenv.mkDerivation {
 
     runHook postInstall
   '';
+
+  meta = with lib; {
+    description = "Update nix-index cache using https://github.com/Mic92/nix-index-database";
+    homepage = "https://github.com/thiagokokada/nix-alien";
+    license = licenses.mit;
+  };
 }

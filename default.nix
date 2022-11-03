@@ -5,7 +5,5 @@
 {
   nix-alien = pkgs.callPackage ./nix-alien.nix { inherit rev; };
 
-  nix-index-update = import ./nix-index-update.nix {
-    inherit pkgs;
-  };
+  nix-index-update = pkgs.callPackage ./nix-index-update.nix { };
 }
