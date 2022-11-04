@@ -9,7 +9,6 @@
 
 assert dev -> (ci == false);
 let
-  pylddwrap = python3.pkgs.callPackage ./pylddwrap.nix { };
   version = if (rev != null) then rev else "dev";
 in
 python3.pkgs.buildPythonApplication {
