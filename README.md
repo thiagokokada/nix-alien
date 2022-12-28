@@ -152,18 +152,14 @@ let
   ) { };
 in
 {
-  # Optional, but this is needed for `nix-alien-ld` command
-  # See https://github.com/Mic92/nix-ld#installation for how to setup `nix-ld`
-  # channel
-  imports = [
-    <nix-ld/modules/nix-ld.nix>
-  ];
-
   environment.systemPackages = with nix-alien-pkgs; [
     nix-alien
     nix-index-update
     pkgs.nix-index # not necessary, but recommended
   ];
+
+  # Optional, but this is needed for `nix-alien-ld` command
+  programs.nix-ld.enable = true;
 }
 ```
 
@@ -181,7 +177,6 @@ setup to install `nix-alien` on system `PATH`:
 
   inputs.nixpkgs.url = "github:NixOS/nixpkgs";
   inputs.nix-alien.url = "github:thiagokokada/nix-alien";
-  inputs.nix-ld.url = "github:Mic92/nix-ld/main";
 
   outputs = { self, nixpkgs, nix-alien }: {
       nixosConfigurations.nix-alien-desktop = nixpkgs.lib.nixosSystem rec {
@@ -189,15 +184,13 @@ setup to install `nix-alien` on system `PATH`:
         specialArgs = { inherit self system; };
         modules = [
           ({ self, system, ... }: {
-            imports = [
-              # Optional, but this is needed for `nix-alien-ld` command
-              self.inputs.nix-ld.nixosModules.nix-ld
-            ];
             environment.systemPackages = with pkgs; with self.inputs.nix-alien.packages.${system}; [
               nix-alien
               nix-index # not necessary, but recommended
               nix-index-update
             ];
+            # Optional, needed for `nix-alien-ld`
+            programs.nix-ld.enable = true;
           })
         ];
     };
@@ -219,7 +212,6 @@ cause issues.
 
   inputs.nixpkgs.url = "github:NixOS/nixpkgs";
   inputs.nix-alien.url = "github:thiagokokada/nix-alien";
-  inputs.nix-ld.url = "github:Mic92/nix-ld/main";
 
   outputs = { self, nixpkgs, nix-alien }: {
       nixosConfigurations.nix-alien-desktop = nixpkgs.lib.nixosSystem {
@@ -230,15 +222,13 @@ cause issues.
             nixpkgs.overlays = [
               self.inputs.nix-alien.overlays.default
             ];
-            imports = [
-              # Optional, but this is needed for `nix-alien-ld` command
-              self.inputs.nix-ld.nixosModules.nix-ld
-            ];
             environment.systemPackages = with pkgs; [
               nix-alien
               nix-index # not necessary, but recommended
               nix-index-update
             ];
+            # Optional, needed for `nix-alien-ld`
+            programs.nix-ld.enable = true;
           })
         ];
     };
