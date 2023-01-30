@@ -33,16 +33,13 @@ python3.pkgs.buildPythonApplication {
 
   checkInputs = with python3.pkgs; [
     pytestCheckHook
-  ]
-  ++ lib.optionals ci [
-    black
-    mypy
   ];
 
   preCheck = ''
     export PATH="${lib.makeBinPath [ fzf ]}:$PATH"
   ''
   + lib.optionalString ci ''
+    export PATH="${with python3.pkgs; lib.makeBinPath [ black mypy ]}:$PATH"
     black --check ./nix_alien
     mypy --ignore-missing-imports ./nix_alien
   '';
