@@ -1,5 +1,6 @@
 [build-system]
-requires = ["setuptools>=61.0.0"]
+# remove setuptools-scm once setuptools 66.1.0 is in nixpkgs
+requires = ["setuptools>=61.0.0", "setuptools-scm"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -12,19 +13,10 @@ license = {text = "MIT"}
 classifiers = [
     "Programming Language :: Python :: 3",
 ]
-dependencies = [
-    "pyfzf",
-    "pylddwrap",
-]
-dynamic = ["version"]
+dynamic = ["dependencies", "version"]
 
 [project.optional-dependencies]
-dev = [
-    "black",
-    "mypy",
-    "pylint",
-    "pytest",
-]
+dev = ["pytest"]
 
 [project.scripts]
 nix-alien = "nix_alien.fhs_env:main"
@@ -35,4 +27,5 @@ nix-alien-find-libs = "nix_alien.libs:main"
 nix_alien = ["*.nix"]
 
 [tool.setuptools.dynamic]
+dependencies = {file = "requirements.txt"}
 version = {attr = "nix_alien._version.__version__"}

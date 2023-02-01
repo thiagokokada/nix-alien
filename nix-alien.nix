@@ -10,6 +10,10 @@
 assert dev -> (ci == false);
 let
   version = if (rev != null) then rev else "dev";
+  deps = with builtins;
+    filter (s: isString s && s != "")
+      (split "\n"
+        (readFile ./requirements.txt));
 in
 python3.pkgs.buildPythonApplication {
   inherit version;
@@ -20,10 +24,9 @@ python3.pkgs.buildPythonApplication {
   src = ./.;
 
   propagatedBuildInputs = with python3.pkgs; [
-    pyfzf
-    pylddwrap
     setuptools
-  ];
+    setuptools-scm
+  ] ++ (lib.attrVals deps python3.pkgs);
 
   preBuild = lib.optionalString (rev != null) ''
     echo "__version__ = \"${rev}\"" > nix_alien/_version.py
