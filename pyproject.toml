@@ -13,8 +13,8 @@ classifiers = [
     "Programming Language :: Python :: 3",
 ]
 dependencies = [
-    "pylddwrap",
     "pyfzf",
+    "pylddwrap",
 ]
 dynamic = ["version"]
 
@@ -22,6 +22,7 @@ dynamic = ["version"]
 dev = [
     "black",
     "mypy",
+    "pylint",
     "pytest",
 ]
 
