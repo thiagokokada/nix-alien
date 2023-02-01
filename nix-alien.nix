@@ -39,9 +39,11 @@ python3.pkgs.buildPythonApplication {
     export PATH="${lib.makeBinPath [ fzf ]}:$PATH"
   ''
   + lib.optionalString ci ''
-    export PATH="${with python3.pkgs; lib.makeBinPath [ black mypy ]}:$PATH"
+    export PATH="${with python3.pkgs; lib.makeBinPath [ black mypy pylint ]}:$PATH"
+    export PYLINTHOME="$(mktemp -d)"
     black --check ./nix_alien
     mypy --ignore-missing-imports ./nix_alien
+    pylint ./nix_alien -d=C0116,C0114,R0801,R0913
   '';
 
   meta = with lib; {

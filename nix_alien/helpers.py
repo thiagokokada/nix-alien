@@ -25,12 +25,10 @@ def get_dest_path(
 ) -> Path:
     if destination:
         return Path(destination).expanduser().resolve() / filename
-    else:
-        return get_cache_path(program) / directory / filename
+    return get_cache_path(program) / directory / filename
 
 
 def get_print(silent: bool = False) -> Callable[..., None]:
     if silent:
         return lambda *_, **__: None
-    else:
-        return partial(print, "[nix-alien]")
+    return partial(print, "[nix-alien]")

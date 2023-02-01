@@ -5,7 +5,7 @@ import subprocess
 import sys
 from shlex import join
 from pathlib import Path
-from typing import Optional, Union
+from typing import Iterable, Optional, Union
 
 from pyfzf.pyfzf import FzfPrompt
 
@@ -38,7 +38,7 @@ def find_lib_candidates(basename: str) -> list[str]:
 def find_libs(
     path: Union[Path, str],
     silent: bool = False,
-    additional_libs: list[str] = [],
+    additional_libs: Iterable[str] = (),
 ) -> dict[str, Optional[str]]:
     _print = get_print(silent)
     path = Path(path).expanduser()
@@ -84,13 +84,16 @@ def find_libs(
     return resolved_deps
 
 
-def get_unique_packages(libs: dict[str, Optional[str]]) -> list[str]:
+def get_unique_packages(libs: dict[str, Optional[str]]) -> Iterable[str]:
     # remove None values
-    unique_packages = set([lib for lib in libs.values() if lib is not None])
+    unique_packages = {lib for lib in libs.values() if lib is not None}
     return sorted(unique_packages)
 
 
-def main(args=sys.argv[1:]):
+def main(args=None):
+    if not args:
+        args = sys.argv[1:]
+
     parser = argparse.ArgumentParser()
     parser.add_argument("program", help="Program to analyze")
     parser.add_argument("--version", action="version", version=__version__)

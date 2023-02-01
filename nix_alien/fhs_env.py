@@ -20,8 +20,8 @@ MODULE = "fhs-env"
 def create_fhs_env_drv(
     program: str,
     silent: bool = False,
-    additional_libs: list[str] = [],
-    additional_packages: list[str] = [],
+    additional_libs: Iterable[str] = (),
+    additional_packages: Iterable[str] = (),
 ) -> str:
     path = Path(program).expanduser()
     packages = find_libs(path, silent, additional_libs)
@@ -29,7 +29,7 @@ def create_fhs_env_drv(
     return FHS_TEMPLATE.safe_substitute(
         __name__=path.name,
         __packages__=("\n" + 4 * " ").join(
-            get_unique_packages(packages) + additional_packages
+            list(get_unique_packages(packages)) + list(additional_packages)
         ),
         __program__=path.absolute(),
     )
@@ -41,8 +41,8 @@ def create_fhs_env(
     destination: Optional[str],
     recreate: bool = False,
     silent: bool = False,
-    additional_libs: list[str] = [],
-    additional_packages: list[str] = [],
+    additional_libs: Iterable[str] = (),
+    additional_packages: Iterable[str] = (),
 ) -> None:
     dest_path = get_dest_path(destination, program, MODULE, "default.nix")
 
@@ -54,8 +54,8 @@ def create_fhs_env(
         fhs_shell = create_fhs_env_drv(
             program, silent, additional_libs, additional_packages
         )
-        with open(dest_path, "w") as f:
-            f.write(fhs_shell)
+        with open(dest_path, "w", encoding="locale") as file:
+            file.write(fhs_shell)
         get_print(silent)(f"File '{dest_path}' created successfuly!", file=sys.stderr)
 
     build_path = Path(
@@ -77,8 +77,8 @@ def create_fhs_env(
 def create_fhs_env_drv_flake(
     program: str,
     silent: bool = False,
-    additional_libs: list[str] = [],
-    additional_packages: list[str] = [],
+    additional_libs: Iterable[str] = (),
+    additional_packages: Iterable[str] = (),
 ) -> str:
     path = Path(program).expanduser()
     libs = find_libs(path, silent, additional_libs)
@@ -86,7 +86,7 @@ def create_fhs_env_drv_flake(
     return FHS_FLAKE_TEMPLATE.safe_substitute(
         __name__=path.name,
         __packages__=("\n" + 12 * " ").join(
-            get_unique_packages(libs) + additional_packages
+            list(get_unique_packages(libs)) + list(additional_packages)
         ),
         __program__=path.absolute(),
         __system__=f"{machine()}-linux",
@@ -99,8 +99,8 @@ def create_fhs_env_flake(
     destination: Optional[str],
     recreate: bool = False,
     silent: bool = False,
-    additional_libs: list[str] = [],
-    additional_packages: list[str] = [],
+    additional_libs: Iterable[str] = (),
+    additional_packages: Iterable[str] = (),
 ) -> None:
     dest_path = get_dest_path(destination, program, MODULE, "flake.nix")
 
@@ -112,8 +112,8 @@ def create_fhs_env_flake(
         fhs_shell = create_fhs_env_drv_flake(
             program, silent, additional_libs, additional_packages
         )
-        with open(dest_path, "w") as f:
-            f.write(fhs_shell)
+        with open(dest_path, "w", encoding="locale") as file:
+            file.write(fhs_shell)
         get_print(silent)(f"File '{dest_path}' created successfuly!", file=sys.stderr)
 
     sys.stderr.flush()
@@ -132,7 +132,10 @@ def create_fhs_env_flake(
     )
 
 
-def main(args=sys.argv[1:]):
+def main(args=None):
+    if not args:
+        args = sys.argv[1:]
+
     parser = argparse.ArgumentParser()
     parser.add_argument("program", help="Program to run")
     parser.add_argument("--version", action="version", version=__version__)
