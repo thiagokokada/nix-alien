@@ -16,16 +16,14 @@ let
         (readFile ./requirements.txt));
 in
 python3.pkgs.buildPythonApplication {
-  inherit version;
-
   pname = "nix-alien";
   format = "pyproject";
+  inherit version;
 
   src = ./.;
 
   propagatedBuildInputs = with python3.pkgs; [
     setuptools
-    setuptools-scm
   ] ++ (lib.attrVals deps python3.pkgs);
 
   preBuild = lib.optionalString (rev != null) ''

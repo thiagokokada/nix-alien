@@ -1,6 +1,5 @@
 [build-system]
-# remove setuptools-scm once setuptools 66.1.0 is in nixpkgs
-requires = ["setuptools>=61.0.0", "setuptools-scm"]
+requires = ["setuptools>=61.0.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
