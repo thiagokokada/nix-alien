@@ -24,20 +24,9 @@ $ nix-alien-find-libs myapp  # Lists all libs needed for the binary
 
 ## Usage
 
-Assuming you have `nix-alien` and `nix-index-update` installed, start by
-running:
-
-```console
-$ nix-index-update
-```
-
-This will avoid the slow startup of `nix-locate` by downloading it from a
-pre-computed index from
-[`nix-index-database`](https://github.com/Mic92/nix-index-database). You can
-also run `nix-index` command to compute the index locally (this will take a
-while).
-
-Afterwards, start by running:
+`nix-index` uses `nix-index-with-db` from
+[`nix-index-database`](https://github.com/Mic92/nix-index-database), so you
+don't need to do any setup. Just run:
 
 ```console
 $ nix-alien ~/myapp
@@ -123,7 +112,6 @@ $ git clone https://github.com/thiagokokada/nix-alien && cd nix-alien
 $ $(nix-build nix-alien.nix --no-out-link)/bin/nix-alien ~/myapp
 $ $(nix-build nix-alien.nix --no-out-link)/bin/nix-alien-ld ~/myapp
 $ $(nix-build nix-alien.nix --no-out-link)/bin/nix-alien-find-libs ~/myapp
-$ $(nix-build nix-index-update.nix --no-out-link)/bin/nix-index-update
 ```
 
 ### Usage without installing with Flakes
@@ -136,7 +124,6 @@ experimental Flakes support](https://nixos.wiki/wiki/Flakes#Enable_flakes).
 $ nix run "github:thiagokokada/nix-alien#nix-alien" -- ~/myapp
 $ nix run "github:thiagokokada/nix-alien#nix-alien-ld" -- ~/myapp
 $ nix run "github:thiagokokada/nix-alien#nix-alien-find-libs" -- ~/myapp
-$ nix run "github:thiagokokada/nix-alien#nix-index-update"
 ```
 
 ## NixOS Installation
@@ -154,8 +141,6 @@ in
 {
   environment.systemPackages = with nix-alien-pkgs; [
     nix-alien
-    nix-index-update
-    pkgs.nix-index # not necessary, but recommended
   ];
 
   # Optional, but this is needed for `nix-alien-ld` command
@@ -186,8 +171,6 @@ setup to install `nix-alien` on system `PATH`:
           ({ self, system, ... }: {
             environment.systemPackages = with pkgs; with self.inputs.nix-alien.packages.${system}; [
               nix-alien
-              nix-index # not necessary, but recommended
-              nix-index-update
             ];
             # Optional, needed for `nix-alien-ld`
             programs.nix-ld.enable = true;
@@ -224,8 +207,6 @@ cause issues.
             ];
             environment.systemPackages = with pkgs; [
               nix-alien
-              nix-index # not necessary, but recommended
-              nix-index-update
             ];
             # Optional, needed for `nix-alien-ld`
             programs.nix-ld.enable = true;
@@ -278,11 +259,6 @@ To solve possible conflicts, human intervation is needed, but thanks to
 [`fzf`](https://github.com/junegunn/fzf) and
 [`pyfzf`](https://github.com/nk412/pyfzf) this is made easy by
 showing an interactive list.
-
-To be able to use `nix-locate`, first, the index has to be build. This is done
-by running `nix-index` and waiting 10-15 minutes. To speed-up this process, this
-repo also includes `nix-index-update` script, that downloads the index from
-[`nix-index-database`](https://github.com/Mic92/nix-index-database).
 
 ## Credits
 

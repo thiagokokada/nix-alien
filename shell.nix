@@ -15,7 +15,6 @@ python-with-packages.env.overrideAttrs (old: {
   buildInputs = with pkgs; [
     fzf
     glibc.bin
-    nix-index
     nixpkgs-fmt
   ];
 })

@@ -1,13 +1,13 @@
 { lib
-, callPackage
-, python3
 , fzf
+, nix-index
+, python3
 , rev ? null
 , dev ? false
 , ci ? false
 }:
 
-assert dev -> (ci == false);
+assert dev -> !ci;
 let
   version = if (rev != null) then rev else "dev";
   deps = with builtins;
@@ -23,6 +23,7 @@ python3.pkgs.buildPythonApplication {
   src = ./.;
 
   propagatedBuildInputs = with python3.pkgs; [
+    nix-index
     setuptools
   ] ++ (lib.attrVals deps python3.pkgs);
 
