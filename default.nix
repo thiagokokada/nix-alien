@@ -18,5 +18,6 @@ in
     nix-index = self.inputs.nix-index-database.packages.${pkgs.system}.nix-index-with-db;
   };
 
+  # For backwards compat, may be removed in the future
   nix-index-update = pkgs.callPackage ./nix-index-update.nix { };
 }
