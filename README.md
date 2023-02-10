@@ -24,9 +24,11 @@ $ nix-alien-find-libs myapp  # Lists all libs needed for the binary
 
 ## Usage
 
-`nix-index` uses `nix-index-with-db` from
-[`nix-index-database`](https://github.com/Mic92/nix-index-database), so you
-don't need to do any setup. Just run:
+> :warning: Previous versions of `nix-alien` needed you to setup `nix-index`
+> first. This is not needed anymore, so you can remove any trace of `nix-index`
+> from your config if you only use it for `nix-alien`.
+
+Once `nix-alien` is installed in your system, all you need to do is run:
 
 ```console
 $ nix-alien ~/myapp
@@ -263,6 +265,7 @@ showing an interactive list.
 ## Credits
 
 - Inspired by [Lassulus/nix-autobahn](https://github.com/Lassulus/nix-autobahn)
-- Thanks to [Mic92/nix-ld](https://github.com/Mic92/nix-ld) and
+- Thanks to [Mic92/nix-ld](https://github.com/Mic92/nix-ld),
+  [Mic92/nix-index-database](https://github.com/Mic92/nix-index-database) and
   [bennofs/nix-index](https://github.com/bennofs/nix-index), since without them
   this project wouldn't be possible
