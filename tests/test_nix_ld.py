@@ -3,7 +3,7 @@ from unittest.mock import patch
 from nix_alien import nix_ld
 
 
-@patch("nix_alien.nix_ld.find_libs")
+@patch("nix_alien._impl.find_libs")
 def test_create_nix_ld_drv(mock_find_libs, pytestconfig):
     mock_find_libs.return_value = {
         "libfoo.so": "foo.out",
@@ -36,8 +36,8 @@ pkgs.writeShellScriptBin "xyz" ''
     )
 
 
-@patch("nix_alien.nix_ld.find_libs")
-@patch("nix_alien.nix_ld.machine")
+@patch("nix_alien._impl.find_libs")
+@patch("nix_alien._impl.machine")
 def test_create_nix_ld_drv_flake(mock_machine, mock_find_libs, pytestconfig):
     mock_machine.return_value = "x86_64"
     mock_find_libs.return_value = {
@@ -88,9 +88,9 @@ def test_create_nix_ld_drv_flake(mock_machine, mock_find_libs, pytestconfig):
     )
 
 
-@patch("nix_alien.nix_ld.subprocess")
-@patch("nix_alien.nix_ld.os")
-@patch("nix_alien.nix_ld.find_libs")
+@patch("nix_alien._impl.subprocess")
+@patch("nix_alien._impl.os")
+@patch("nix_alien._impl.find_libs")
 def test_main_wo_args(
     mock_find_libs,
     mock_os,
@@ -123,9 +123,9 @@ def test_main_wo_args(
     )
 
 
-@patch("nix_alien.nix_ld.subprocess")
-@patch("nix_alien.nix_ld.os")
-@patch("nix_alien.nix_ld.find_libs")
+@patch("nix_alien._impl.subprocess")
+@patch("nix_alien._impl.os")
+@patch("nix_alien._impl.find_libs")
 def test_main_with_args(
     mock_find_libs,
     mock_os,
@@ -161,8 +161,8 @@ def test_main_with_args(
     assert err == ""
 
 
-@patch("nix_alien.nix_ld.os")
-@patch("nix_alien.nix_ld.find_libs")
+@patch("nix_alien._impl.os")
+@patch("nix_alien._impl.find_libs")
 def test_main_with_flake(mock_find_libs, mock_os, tmp_path, capsys):
     mock_find_libs.return_value = {
         "libfoo.so": "foo.out",

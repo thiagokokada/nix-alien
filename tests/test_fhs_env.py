@@ -3,7 +3,7 @@ from unittest.mock import patch
 from nix_alien import fhs_env
 
 
-@patch("nix_alien.fhs_env.find_libs")
+@patch("nix_alien._impl.find_libs")
 def test_create_fhs_env_drv(mock_find_libs, pytestconfig):
     mock_find_libs.return_value = {
         "libfoo.so": "foo.out",
@@ -34,8 +34,8 @@ buildFHSUserEnv {
     )
 
 
-@patch("nix_alien.fhs_env.find_libs")
-@patch("nix_alien.fhs_env.machine")
+@patch("nix_alien._impl.find_libs")
+@patch("nix_alien._impl.machine")
 def test_create_fhs_env_drv_flake(mock_machine, mock_find_libs, pytestconfig):
     mock_machine.return_value = "x86_64"
     mock_find_libs.return_value = {
@@ -84,9 +84,9 @@ def test_create_fhs_env_drv_flake(mock_machine, mock_find_libs, pytestconfig):
     )
 
 
-@patch("nix_alien.fhs_env.subprocess")
-@patch("nix_alien.fhs_env.os")
-@patch("nix_alien.fhs_env.find_libs")
+@patch("nix_alien._impl.subprocess")
+@patch("nix_alien._impl.os")
+@patch("nix_alien._impl.find_libs")
 def test_main_wo_args(
     mock_find_libs,
     mock_os,
@@ -119,9 +119,9 @@ def test_main_wo_args(
     )
 
 
-@patch("nix_alien.fhs_env.subprocess")
-@patch("nix_alien.fhs_env.os")
-@patch("nix_alien.fhs_env.find_libs")
+@patch("nix_alien._impl.subprocess")
+@patch("nix_alien._impl.os")
+@patch("nix_alien._impl.find_libs")
 def test_main_with_args(
     mock_find_libs,
     mock_os,
@@ -157,8 +157,8 @@ def test_main_with_args(
     assert err == ""
 
 
-@patch("nix_alien.fhs_env.os")
-@patch("nix_alien.fhs_env.find_libs")
+@patch("nix_alien._impl.os")
+@patch("nix_alien._impl.find_libs")
 def test_main_with_flake(mock_find_libs, mock_os, tmp_path, capsys):
     mock_find_libs.return_value = {
         "libfoo.so": "foo.out",
