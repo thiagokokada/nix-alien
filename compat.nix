@@ -3,14 +3,16 @@ let
   flakeLock = (builtins.fromJSON (builtins.readFile ./flake.lock));
 in
 rec {
-  pkgs =
-    let
-      inherit (flakeLock.nodes.nixpkgs.locked) rev narHash;
-    in
-    import
-      (fetchTarball {
-        url = "https://github.com/NixOS/nixpkgs/archive/${rev}.tar.gz";
-        sha256 = narHash;
-      })
-      { };
+  flake =
+    (import
+      (
+        let lock = with builtins; fromJSON (readFile ./flake.lock); in
+        builtins.fetchTarball {
+          url = "https://github.com/edolstra/flake-compat/archive/${lock.nodes.flake-compat.locked.rev}.tar.gz";
+          sha256 = lock.nodes.flake-compat.locked.narHash;
+        }
+      )
+      { src = ./.; }).defaultNix;
+
+  pkgs = import (flake.inputs.nixpkgs) { };
 }
