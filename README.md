@@ -167,7 +167,7 @@ setup to install `nix-alien` on system `PATH`:
 
   outputs = { self, nixpkgs, nix-alien }: {
       nixosConfigurations.nix-alien-desktop = nixpkgs.lib.nixosSystem rec {
-        system = "x86_64-linux";
+        system = "x86_64-linux"; # or aarch64-linux
         specialArgs = { inherit self system; };
         modules = [
           ({ self, system, ... }: {
@@ -200,7 +200,7 @@ cause issues.
 
   outputs = { self, nixpkgs, nix-alien }: {
       nixosConfigurations.nix-alien-desktop = nixpkgs.lib.nixosSystem {
-        system = "x86_64-linux";
+        system = "x86_64-linux"; # or aarch64-linux
         specialArgs = { inherit self; };
         modules = [
           ({ self, ... }: {
@@ -216,6 +216,58 @@ cause issues.
         ];
     };
   };
+}
+```
+
+## Home-Manager Installation
+
+You can add the following contents to your Home-Manager configuration file:
+
+``` nix
+{ pkgs, ... }:
+
+let
+  nix-alien-pkgs = import (
+    fetchTarball "https://github.com/thiagokokada/nix-alien/tarball/master"
+  ) { };
+in
+{
+  # ...
+  home.packages = with nix-alien-pkgs; [
+    nix-alien
+  ];
+}
+```
+
+### Home-Manager installation with Flakes
+
+If you're using Home-Manager with Flakes, you can use:
+
+```nix
+{
+  description = "nix-alien-on-home-manager";
+
+  inputs.nixpkgs.url = "github:NixOS/nixpkgs";
+  inputs.home-manager.url = "github:nix-community/home-manager";
+  inputs.nix-alien.url = "github:thiagokokada/nix-alien";
+
+  outputs = { self, nixpkgs, home-manager, nix-alien }:
+    let
+      system = "x86_64-linux"; # or aarch64-linux
+      pkgs = import nixpkgs { inherit system; };
+    in {
+        homeConfigurations.nix-alien-home = home-manager.lib.homeManagerConfiguration rec {
+          inherit pkgs;
+          extraSpecialArgs = { inherit self system; };
+          modules = [
+            ({ self, system, ... }: {
+              home.packages = with pkgs; with self.inputs.nix-alien.packages.${system}; [
+                nix-alien
+              ];
+            })
+          ];
+      };
+    };
 }
 ```
 
