@@ -133,11 +133,11 @@ $ nix run "github:thiagokokada/nix-alien#nix-alien-find-libs" -- ~/myapp
 You can add the following contents to a `/etc/nixos/nix-alien.nix` file:
 
 ``` nix
-{ pkgs, ... }:
+{ ... }:
 
 let
   nix-alien-pkgs = import (
-    fetchTarball "https://github.com/thiagokokada/nix-alien/tarball/master"
+    builtins.fetchTarball "https://github.com/thiagokokada/nix-alien/tarball/master"
   ) { };
 in
 {
@@ -171,7 +171,7 @@ setup to install `nix-alien` on system `PATH`:
         specialArgs = { inherit self system; };
         modules = [
           ({ self, system, ... }: {
-            environment.systemPackages = with pkgs; with self.inputs.nix-alien.packages.${system}; [
+            environment.systemPackages = with self.inputs.nix-alien.packages.${system}; [
               nix-alien
             ];
             # Optional, needed for `nix-alien-ld`
@@ -224,11 +224,11 @@ cause issues.
 You can add the following contents to your Home-Manager configuration file:
 
 ``` nix
-{ pkgs, ... }:
+{ ... }:
 
 let
   nix-alien-pkgs = import (
-    fetchTarball "https://github.com/thiagokokada/nix-alien/tarball/master"
+    builtins.fetchTarball "https://github.com/thiagokokada/nix-alien/tarball/master"
   ) { };
 in
 {
@@ -261,7 +261,7 @@ If you're using Home-Manager with Flakes, you can use:
           extraSpecialArgs = { inherit self system; };
           modules = [
             ({ self, system, ... }: {
-              home.packages = with pkgs; with self.inputs.nix-alien.packages.${system}; [
+              home.packages = with self.inputs.nix-alien.packages.${system}; [
                 nix-alien
               ];
             })
