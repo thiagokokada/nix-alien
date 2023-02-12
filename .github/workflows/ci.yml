@@ -32,7 +32,10 @@ jobs:
           fi
 
       - name: CI
-        run: nix flake check --print-build-logs
+        run: |
+          nix flake check --print-build-logs
+          # non-flake build
+          nix-build
 
       - name: Export Nix store cache
         run: |
@@ -74,8 +77,11 @@ jobs:
           fi
 
       - name: CI
-        # We are running all linters in x86_64 already, no need to rerun them here
-        run: nix build --print-build-logs --option system aarch64-linux
+        run: |
+          # already running linters in x86_64 already, no need to rerun them here
+          nix build --print-build-logs --option system aarch64-linux
+          # non-flake build
+          nix-build --option system aarch64-linux
 
       - name: Export Nix store cache
         run: |
