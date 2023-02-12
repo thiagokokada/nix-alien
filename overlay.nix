@@ -1,6 +1,6 @@
 { final
 , prev
-, self ? { }
+, self ? (import ./compat.nix).flake
 }:
 
 import ./default.nix {
