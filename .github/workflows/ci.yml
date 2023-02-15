@@ -2,6 +2,10 @@ name: ci
 
 on:
   push:
+  workflow_run:
+    workflows: ["update-flake-lock"]
+    types:
+      - completed
 
 jobs:
   build-x86_64-linux:
