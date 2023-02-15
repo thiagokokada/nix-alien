@@ -46,6 +46,7 @@ jobs:
         uses: peter-evans/create-pull-request@v4
         with:
           branch: flake-updates
+          token: ${{ secrets.PAT_TOKEN }}
           delete-branch: true
           title: "Update flake.lock"
           body: |
