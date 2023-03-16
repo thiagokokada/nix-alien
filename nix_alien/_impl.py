@@ -17,13 +17,14 @@ def create_template_drv(
     silent: bool = False,
     additional_libs: Iterable[str] = (),
     additional_packages: Iterable[str] = (),
+    _indent: int = 4,
 ) -> str:
     path = Path(program).expanduser()
     packages = find_libs(path, silent, additional_libs)
 
     return read_template(template).safe_substitute(
         __name__=path.name,
-        __packages__=("\n" + 4 * " ").join(
+        __packages__=("\n" + _indent * " ").join(
             list(get_unique_packages(packages)) + list(additional_packages)
         ),
         __program__=path.absolute(),
@@ -76,13 +77,14 @@ def create_template_drv_flake(
     silent: bool = False,
     additional_libs: Iterable[str] = (),
     additional_packages: Iterable[str] = (),
+    _indent: int = 12,
 ) -> str:
     path = Path(program).expanduser()
     libs = find_libs(path, silent, additional_libs)
 
     return read_template(template).safe_substitute(
         __name__=path.name,
-        __packages__=("\n" + 12 * " ").join(
+        __packages__=("\n" + _indent * " ").join(
             list(get_unique_packages(libs)) + list(additional_packages)
         ),
         __program__=path.absolute(),
