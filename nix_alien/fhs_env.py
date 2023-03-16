@@ -1,12 +1,10 @@
-from importlib.resources import read_text
 from pathlib import Path
-from string import Template
 from typing import Iterable, Optional
 
 from . import _impl
 
-TEMPLATE = Template(read_text(__package__, "fhs_env.template.nix"))
-FLAKE_TEMPLATE = Template(read_text(__package__, "fhs_env_flake.template.nix"))
+TEMPLATE = "fhs_env.template.nix"
+FLAKE_TEMPLATE = "fhs_env_flake.template.nix"
 MODULE = "fhs-env"
 
 

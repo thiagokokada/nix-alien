@@ -1,7 +1,9 @@
 import os
 import uuid
 from functools import partial
+from importlib.resources import read_text
 from pathlib import Path
+from string import Template
 from typing import Callable, Optional
 
 UUID_NAMESPACE = uuid.UUID("f318d4a6-dd46-47ce-995d-e95c17cadcc0")
@@ -32,3 +34,7 @@ def get_print(silent: bool = False) -> Callable[..., None]:
     if silent:
         return lambda *_, **__: None
     return partial(print, "[nix-alien]")
+
+
+def read_template(filename: str) -> Template:
+    return Template(read_text(__package__, filename))

@@ -4,16 +4,15 @@ import subprocess
 import sys
 from pathlib import Path
 from platform import machine
-from string import Template
 from typing import Callable, Iterable, Optional
 
 from ._version import __version__
 from .libs import get_unique_packages, find_libs
-from .helpers import get_dest_path, get_print
+from .helpers import get_dest_path, get_print, read_template
 
 
 def create_template_drv(
-    template: Template,
+    template: str,
     program: str,
     silent: bool = False,
     additional_libs: Iterable[str] = (),
@@ -22,7 +21,7 @@ def create_template_drv(
     path = Path(program).expanduser()
     packages = find_libs(path, silent, additional_libs)
 
-    return template.safe_substitute(
+    return read_template(template).safe_substitute(
         __name__=path.name,
         __packages__=("\n" + 4 * " ").join(
             list(get_unique_packages(packages)) + list(additional_packages)
@@ -32,7 +31,7 @@ def create_template_drv(
 
 
 def create(
-    template: Template,
+    template: str,
     module: str,
     process_name: str,
     program: str,
@@ -72,7 +71,7 @@ def create(
 
 
 def create_template_drv_flake(
-    template: Template,
+    template: str,
     program: str,
     silent: bool = False,
     additional_libs: Iterable[str] = (),
@@ -81,7 +80,7 @@ def create_template_drv_flake(
     path = Path(program).expanduser()
     libs = find_libs(path, silent, additional_libs)
 
-    return template.safe_substitute(
+    return read_template(template).safe_substitute(
         __name__=path.name,
         __packages__=("\n" + 12 * " ").join(
             list(get_unique_packages(libs)) + list(additional_packages)
@@ -92,7 +91,7 @@ def create_template_drv_flake(
 
 
 def create_flake(
-    template: Template,
+    template: str,
     module: str,
     program: str,
     args: Iterable[str],

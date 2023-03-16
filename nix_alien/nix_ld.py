@@ -1,12 +1,10 @@
-from importlib.resources import read_text
 from pathlib import Path
-from string import Template
 from typing import Iterable, Optional
 
 from . import _impl
 
-TEMPLATE = Template(read_text(__package__, "nix_ld.template.nix"))
-FLAKE_TEMPLATE = Template(read_text(__package__, "nix_ld_flake.template.nix"))
+TEMPLATE = "nix_ld.template.nix"
+FLAKE_TEMPLATE = "nix_ld_flake.template.nix"
 MODULE = "nix-ld"
 
 
