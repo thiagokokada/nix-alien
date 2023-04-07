@@ -22,6 +22,8 @@ python3.pkgs.buildPythonApplication {
 
   src = ./.;
 
+  nativeBuildInputs = [ fzf ];
+
   propagatedBuildInputs = with python3.pkgs; [
     nix-index
     setuptools
@@ -33,15 +35,15 @@ python3.pkgs.buildPythonApplication {
 
   doCheck = !dev;
 
-  checkInputs = with python3.pkgs; [
+  nativeCheckInputs = with python3.pkgs; [
     pytestCheckHook
+  ] ++ lib.optionals ci [
+    black
+    mypy
+    pylint
   ];
 
-  preCheck = ''
-    export PATH="${lib.makeBinPath [ fzf ]}:$PATH"
-  ''
-  + lib.optionalString ci ''
-    export PATH="${with python3.pkgs; lib.makeBinPath [ black mypy pylint ]}:$PATH"
+  preCheck = lib.optionalString ci ''
     export PYLINTHOME="$(mktemp -d)"
     black --check ./nix_alien
     mypy --ignore-missing-imports ./nix_alien
