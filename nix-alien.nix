@@ -2,6 +2,7 @@
 , fzf
 , nix-index
 , python3
+, ruff
 , rev ? null
 , dev ? false
 , ci ? false
@@ -41,13 +42,14 @@ python3.pkgs.buildPythonApplication {
     black
     mypy
     pylint
+    ruff
   ];
 
   preCheck = lib.optionalString ci ''
     export PYLINTHOME="$(mktemp -d)"
     black --check ./nix_alien
     mypy --ignore-missing-imports ./nix_alien
-    pylint ./nix_alien -d=C0116,C0114,R0801,R0913
+    ruff check ./nix_alien
   '';
 
   meta = with lib; {

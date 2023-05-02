@@ -28,3 +28,15 @@ nix_alien = ["*.nix"]
 [tool.setuptools.dynamic]
 dependencies = {file = "requirements.txt"}
 version = {attr = "nix_alien._version.__version__"}
+
+[tool.ruff]
+select = [
+    "B",  # flake8-bugbear
+    "E",  # pycodestyle
+    "F",  # Pyflakes
+    "I",  # isort
+    "PL", # pylint
+    "UP", # pyupgrade
+    "W",  # pycodestyle
+]
+ignore = [ "PLR0913" ]

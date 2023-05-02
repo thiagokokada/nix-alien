@@ -2,13 +2,14 @@ import argparse
 import os
 import subprocess
 import sys
+from collections.abc import Iterable
 from pathlib import Path
 from platform import machine
-from typing import Callable, Iterable, Optional
+from typing import Callable, Optional
 
 from ._version import __version__
-from .libs import get_unique_packages, find_libs
 from .helpers import get_dest_path, get_print, read_template
+from .libs import find_libs, get_unique_packages
 
 
 def create_template_drv(
@@ -218,24 +219,23 @@ def main(
                     "default.nix",
                 )
             )
+    elif parsed_args.flake:
+        create_flake_fn(
+            program=parsed_args.program,
+            args=parsed_args.ellipsis,
+            destination=parsed_args.destination,
+            recreate=parsed_args.recreate,
+            additional_libs=parsed_args.additional_libs,
+            additional_packages=parsed_args.additional_packages,
+            silent=parsed_args.silent,
+        )
     else:
-        if parsed_args.flake:
-            create_flake_fn(
-                program=parsed_args.program,
-                args=parsed_args.ellipsis,
-                destination=parsed_args.destination,
-                recreate=parsed_args.recreate,
-                additional_libs=parsed_args.additional_libs,
-                additional_packages=parsed_args.additional_packages,
-                silent=parsed_args.silent,
-            )
-        else:
-            create_fn(
-                program=parsed_args.program,
-                args=parsed_args.ellipsis,
-                destination=parsed_args.destination,
-                recreate=parsed_args.recreate,
-                additional_libs=parsed_args.additional_libs,
-                additional_packages=parsed_args.additional_packages,
-                silent=parsed_args.silent,
-            )
+        create_fn(
+            program=parsed_args.program,
+            args=parsed_args.ellipsis,
+            destination=parsed_args.destination,
+            recreate=parsed_args.recreate,
+            additional_libs=parsed_args.additional_libs,
+            additional_packages=parsed_args.additional_packages,
+            silent=parsed_args.silent,
+        )

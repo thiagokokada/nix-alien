@@ -6,9 +6,8 @@ let
   python-with-packages = python3.withPackages (ps: with ps; [
     black
     mypy
-    pylint
-    pytest
     nix-alien
+    pytest
   ]);
 in
 python-with-packages.env.overrideAttrs (old: {
@@ -16,5 +15,6 @@ python-with-packages.env.overrideAttrs (old: {
     fzf
     glibc.bin
     nixpkgs-fmt
+    ruff
   ];
 })

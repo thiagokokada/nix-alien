@@ -3,13 +3,13 @@ import json
 import os
 import subprocess
 import sys
-from shlex import join
+from collections.abc import Iterable
 from pathlib import Path
-from typing import Iterable, Optional, Union
-
-from pyfzf.pyfzf import FzfPrompt
+from shlex import join
+from typing import Optional, Union
 
 from lddwrap import Dependency, list_dependencies
+from pyfzf.pyfzf import FzfPrompt
 
 from ._version import __version__
 from .helpers import get_print
@@ -32,7 +32,7 @@ def find_lib_candidates(basename: str) -> list[str]:
         stdout=subprocess.PIPE,
     )
     candidates = result.stdout.strip().split("\n")
-    return [c for c in candidates if c != ""]
+    return [c for c in candidates if c]
 
 
 def find_libs(
