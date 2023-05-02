@@ -41,7 +41,6 @@ python3.pkgs.buildPythonApplication {
   ] ++ lib.optionals ci [
     black
     mypy
-    pylint
     ruff
   ];
 
