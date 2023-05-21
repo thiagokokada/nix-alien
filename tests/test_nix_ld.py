@@ -29,7 +29,40 @@ in
 pkgs.writeShellScriptBin "xyz" ''
   export NIX_LD_LIBRARY_PATH='${NIX_LD_LIBRARY_PATH}'${"\\${NIX_LD_LIBRARY_PATH:+':'}$NIX_LD_LIBRARY_PATH"}
   export NIX_LD='${NIX_LD}'${"\\${NIX_LD:+':'}$NIX_LD"}
-  "%s/xyz" "$@"
+  %s/xyz "$@"
+''
+"""
+        % pytestconfig.rootpath.absolute()
+    )
+
+
+@patch("nix_alien._impl.find_libs")
+def test_create_nix_ld_drv_with_spaces(mock_find_libs, pytestconfig):
+    mock_find_libs.return_value = {
+        "libfoo.so": "foo.out",
+        "libfoo.6.so": "foo.out",
+        "libbar.so": "bar.out",
+        "libquux.so": "quux.out",
+    }
+    assert (
+        nix_ld.create_nix_ld_drv("x y z", additional_packages=["libGL"])
+        == """\
+{ pkgs ? import <nixpkgs> { } }:
+
+let
+  inherit (pkgs) lib stdenv;
+  NIX_LD_LIBRARY_PATH = with pkgs; lib.makeLibraryPath [
+    bar.out
+    foo.out
+    quux.out
+    libGL
+  ];
+  NIX_LD = lib.fileContents "${stdenv.cc}/nix-support/dynamic-linker";
+in
+pkgs.writeShellScriptBin "x_y_z" ''
+  export NIX_LD_LIBRARY_PATH='${NIX_LD_LIBRARY_PATH}'${"\\${NIX_LD_LIBRARY_PATH:+':'}$NIX_LD_LIBRARY_PATH"}
+  export NIX_LD='${NIX_LD}'${"\\${NIX_LD:+':'}$NIX_LD"}
+  '%s/x y z' "$@"
 ''
 """
         % pytestconfig.rootpath.absolute()
@@ -74,7 +107,7 @@ def test_create_nix_ld_drv_flake(mock_machine, mock_find_libs, pytestconfig):
         pkgs.writeShellScriptBin "xyz" ''
           export NIX_LD_LIBRARY_PATH='${NIX_LD_LIBRARY_PATH}'${"\\${NIX_LD_LIBRARY_PATH:+':'}$NIX_LD_LIBRARY_PATH"}
           export NIX_LD="$(< ${NIX_LD})"${"\\${NIX_LD:+':'}$NIX_LD"}
-          "%s/xyz" "$@"
+          %s/xyz "$@"
         '';
 
       defaultApp.${system} = {

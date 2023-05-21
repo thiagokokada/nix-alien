@@ -35,6 +35,37 @@ buildFHSUserEnv {
 
 
 @patch("nix_alien._impl.find_libs")
+def test_create_fhs_env_drv_with_spaces(mock_find_libs, pytestconfig):
+    mock_find_libs.return_value = {
+        "libfoo.so": "foo.out",
+        "libfoo.6.so": "foo.out",
+        "libbar.so": "bar.out",
+        "libquux.so": "quux.out",
+    }
+    assert (
+        fhs_env.create_fhs_env_drv("x y z", additional_packages=["libGL"])
+        == """\
+{ pkgs ? import <nixpkgs> { } }:
+
+let
+  inherit (pkgs) buildFHSUserEnv;
+in
+buildFHSUserEnv {
+  name = "x_y_z-fhs";
+  targetPkgs = p: with p; [
+    bar.out
+    foo.out
+    quux.out
+    libGL
+  ];
+  runScript = "'%s/x y z'";
+}
+"""
+        % pytestconfig.rootpath.absolute()
+    )
+
+
+@patch("nix_alien._impl.find_libs")
 @patch("nix_alien._impl.machine")
 def test_create_fhs_env_drv_flake(mock_machine, mock_find_libs, pytestconfig):
     mock_machine.return_value = "x86_64"
@@ -57,7 +88,7 @@ def test_create_fhs_env_drv_flake(mock_machine, mock_find_libs, pytestconfig):
       system = "x86_64-linux";
       pkgs = import nixpkgs { inherit system; };
     in
-    rec {
+    {
       defaultPackage.${system} =
         let
           inherit (pkgs) buildFHSUserEnv;

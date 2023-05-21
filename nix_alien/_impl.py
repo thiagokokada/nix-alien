@@ -1,5 +1,7 @@
 import argparse
 import os
+import re
+import shlex
 import subprocess
 import sys
 from collections.abc import Iterable
@@ -10,6 +12,8 @@ from typing import Callable, Optional
 from ._version import __version__
 from .helpers import get_dest_path, get_print, read_template
 from .libs import find_libs, get_unique_packages
+
+REMOVE_WHITESPACES = re.compile(r"\s+")
 
 
 def create_template_drv(
@@ -24,11 +28,11 @@ def create_template_drv(
     packages = find_libs(path, silent, additional_libs)
 
     return read_template(template).safe_substitute(
-        __name__=path.name,
+        __name__=REMOVE_WHITESPACES.sub("_", path.name),
         __packages__=("\n" + _indent * " ").join(
             list(get_unique_packages(packages)) + list(additional_packages)
         ),
-        __program__=path.absolute(),
+        __program__=shlex.quote(str(path.absolute())),
     )
 
 
@@ -69,7 +73,10 @@ def create(
 
     sys.stderr.flush()
     sys.stdout.flush()
-    os.execv(build_path / "bin" / process_name, [process_name, *args])
+    os.execv(
+        build_path / "bin" / REMOVE_WHITESPACES.sub("_", process_name),
+        [process_name, *args],
+    )
 
 
 def create_template_drv_flake(

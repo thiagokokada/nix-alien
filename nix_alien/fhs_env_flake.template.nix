@@ -8,7 +8,7 @@
       system = "${__system__}";
       pkgs = import nixpkgs { inherit system; };
     in
-    rec {
+    {
       defaultPackage.${system} =
         let
           inherit (pkgs) buildFHSUserEnv;
