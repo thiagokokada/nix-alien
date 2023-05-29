@@ -19,7 +19,7 @@ jobs:
             ${{ runner.os }}-x86_64-${{ hashFiles('flake.*') }}
             ${{ runner.os }}-x86_64-
 
-      - uses: cachix/install-nix-action@v20
+      - uses: cachix/install-nix-action@v21
         with:
           nix_path: nixpkgs=channel:nixos-unstable
           extra_nix_config: |
@@ -63,7 +63,7 @@ jobs:
             ${{ runner.os }}-aarch64-${{ hashFiles('flake.*') }}
             ${{ runner.os }}-aarch64-
 
-      - uses: cachix/install-nix-action@v20
+      - uses: cachix/install-nix-action@v21
         with:
           nix_path: nixpkgs=channel:nixos-unstable
           extra_nix_config: |
