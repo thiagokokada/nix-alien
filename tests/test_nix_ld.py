@@ -28,7 +28,7 @@ let
 in
 pkgs.writeShellScriptBin "xyz" ''
   export NIX_LD_LIBRARY_PATH='${NIX_LD_LIBRARY_PATH}'${"\\${NIX_LD_LIBRARY_PATH:+':'}$NIX_LD_LIBRARY_PATH"}
-  export NIX_LD='${NIX_LD}'${"\\${NIX_LD:+':'}$NIX_LD"}
+  export NIX_LD='${NIX_LD}'
   %s/xyz "$@"
 ''
 """
@@ -61,7 +61,7 @@ let
 in
 pkgs.writeShellScriptBin "x_y_z" ''
   export NIX_LD_LIBRARY_PATH='${NIX_LD_LIBRARY_PATH}'${"\\${NIX_LD_LIBRARY_PATH:+':'}$NIX_LD_LIBRARY_PATH"}
-  export NIX_LD='${NIX_LD}'${"\\${NIX_LD:+':'}$NIX_LD"}
+  export NIX_LD='${NIX_LD}'
   '%s/x y z' "$@"
 ''
 """
@@ -102,11 +102,11 @@ def test_create_nix_ld_drv_flake(mock_machine, mock_find_libs, pytestconfig):
             quux.out
             libGL
           ];
-          NIX_LD = "${stdenv.cc}/nix-support/dynamic-linker";
+          NIX_LD = lib.fileContents "${stdenv.cc}/nix-support/dynamic-linker";
         in
         pkgs.writeShellScriptBin "xyz" ''
           export NIX_LD_LIBRARY_PATH='${NIX_LD_LIBRARY_PATH}'${"\\${NIX_LD_LIBRARY_PATH:+':'}$NIX_LD_LIBRARY_PATH"}
-          export NIX_LD="$(< ${NIX_LD})"${"\\${NIX_LD:+':'}$NIX_LD"}
+          export NIX_LD='${NIX_LD}'
           %s/xyz "$@"
         '';
 

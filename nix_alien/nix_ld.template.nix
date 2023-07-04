@@ -9,6 +9,6 @@ let
 in
 pkgs.writeShellScriptBin "${__name__}" ''
   export NIX_LD_LIBRARY_PATH='${NIX_LD_LIBRARY_PATH}'${"\${NIX_LD_LIBRARY_PATH:+':'}$NIX_LD_LIBRARY_PATH"}
-  export NIX_LD='${NIX_LD}'${"\${NIX_LD:+':'}$NIX_LD"}
+  export NIX_LD='${NIX_LD}'
   ${__program__} "$@"
 ''
