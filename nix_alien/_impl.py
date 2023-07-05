@@ -10,7 +10,7 @@ from platform import machine
 from typing import Callable, Optional
 
 from ._version import __version__
-from .helpers import get_dest_path, get_print, read_template
+from .helpers import edit_file, get_dest_path, get_print, read_template
 from .libs import find_libs, get_unique_packages
 
 REMOVE_WHITESPACES = re.compile(r"\s+")
@@ -188,6 +188,12 @@ def main(
         action="store_true",
     )
     parser.add_argument(
+        "-E",
+        "--edit",
+        help="Edit 'default.nix' using $EDITOR (or 'nano' if unset)",
+        action="store_true",
+    )
+    parser.add_argument(
         "-s",
         "--silent",
         help="Silence informational messages",
@@ -207,25 +213,29 @@ def main(
     )
     parsed_args = parser.parse_args(args=args)
 
+    if parsed_args.flake:
+        filename = "flake.nix"
+    else:
+        filename = "default.nix"
+
     if parsed_args.print_destination:
-        if parsed_args.flake:
-            print(
-                get_dest_path(
-                    parsed_args.destination,
-                    parsed_args.program,
-                    module,
-                    "flake.nix",
-                )
+        print(
+            get_dest_path(
+                parsed_args.destination,
+                parsed_args.program,
+                module,
+                filename,
             )
-        else:
-            print(
-                get_dest_path(
-                    parsed_args.destination,
-                    parsed_args.program,
-                    module,
-                    "default.nix",
-                )
+        )
+    elif parsed_args.edit:
+        edit_file(
+            get_dest_path(
+                parsed_args.destination,
+                parsed_args.program,
+                module,
+                filename,
             )
+        )
     elif parsed_args.flake:
         create_flake_fn(
             program=parsed_args.program,

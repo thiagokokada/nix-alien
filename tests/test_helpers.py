@@ -4,6 +4,11 @@ from pathlib import Path
 from nix_alien import helpers
 
 
+def test_edit_file(monkeypatch):
+    monkeypatch.setenv("EDITOR", "cat")
+    assert helpers.edit_file(Path("/dev/null")).returncode == 0
+
+
 def test_get_hash_for_program(monkeypatch):
     monkeypatch.setenv("HOME", "/home/nameless-shelter")
     assert helpers.get_hash_for_program("/home/nameless-shelter/abc") == UUID(

@@ -1,4 +1,5 @@
 import os
+import subprocess
 import uuid
 from functools import partial
 from importlib.resources import read_text
@@ -7,6 +8,11 @@ from string import Template
 from typing import Callable, Optional
 
 UUID_NAMESPACE = uuid.UUID("f318d4a6-dd46-47ce-995d-e95c17cadcc0")
+
+
+def edit_file(file: Path) -> subprocess.CompletedProcess:
+    editor = os.environ.get("EDITOR", "nano")
+    return subprocess.run([editor, file])
 
 
 def get_hash_for_program(program: str) -> uuid.UUID:
