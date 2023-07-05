@@ -82,13 +82,13 @@ There are also some other options, check them using `--help` flag on each
 program. Example for `nix-alien`:
 
 ```console
-usage: nix-alien [-h] [--version] [-l LIBRARY] [-p PACKAGE] [-r] [-d PATH] [-P] [-s] [-f] program ...
+usage: nix-alien [-h] [--version] [-l LIBRARY] [-p PACKAGE] [-r] [-d PATH] [-P] [-E] [-s] [-f] program ...
 
 positional arguments:
   program               Program to run
   ellipsis              Arguments to be passed to the program
 
-optional arguments:
+options:
   -h, --help            show this help message and exit
   --version             show program's version number and exit
   -l LIBRARY, --additional-libs LIBRARY
@@ -100,6 +100,7 @@ optional arguments:
                         Path where 'default.nix' file will be created
   -P, --print-destination
                         Print where 'default.nix' file is located and exit
+  -E, --edit            Edit 'default.nix' using $EDITOR (or 'nano' if unset)
   -s, --silent          Silence informational messages
   -f, --flake           Create and use 'flake.nix' file instead (experimental)
 ```
