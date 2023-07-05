@@ -38,33 +38,30 @@ def create_template_drv(
 
 def create(
     template: str,
-    module: str,
     process_name: str,
     program: str,
     args: Iterable[str],
-    destination: Optional[str],
+    destination: Path,
     recreate: bool = False,
     silent: bool = False,
     additional_libs: Iterable[str] = (),
     additional_packages: Iterable[str] = (),
 ) -> None:
-    dest_path = get_dest_path(destination, program, module, "default.nix")
-
     if recreate:
-        dest_path.unlink(missing_ok=True)
+        destination.unlink(missing_ok=True)
 
-    if not dest_path.exists():
-        dest_path.parent.mkdir(parents=True, exist_ok=True)
+    if not destination.exists():
+        destination.parent.mkdir(parents=True, exist_ok=True)
         fhs_shell = create_template_drv(
             template, program, silent, additional_libs, additional_packages
         )
-        with open(dest_path, "w", encoding="locale") as file:
+        with open(destination, "w", encoding="locale") as file:
             file.write(fhs_shell)
-        get_print(silent)(f"File '{dest_path}' created successfuly!", file=sys.stderr)
+        get_print(silent)(f"File '{destination}' created successfuly!", file=sys.stderr)
 
     build_path = Path(
         subprocess.run(
-            ["nix-build", "--no-out-link", dest_path],
+            ["nix-build", "--no-out-link", destination],
             check=True,
             text=True,
             stdout=subprocess.PIPE,
@@ -102,28 +99,25 @@ def create_template_drv_flake(
 
 def create_flake(
     template: str,
-    module: str,
     program: str,
     args: Iterable[str],
-    destination: Optional[str],
+    destination: Path,
     recreate: bool = False,
     silent: bool = False,
     additional_libs: Iterable[str] = (),
     additional_packages: Iterable[str] = (),
 ) -> None:
-    dest_path = get_dest_path(destination, program, module, "flake.nix")
-
     if recreate:
-        dest_path.unlink(missing_ok=True)
+        destination.unlink(missing_ok=True)
 
-    if not dest_path.exists():
-        dest_path.parent.mkdir(parents=True, exist_ok=True)
+    if not destination.exists():
+        destination.parent.mkdir(parents=True, exist_ok=True)
         fhs_shell = create_template_drv_flake(
             template, program, silent, additional_libs, additional_packages
         )
-        with open(dest_path, "w", encoding="locale") as file:
+        with open(destination, "w", encoding="locale") as file:
             file.write(fhs_shell)
-        get_print(silent)(f"File '{dest_path}' created successfuly!", file=sys.stderr)
+        get_print(silent)(f"File '{destination}' created successfuly!", file=sys.stderr)
 
     sys.stderr.flush()
     sys.stdout.flush()
@@ -134,7 +128,7 @@ def create_flake(
             "run",
             "--experimental-features",
             "nix-command flakes",
-            str(dest_path.parent),
+            str(destination.parent),
             "--",
             *args,
         ],
@@ -218,29 +212,22 @@ def main(
     else:
         filename = "default.nix"
 
+    destination = get_dest_path(
+        parsed_args.destination,
+        parsed_args.program,
+        module,
+        filename,
+    )
+
     if parsed_args.print_destination:
-        print(
-            get_dest_path(
-                parsed_args.destination,
-                parsed_args.program,
-                module,
-                filename,
-            )
-        )
+        print(destination)
     elif parsed_args.edit:
-        edit_file(
-            get_dest_path(
-                parsed_args.destination,
-                parsed_args.program,
-                module,
-                filename,
-            )
-        )
+        edit_file(destination)
     elif parsed_args.flake:
         create_flake_fn(
             program=parsed_args.program,
             args=parsed_args.ellipsis,
-            destination=parsed_args.destination,
+            destination=destination,
             recreate=parsed_args.recreate,
             additional_libs=parsed_args.additional_libs,
             additional_packages=parsed_args.additional_packages,
@@ -250,7 +237,7 @@ def main(
         create_fn(
             program=parsed_args.program,
             args=parsed_args.ellipsis,
-            destination=parsed_args.destination,
+            destination=destination,
             recreate=parsed_args.recreate,
             additional_libs=parsed_args.additional_libs,
             additional_packages=parsed_args.additional_packages,

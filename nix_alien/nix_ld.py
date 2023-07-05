@@ -1,6 +1,5 @@
 from collections.abc import Iterable
 from pathlib import Path
-from typing import Optional
 
 from . import _impl
 
@@ -27,7 +26,7 @@ def create_nix_ld_drv(
 def create_nix_ld(
     program: str,
     args: Iterable[str],
-    destination: Optional[str],
+    destination: Path,
     recreate: bool = False,
     silent: bool = False,
     additional_libs: Iterable[str] = (),
@@ -35,7 +34,6 @@ def create_nix_ld(
 ) -> None:
     return _impl.create(
         template=TEMPLATE,
-        module=MODULE,
         process_name=Path(program).name,
         program=program,
         args=args,
@@ -65,7 +63,7 @@ def create_nix_ld_drv_flake(
 def create_nix_ld_flake(
     program: str,
     args: Iterable[str],
-    destination: Optional[str],
+    destination: Path,
     recreate: bool = False,
     silent: bool = False,
     additional_libs: Iterable[str] = (),
@@ -73,7 +71,6 @@ def create_nix_ld_flake(
 ) -> None:
     return _impl.create_flake(
         template=FLAKE_TEMPLATE,
-        module=MODULE,
         program=program,
         args=args,
         destination=destination,
