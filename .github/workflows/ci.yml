@@ -9,27 +9,9 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Cache /nix/store
-        id: nix-cache
-        uses: actions/cache@v3
-        with:
-          path: /tmp/nix-cache
-          key: ${{ runner.os }}-x86_64-${{ hashFiles('flake.*') }}
-          restore-keys: |
-            ${{ runner.os }}-x86_64-${{ hashFiles('flake.*') }}
-            ${{ runner.os }}-x86_64-
+      - uses: DeterminateSystems/nix-installer-action@main
 
-      - uses: cachix/install-nix-action@v22
-        with:
-          nix_path: nixpkgs=channel:nixos-unstable
-          extra_nix_config: |
-            access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
-
-      - name: Import Nix store cache
-        run: |
-          if [[ -f /tmp/nix-cache ]]; then
-            nix-store --import < /tmp/nix-cache
-          fi
+      - uses: DeterminateSystems/magic-nix-cache-action@main
 
       - name: CI
         run: |
@@ -37,15 +19,14 @@ jobs:
           # non-flake build
           nix-build
 
-      - name: Export Nix store cache
-        run: |
-          nix-collect-garbage --delete-older-than 15d
-          nix-store --export $(find /nix/store -maxdepth 1 -name '*-*') > /tmp/nix-cache
-
   build-aarch64-linux:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+
+      - uses: DeterminateSystems/nix-installer-action@main
+
+      - uses: DeterminateSystems/magic-nix-cache-action@main
 
       - name: Install QEMU
         run: |
@@ -53,37 +34,9 @@ jobs:
           sudo apt-get update -q -y
           sudo apt-get install -q -y qemu-system-aarch64 qemu-efi binfmt-support qemu-user-static
 
-      - name: Cache /nix/store
-        id: nix-cache
-        uses: actions/cache@v3
-        with:
-          path: /tmp/nix-cache
-          key: ${{ runner.os }}-aarch64-${{ hashFiles('flake.*') }}
-          restore-keys: |
-            ${{ runner.os }}-aarch64-${{ hashFiles('flake.*') }}
-            ${{ runner.os }}-aarch64-
-
-      - uses: cachix/install-nix-action@v22
-        with:
-          nix_path: nixpkgs=channel:nixos-unstable
-          extra_nix_config: |
-            access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
-            extra-platforms = aarch64-linux
-
-      - name: Import Nix store cache
-        run: |
-          if [[ -f /tmp/nix-cache ]]; then
-            nix-store --import < /tmp/nix-cache
-          fi
-
       - name: CI
         run: |
           # already running linters in x86_64 already, no need to rerun them here
           nix build --print-build-logs --option system aarch64-linux
           # non-flake build
           nix-build --option system aarch64-linux
-
-      - name: Export Nix store cache
-        run: |
-          nix-collect-garbage --delete-older-than 15d
-          nix-store --export $(find /nix/store -maxdepth 1 -name '*-*') > /tmp/nix-cache
