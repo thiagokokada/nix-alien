@@ -24,11 +24,15 @@ $ nix-alien-ld myapp         # Spawns you inside a shell with NIX_LD_LIBRARY_PAT
 $ nix-alien-find-libs myapp  # Lists all libs needed for the binary
 ```
 
-## Usage
+## Quick start
 
-> :warning: Previous versions of `nix-alien` needed you to setup `nix-index`
-> first. This is not needed anymore, so you can remove any trace of `nix-index`
-> from your config if you only use it for `nix-alien`.
+If your binary is located in `~/myapp`, run:
+
+```console
+$ nix --extra-experimental-features "nix-command flakes" run github:thiagokokada/nix-alien -- ~/myapp
+```
+
+## Usage
 
 Once `nix-alien` is installed in your system, all you need to do is run:
 
@@ -129,6 +133,15 @@ experimental Flakes support](https://nixos.wiki/wiki/Flakes#Enable_flakes).
 $ nix run "github:thiagokokada/nix-alien#nix-alien" -- ~/myapp
 $ nix run "github:thiagokokada/nix-alien#nix-alien-ld" -- ~/myapp
 $ nix run "github:thiagokokada/nix-alien#nix-alien-find-libs" -- ~/myapp
+```
+
+Or if you don't have Flakes enabled but still wants to run it without
+downloading it first:
+
+```console
+$ nix --extra-experimental-features "nix-command flakes" run "github:thiagokokada/nix-alien#nix-alien" -- ~/myapp
+$ nix --extra-experimental-features "nix-command flakes" run "github:thiagokokada/nix-alien#nix-alien-ld" -- ~/myapp
+$ nix --extra-experimental-features "nix-command flakes" run "github:thiagokokada/nix-alien#nix-alien-find-libs" -- ~/myapp
 ```
 
 ## NixOS Installation
