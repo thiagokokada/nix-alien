@@ -11,10 +11,7 @@
 assert dev -> !ci;
 let
   version = if (rev != null) then rev else "dev";
-  deps = with builtins;
-    (fromTOML
-      (readFile ./pyproject.toml)
-    ).project.dependencies;
+  deps = (lib.importTOML ./pyproject.toml).project.dependencies;
 in
 python3.pkgs.buildPythonApplication {
   pname = "nix-alien";
