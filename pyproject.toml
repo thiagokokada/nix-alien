@@ -12,7 +12,11 @@ license = {file = "LICENSE"}
 classifiers = [
     "Programming Language :: Python :: 3",
 ]
-dynamic = ["dependencies", "version"]
+dependencies = [
+    "pyfzf",
+    "pylddwrap",
+]
+dynamic = ["version"]
 
 [project.optional-dependencies]
 dev = ["pytest"]
@@ -26,7 +30,6 @@ nix-alien-find-libs = "nix_alien.libs:main"
 nix_alien = ["*.nix"]
 
 [tool.setuptools.dynamic]
-dependencies = {file = "requirements.txt"}
 version = {attr = "nix_alien._version.__version__"}
 
 [tool.ruff]

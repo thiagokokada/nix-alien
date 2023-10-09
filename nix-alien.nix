@@ -12,9 +12,9 @@ assert dev -> !ci;
 let
   version = if (rev != null) then rev else "dev";
   deps = with builtins;
-    filter (s: isString s && s != "")
-      (split "\n"
-        (readFile ./requirements.txt));
+    (fromTOML
+      (readFile ./pyproject.toml)
+    ).project.dependencies;
 in
 python3.pkgs.buildPythonApplication {
   pname = "nix-alien";
