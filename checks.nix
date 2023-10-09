@@ -15,9 +15,10 @@ in
   check-format-nix = pkgs.runCommand "check-format-nix"
     {
       src = ./.;
-      nativeBuildInputs = [ pkgs.nixpkgs-fmt ];
+      nativeBuildInputs = with pkgs; [ nixpkgs-fmt statix ];
     } ''
     touch $out
     nixpkgs-fmt --check $src
+    statix check $src
   '';
 }

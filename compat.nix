@@ -1,6 +1,6 @@
 # Compatibility with non-flakes systems
 let
-  flakeLock = (builtins.fromJSON (builtins.readFile ./flake.lock));
+  flakeLock = builtins.fromJSON (builtins.readFile ./flake.lock);
 in
 rec {
   flake =
@@ -14,5 +14,5 @@ rec {
       )
       { src = ./.; }).defaultNix;
 
-  pkgs = import (flake.inputs.nixpkgs) { };
+  pkgs = import flake.inputs.nixpkgs { };
 }
