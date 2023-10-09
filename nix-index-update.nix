@@ -1,7 +1,5 @@
-{ lib
-, writeShellApplication
+{ writeShellApplication
 , coreutils
-, substituteAll
 , system
 , wget
 }:
