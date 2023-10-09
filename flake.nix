@@ -17,9 +17,6 @@
   outputs = { self, nixpkgs, flake-utils, ... }:
     {
       overlays.default = final: prev: import ./overlay.nix { inherit self final prev; };
-
-      # For backwards compat, will be removed in the future
-      overlay = self.outputs.overlays.default;
     } // (flake-utils.lib.eachSystem [ "aarch64-linux" "x86_64-linux" ] (system:
       let
         pkgs = import nixpkgs {
@@ -48,10 +45,5 @@
           };
 
         devShells.default = import ./shell.nix { inherit pkgs; };
-
-        # For backwards compat, will be removed in the future
-        defaultPackage = self.outputs.packages.${system}.default;
-        defaultApp = self.outputs.apps.${system}.default;
-        devShell = self.outputs.devShells.${system}.default;
       }));
 }
