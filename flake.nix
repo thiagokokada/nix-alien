@@ -25,6 +25,8 @@
         };
       in
       {
+        formatter = pkgs.nixpkgs-fmt;
+
         packages = {
           inherit (pkgs) nix-alien nix-index-update;
           default = self.outputs.packages.${system}.nix-alien;
