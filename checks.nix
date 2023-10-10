@@ -12,7 +12,7 @@ in
 
   nix-index-update-ci = pkgs.callPackage ./nix-index-update.nix { };
 
-  check-format-nix = pkgs.runCommand "check-format-nix"
+  check-nix-files = pkgs.runCommand "check-nix-files"
     {
       src = ./.;
       nativeBuildInputs = with pkgs; [ nixpkgs-fmt statix ];
