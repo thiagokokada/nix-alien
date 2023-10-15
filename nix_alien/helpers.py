@@ -12,7 +12,9 @@ UUID_NAMESPACE = uuid.UUID("f318d4a6-dd46-47ce-995d-e95c17cadcc0")
 
 def edit_file(file: Path) -> subprocess.CompletedProcess:
     editor = os.environ.get("EDITOR", "nano")
-    return subprocess.run([editor, file])
+    # Explicitly not checking the result here since it doesn't matter
+    # if the editor exists successfully or not here
+    return subprocess.run([editor, file], check=False)
 
 
 def get_hash_for_program(program: str) -> uuid.UUID:
