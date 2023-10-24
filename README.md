@@ -120,19 +120,7 @@ options:
 
 ### Usage without installing
 
-You can also run the scripts from this repo on any Nix/NixOS setup. However, in
-this case you will need to have a copy of this repository first:
-
-```console
-$ git clone https://github.com/thiagokokada/nix-alien && cd nix-alien
-$ $(nix-build nix-alien.nix --no-out-link)/bin/nix-alien ~/myapp
-$ $(nix-build nix-alien.nix --no-out-link)/bin/nix-alien-ld ~/myapp
-$ $(nix-build nix-alien.nix --no-out-link)/bin/nix-alien-find-libs ~/myapp
-```
-
-### Usage without installing with Flakes
-
-You can also run the scripts from this repo directly without clonning or
+You can run the scripts from this repo directly without clonning or
 installing them, assuming you're using [a resonable up-to-date nix and enabled
 experimental Flakes support](https://nixos.wiki/wiki/Flakes#Enable_flakes).
 
