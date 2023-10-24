@@ -241,7 +241,7 @@ def test_main_with_print(monkeypatch, capsys):
     assert (
         out
         == """\
-/home/nameless-shelter/.cache/nix-alien/b5ae45f6-276c-53a3-93ab-4a44f35976a4/nix-ld/default.nix
+/home/nameless-shelter/.cache/nix-alien/d51a223b-43f0-56c6-b5c8-2404823026ac/nix-ld/default.nix
 """
     )
 
@@ -251,6 +251,6 @@ def test_main_with_print(monkeypatch, capsys):
     assert (
         out
         == """\
-/home/nameless-shelter/.cache/nix-alien/b5ae45f6-276c-53a3-93ab-4a44f35976a4/nix-ld/flake.nix
+/home/nameless-shelter/.cache/nix-alien/d51a223b-43f0-56c6-b5c8-2404823026ac/nix-ld/flake.nix
 """
     )
