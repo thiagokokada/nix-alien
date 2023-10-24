@@ -95,7 +95,7 @@ def test_create_fhs_env_drv_flake(mock_machine, mock_find_libs, pytestconfig):
 {
   description = "xyz-fhs";
 
-  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+  inputs.nixpkgs.url = "github:NixOS/nixpkgs/@nixpkgsRev@";
 
   outputs = { self, nixpkgs }:
     let
@@ -120,7 +120,7 @@ def test_create_fhs_env_drv_flake(mock_machine, mock_find_libs, pytestconfig):
 
       defaultApp.${system} = {
         type = "app";
-        program = "${defaultPackage.${system}}/bin/xyz-fhs";
+        program = "${self.outputs.defaultPackage.${system}}/bin/xyz-fhs";
       };
     };
 }

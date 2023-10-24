@@ -34,6 +34,8 @@ python3.pkgs.buildPythonApplication {
       --subst-var-by nixpkgsLastModifiedDate ${nixpkgs-src.lastModifiedDate} \
       --subst-var-by nixpkgsRev ${nixpkgs-src.rev} \
       --subst-var-by nixpkgsHash ${nixpkgs-src.narHash}
+    substituteInPlace nix_alien/fhs_env_flake.template.nix \
+      --subst-var-by nixpkgsRev ${nixpkgs-src.rev}
     substituteInPlace tests/test_fhs_env.py \
       --subst-var-by nixpkgsLastModifiedDate ${nixpkgs-src.lastModifiedDate} \
       --subst-var-by nixpkgsRev ${nixpkgs-src.rev} \
@@ -42,6 +44,8 @@ python3.pkgs.buildPythonApplication {
       --subst-var-by nixpkgsLastModifiedDate ${nixpkgs-src.lastModifiedDate} \
       --subst-var-by nixpkgsRev ${nixpkgs-src.rev} \
       --subst-var-by nixpkgsHash ${nixpkgs-src.narHash}
+    substituteInPlace nix_alien/nix_ld_flake.template.nix \
+      --subst-var-by nixpkgsRev ${nixpkgs-src.rev}
     substituteInPlace tests/test_nix_ld.py \
       --subst-var-by nixpkgsLastModifiedDate ${nixpkgs-src.lastModifiedDate} \
       --subst-var-by nixpkgsRev ${nixpkgs-src.rev} \

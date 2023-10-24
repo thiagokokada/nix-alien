@@ -99,7 +99,7 @@ def test_create_nix_ld_drv_flake(mock_machine, mock_find_libs, pytestconfig):
 {
   description = "xyz-nix-ld";
 
-  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+  inputs.nixpkgs.url = "github:NixOS/nixpkgs/@nixpkgsRev@";
 
   outputs = { self, nixpkgs }:
     let
@@ -116,11 +116,10 @@ def test_create_nix_ld_drv_flake(mock_machine, mock_find_libs, pytestconfig):
             quux.out
             libGL
           ];
-          NIX_LD = lib.fileContents "${stdenv.cc}/nix-support/dynamic-linker";
         in
         pkgs.writeShellScriptBin "xyz" ''
           export NIX_LD_LIBRARY_PATH='${NIX_LD_LIBRARY_PATH}'${"\\${NIX_LD_LIBRARY_PATH:+':'}$NIX_LD_LIBRARY_PATH"}
-          export NIX_LD='${NIX_LD}'
+          export NIX_LD="$(cat ${stdenv.cc}/nix-support/dynamic-linker)"
           %s/xyz "$@"
         '';
 
