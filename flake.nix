@@ -8,10 +8,7 @@
     };
     flake-utils.url = "github:numtide/flake-utils";
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
-    nix-index-database = {
-      url = "github:Mic92/nix-index-database";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    nix-index-database.url = "github:Mic92/nix-index-database";
   };
 
   outputs = { self, nixpkgs, flake-utils, ... }:
@@ -32,7 +29,7 @@
           default = self.outputs.packages.${system}.nix-alien;
         };
 
-        checks = import ./checks.nix { inherit pkgs; };
+        checks = import ./checks.nix { inherit pkgs self; };
 
         apps =
           let
@@ -46,6 +43,6 @@
             nix-index-update = mkApp { drv = self.outputs.packages.${system}.nix-index-update; };
           };
 
-        devShells.default = import ./shell.nix { inherit pkgs; };
+        devShells.default = import ./shell.nix { inherit pkgs self; };
       }));
 }

@@ -1,7 +1,7 @@
 {
   description = "${__name__}-fhs";
 
-  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+  inputs.nixpkgs.url = "github:NixOS/nixpkgs/@nixpkgsRev@";
 
   outputs = { self, nixpkgs }:
     let
@@ -23,7 +23,7 @@
 
       defaultApp.${system} = {
         type = "app";
-        program = "${defaultPackage.${system}}/bin/${__name__}-fhs";
+        program = "${self.outputs.defaultPackage.${system}}/bin/${__name__}-fhs";
       };
     };
 }
