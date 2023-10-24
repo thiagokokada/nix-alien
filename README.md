@@ -178,7 +178,7 @@ file.
 
 ### NixOS installation with Flakes
 
-> :warning: Overriding nix-alien inputs may cause mismatches between the
+> :warning: Overriding `nix-alien` inputs may cause mismatches between the
 > `nix-index-database` and `nixpkgs`, causing possibly incorrect results, so it
 > is unsupported.
 
