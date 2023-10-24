@@ -1,15 +1,16 @@
 { lib
 , fzf
 , nix-index
-, nixpkgs-src
+, nixpkgs-src ? {
+    lastModifiedDate = "19700101000000";
+    rev = "nixpkgs-unstable";
+    narHash = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
+  }
 , python3
-, ruff
 , rev ? null
 , dev ? false
-, ci ? false
 }:
 
-assert dev -> !ci;
 let
   version = if (rev != null) then rev else "dev";
   deps = (lib.importTOML ./pyproject.toml).project.dependencies;
@@ -56,18 +57,7 @@ python3.pkgs.buildPythonApplication {
 
   nativeCheckInputs = with python3.pkgs; [
     pytestCheckHook
-  ] ++ lib.optionals ci [
-    black
-    mypy
-    ruff
   ];
-
-  preCheck = lib.optionalString ci ''
-    export PYLINTHOME="$(mktemp -d)"
-    black --check ./nix_alien
-    mypy --ignore-missing-imports ./nix_alien
-    ruff check ./nix_alien
-  '';
 
   meta = with lib; {
     description = "Run unpatched binaries on Nix/NixOS";
