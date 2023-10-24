@@ -1,4 +1,5 @@
 { pkgs ? (import ./compat.nix).pkgs
+, self ? (import ./compat.nix).flake
 }:
 
 let
@@ -6,8 +7,10 @@ let
 in
 {
   nix-alien-ci = pkgs.callPackage ./nix-alien.nix {
-    inherit rev;
     ci = true;
+    inherit rev;
+    nix-index = self.inputs.nix-index-database.packages.${pkgs.system}.nix-index-with-db;
+    nixpkgs-input = self.inputs.nix-index-database.inputs.nixpkgs.sourceInfo;
   };
 
   nix-index-update-ci = pkgs.callPackage ./nix-index-update.nix { };

@@ -14,7 +14,14 @@ def test_create_fhs_env_drv(mock_find_libs, pytestconfig):
     assert (
         fhs_env.create_fhs_env_drv("xyz", additional_packages=["libGL"])
         == """\
-{ pkgs ? import <nixpkgs> { } }:
+{ pkgs ? import
+    (builtins.fetchTarball {
+      name = "nixpkgs-unstable-@nixpkgsLastModifiedDate@";
+      url = "https://github.com/NixOS/nixpkgs/archive/@nixpkgsRev@.tar.gz";
+      sha256 = "@nixpkgsHash@";
+    })
+    { }
+}:
 
 let
   inherit (pkgs) buildFHSUserEnv;
@@ -45,7 +52,14 @@ def test_create_fhs_env_drv_with_spaces(mock_find_libs, pytestconfig):
     assert (
         fhs_env.create_fhs_env_drv("x y z", additional_packages=["libGL"])
         == """\
-{ pkgs ? import <nixpkgs> { } }:
+{ pkgs ? import
+    (builtins.fetchTarball {
+      name = "nixpkgs-unstable-@nixpkgsLastModifiedDate@";
+      url = "https://github.com/NixOS/nixpkgs/archive/@nixpkgsRev@.tar.gz";
+      sha256 = "@nixpkgsHash@";
+    })
+    { }
+}:
 
 let
   inherit (pkgs) buildFHSUserEnv;

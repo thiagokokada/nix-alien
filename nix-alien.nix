@@ -1,6 +1,7 @@
 { lib
 , fzf
 , nix-index
+, nixpkgs-src
 , python3
 , ruff
 , rev ? null
@@ -29,6 +30,22 @@ python3.pkgs.buildPythonApplication {
 
   preBuild = lib.optionalString (rev != null) ''
     echo "__version__ = \"${rev}\"" > nix_alien/_version.py
+    substituteInPlace nix_alien/fhs_env.template.nix \
+      --subst-var-by nixpkgsLastModifiedDate ${nixpkgs-src.lastModifiedDate} \
+      --subst-var-by nixpkgsRev ${nixpkgs-src.rev} \
+      --subst-var-by nixpkgsHash ${nixpkgs-src.narHash}
+    substituteInPlace tests/test_fhs_env.py \
+      --subst-var-by nixpkgsLastModifiedDate ${nixpkgs-src.lastModifiedDate} \
+      --subst-var-by nixpkgsRev ${nixpkgs-src.rev} \
+      --subst-var-by nixpkgsHash ${nixpkgs-src.narHash}
+    substituteInPlace nix_alien/nix_ld.template.nix \
+      --subst-var-by nixpkgsLastModifiedDate ${nixpkgs-src.lastModifiedDate} \
+      --subst-var-by nixpkgsRev ${nixpkgs-src.rev} \
+      --subst-var-by nixpkgsHash ${nixpkgs-src.narHash}
+    substituteInPlace tests/test_nix_ld.py \
+      --subst-var-by nixpkgsLastModifiedDate ${nixpkgs-src.lastModifiedDate} \
+      --subst-var-by nixpkgsRev ${nixpkgs-src.rev} \
+      --subst-var-by nixpkgsHash ${nixpkgs-src.narHash}
   '';
 
   doCheck = !dev;

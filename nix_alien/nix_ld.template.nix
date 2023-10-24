@@ -1,4 +1,11 @@
-{ pkgs ? import <nixpkgs> { } }:
+{ pkgs ? import
+    (builtins.fetchTarball {
+      name = "nixpkgs-unstable-@nixpkgsLastModifiedDate@";
+      url = "https://github.com/NixOS/nixpkgs/archive/@nixpkgsRev@.tar.gz";
+      sha256 = "@nixpkgsHash@";
+    })
+    { }
+}:
 
 let
   inherit (pkgs) lib stdenv;

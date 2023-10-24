@@ -8,10 +8,7 @@
     };
     flake-utils.url = "github:numtide/flake-utils";
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
-    nix-index-database = {
-      url = "github:Mic92/nix-index-database";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    nix-index-database.url = "github:Mic92/nix-index-database";
   };
 
   outputs = { self, nixpkgs, flake-utils, ... }:
