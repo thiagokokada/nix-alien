@@ -31,6 +31,13 @@ If your binary is located in `~/myapp`, run:
 ```console
 $ nix --extra-experimental-features "nix-command flakes" run github:thiagokokada/nix-alien -- ~/myapp
 ```
+_Tip_: if you are trying to run an OpenGL binary (e.g.: `blender`) in non-NixOS
+systems, you can wrap the command above in
+[nixGL](https://github.com/guibou/nixGL):
+
+```console
+$ nix --extra-experimental-features "nix-command flakes" run --impure github:guibou/nixGL --override-input nixpkgs nixpkgs/nixos-unstable -- nix run github:thiagokokada/nix-alien -- blender
+```
 
 ## Usage
 
@@ -57,7 +64,7 @@ In case you're using [`nix-ld`](https://github.com/Mic92/nix-ld), there is also
 `nix-alien-ld`:
 
 ```console
-$ nix-alien-ld -- ~/myapp 
+$ nix-alien-ld -- ~/myapp
 ```
 
 This will spawn a wrapped binary with `NIX_LD_LIBRARY_PATH` and `NIX_LD` setup.
@@ -77,7 +84,7 @@ If you want to use the `fzf` based menu to find the libraries for scripting
 purposes, you can run:
 
 ```console
-$ nix-alien-find-libs ~/myapp 
+$ nix-alien-find-libs ~/myapp
 ```
 
 This will print the found libraries on the `stdout`. The informational messages
@@ -170,6 +177,10 @@ And afterwards, add it to `imports` section on `/etc/nixos/configuration.nix`
 file.
 
 ### NixOS installation with Flakes
+
+> :warning: Overriding nix-alien inputs may cause mismatches between the
+> `nix-index-database` and `nixpkgs`, causing possibly incorrect results, so it
+> is unsupported.
 
 If you're using NixOS with Flakes, you can do something similar to your NixOS
 setup to install `nix-alien` on system `PATH`:
