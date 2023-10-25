@@ -139,7 +139,7 @@ def test_find_libs_when_select_candidates_is_used(
     mock_subprocess.run.return_value = CompletedProcessMock(
         stdout="\n".join(["foo.out", "bar.out"])
     )
-    assert libs.find_libs("xyz", select_candidates=["foo.out"]) == {
+    assert libs.find_libs("xyz", select_candidates="foo") == {
         "libfoo.so": "foo.out",
         "libbar.so": "foo.out",
         "libquux.so": "foo.out",
@@ -217,7 +217,7 @@ def test_main_with_args(mock_subprocess, mock_list_dependencies, capsys):
             "-l",
             "libquux.so",
             "-c",
-            "foo.out",
+            "foo",
         ]
     )
 

@@ -20,15 +20,15 @@ in
     . /etc/os-release
 
     testNixAlien() {
-      nix-alien -c zlib.out ${babashka}/bb -- --version | grep -F "babashka v${babashkaVersion}"
+      nix-alien -c zlib ${babashka}/bb -- --version | grep -F "babashka v${babashkaVersion}"
     }
 
     testNixAlienFlake() {
-      nix-alien -c zlib.out --flake ${babashka}/bb -- --version | grep -F "babashka v${babashkaVersion}"
+      nix-alien -c zlib --flake ${babashka}/bb -- --version | grep -F "babashka v${babashkaVersion}"
     }
 
     testNixAlienFindLibs() {
-      nix-alien-find-libs -c zlib.out ${babashka}/bb | grep -F "zlib.out"
+      nix-alien-find-libs -c zlib ${babashka}/bb | grep -F "zlib.out"
     }
 
     # The tests below will fail in a NixOS system without NIX_LD setup, so we
@@ -40,18 +40,18 @@ in
     testNixAlienLd() {
       if [[ "$NAME" == "NixOS" ]] && [[ -z "$NIX_LD" ]]; then
         echo "[WARN] NIX_LD not setup! Will only test nix evaluation."
-        nix-alien-ld -c zlib.out ${babashka}/bb -- --version 2>&1 | grep -F "required file not found"
+        nix-alien-ld -c zlib ${babashka}/bb -- --version 2>&1 | grep -F "required file not found"
       else
-        nix-alien-ld -c zlib.out ${babashka}/bb -- --version | grep -F "babashka v${babashkaVersion}"
+        nix-alien-ld -c zlib ${babashka}/bb -- --version | grep -F "babashka v${babashkaVersion}"
       fi
     }
 
     testNixAlienLdFlake() {
       if [[ "$NAME" == "NixOS" ]] && [[ -z "$NIX_LD" ]]; then
         echo "[WARN] NIX_LD not setup! Will only test nix evaluation."
-        nix-alien-ld -c zlib.out --flake ${babashka}/bb -- --version 2>&1 | grep -F "required file not found"
+        nix-alien-ld -c zlib --flake ${babashka}/bb -- --version 2>&1 | grep -F "required file not found"
       else
-        nix-alien-ld -c zlib.out --flake ${babashka}/bb -- --version | grep -F "babashka v${babashkaVersion}"
+        nix-alien-ld -c zlib --flake ${babashka}/bb -- --version | grep -F "babashka v${babashkaVersion}"
       fi
     }
 

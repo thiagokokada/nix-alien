@@ -1,6 +1,7 @@
 import argparse
 import json
 import os
+import re
 import subprocess
 import sys
 from collections.abc import Iterable
@@ -39,7 +40,7 @@ def find_libs(
     path: Union[Path, str],
     silent: bool = False,
     additional_libs: Iterable[str] = (),
-    select_candidates: Iterable[str] = (),
+    select_candidates: Optional[str] = None,
 ) -> dict[str, Optional[str]]:
     _print = get_print(silent)
     path = Path(path).expanduser()
@@ -63,11 +64,12 @@ def find_libs(
         elif len(candidates) == 1:
             selected_candidate = candidates[0]
         else:
-            # Prioritise user selected candidates
-            maybe_selected_candidates = (
-                c for c in select_candidates if c in candidates
-            )
-            selected_candidate = next(maybe_selected_candidates, None)
+            if select_candidates:
+                # Prioritise user selected candidates
+                maybe_selected_candidates = (
+                    c for c in candidates if re.search(select_candidates, c)
+                )
+                selected_candidate = next(maybe_selected_candidates, None)
 
             # Try to find an dependency that is already solved
             if not selected_candidate:
@@ -121,13 +123,11 @@ def main(args=None):
         metavar="CANDIDATE",
         help=" ".join(
             [
-                "Library candidates that will be auto-selected if found.",
+                "Library candidates that will be auto-selected if found via regex.",
                 "Useful for automation.",
-                "May be passed multiple times",
             ]
         ),
-        action="append",
-        default=[],
+        action="store",
     )
     parser.add_argument("-j", "--json", help="Output as json", action="store_true")
     parser.add_argument(
