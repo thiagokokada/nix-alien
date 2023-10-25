@@ -56,28 +56,28 @@ def find_libs(
         if not dep.soname or dep.found:
             continue
 
-        candidates = find_lib_candidates(dep.soname)
-        selected_candidate = None
+        dep_candidates = find_lib_candidates(dep.soname)
+        selected_dep = None
 
-        if len(candidates) == 0:
+        if len(dep_candidates) == 0:
             _print(f"No candidate found for '{dep.soname}'", file=sys.stderr)
-        elif len(candidates) == 1:
-            selected_candidate = candidates[0]
+        elif len(dep_candidates) == 1:
+            selected_dep = dep_candidates[0]
         else:
             if select_candidates:
                 # Prioritise user selected candidates
-                maybe_selected_candidates = (
-                    c for c in candidates if re.search(select_candidates, c)
+                selected_dep = next(
+                    (c for c in dep_candidates if re.search(select_candidates, c)), None
                 )
-                selected_candidate = next(maybe_selected_candidates, None)
 
             # Try to find an dependency that is already solved
-            if not selected_candidate:
-                intersection = (d for d in resolved_deps.values() if d in candidates)
-                selected_candidate = next(intersection, None)
+            if not selected_dep:
+                selected_dep = next(
+                    (d for d in resolved_deps.values() if d in dep_candidates), None
+                )
 
                 # Show FZF to allow user to select the best dependency
-                if not selected_candidate:
+                if not selected_dep:
                     fzf_options = join(
                         [
                             "--cycle",
@@ -85,13 +85,13 @@ def find_libs(
                             f"Select candidate for '{dep.soname}'> ",
                         ]
                     )
-                    selected_candidate = fzf.prompt(candidates, fzf_options)[0]
+                    selected_dep = fzf.prompt(dep_candidates, fzf_options)[0]
 
         _print(
-            f"Selected candidate for '{dep.soname}': {selected_candidate}",
+            f"Selected candidate for '{dep.soname}': {selected_dep}",
             file=sys.stderr,
         )
-        resolved_deps[dep.soname] = selected_candidate
+        resolved_deps[dep.soname] = selected_dep
 
     return resolved_deps
 
