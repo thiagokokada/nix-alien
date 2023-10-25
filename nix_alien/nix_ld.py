@@ -1,5 +1,6 @@
 from collections.abc import Iterable
 from pathlib import Path
+from typing import Optional
 
 from . import _impl
 
@@ -31,7 +32,7 @@ def create_nix_ld(
     silent: bool = False,
     additional_libs: Iterable[str] = (),
     additional_packages: Iterable[str] = (),
-    select_candidates: Iterable[str] = (),
+    select_candidates: Optional[str] = None,
 ) -> None:
     return _impl.create(
         template=TEMPLATE,
@@ -70,7 +71,7 @@ def create_nix_ld_flake(
     silent: bool = False,
     additional_libs: Iterable[str] = (),
     additional_packages: Iterable[str] = (),
-    select_candidates: Iterable[str] = (),
+    select_candidates: Optional[str] = None,
 ) -> None:
     return _impl.create_flake(
         template=FLAKE_TEMPLATE,

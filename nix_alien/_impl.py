@@ -22,7 +22,7 @@ def create_template_drv(
     silent: bool = False,
     additional_libs: Iterable[str] = (),
     additional_packages: Iterable[str] = (),
-    select_candidates: Iterable[str] = (),
+    select_candidates: Optional[str] = None,
     _indent: int = 4,
 ) -> str:
     path = Path(program).expanduser()
@@ -47,7 +47,7 @@ def create(
     silent: bool = False,
     additional_libs: Iterable[str] = (),
     additional_packages: Iterable[str] = (),
-    select_candidates: Iterable[str] = (),
+    select_candidates: Optional[str] = None,
 ) -> None:
     if recreate:
         destination.unlink(missing_ok=True)
@@ -89,7 +89,7 @@ def create_template_drv_flake(
     silent: bool = False,
     additional_libs: Iterable[str] = (),
     additional_packages: Iterable[str] = (),
-    select_candidates: Iterable[str] = (),
+    select_candidates: Optional[str] = None,
     _indent: int = 12,
 ) -> str:
     path = Path(program).expanduser()
@@ -114,7 +114,7 @@ def create_flake(
     silent: bool = False,
     additional_libs: Iterable[str] = (),
     additional_packages: Iterable[str] = (),
-    select_candidates: Iterable[str] = (),
+    select_candidates: Optional[str] = None,
 ) -> None:
     if recreate:
         destination.unlink(missing_ok=True)
@@ -183,13 +183,11 @@ def main(
         metavar="CANDIDATE",
         help=" ".join(
             [
-                "Library candidates that will be auto-selected if found.",
+                "Library candidates that will be auto-selected if found via regex.",
                 "Useful for automation.",
-                "May be passed multiple times",
             ]
         ),
-        action="append",
-        default=[],
+        action="store",
     )
     parser.add_argument(
         "-r",

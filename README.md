@@ -109,7 +109,7 @@ options:
   -p PACKAGE, --additional-packages PACKAGE
                         Additional package to add. May be passed multiple times
   -c CANDIDATE, --select-candidates CANDIDATE
-                        Library candidates that will be auto-selected if found. Useful for automation. May be passed multiple times
+                        Library candidates that will be auto-selected if found via regex. Useful for automation.
   -r, --recreate        Recreate 'default.nix' file if exists
   -d PATH, --destination PATH
                         Path where 'default.nix' file will be created
