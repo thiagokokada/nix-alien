@@ -109,7 +109,9 @@ def test_find_libs_when_multiple_candidates_found(
         DependencyMock(soname="libbar.so", path="/lib/libbar.so", found=False),
         DependencyMock(soname="libbar.so", path="/lib/libbar.so", found=False),
     ]
-    mock_subprocess.run.return_value = CompletedProcessMock(stdout="foo.out\nbar.out")
+    mock_subprocess.run.return_value = CompletedProcessMock(
+        stdout="\n".join(["foo.out", "bar.out"])
+    )
     # On the second time, this will take the candidate from intersection
     mock_fzf.prompt.side_effect = [["foo.out"]]
     assert libs.find_libs("xyz", silent=True, additional_libs=["libquux.so"]) == {
@@ -120,6 +122,38 @@ def test_find_libs_when_multiple_candidates_found(
 
     _, err = capsys.readouterr()
     assert err == ""
+
+
+@patch("nix_alien.libs.list_dependencies", autospec=True)
+@patch("nix_alien.libs.subprocess", autospec=True)
+def test_find_libs_when_select_candidates_is_used(
+    mock_subprocess,
+    mock_list_dependencies,
+    capsys,
+):
+    mock_list_dependencies.return_value = [
+        DependencyMock(soname="libfoo.so", path="/lib/libfoo.so", found=False),
+        DependencyMock(soname="libbar.so", path="/lib/libbar.so", found=False),
+        DependencyMock(soname="libquux.so", path="/lib/libbar.so", found=False),
+    ]
+    mock_subprocess.run.return_value = CompletedProcessMock(
+        stdout="\n".join(["foo.out", "bar.out"])
+    )
+    assert libs.find_libs("xyz", select_candidates=["foo.out"]) == {
+        "libfoo.so": "foo.out",
+        "libbar.so": "foo.out",
+        "libquux.so": "foo.out",
+    }
+
+    _, err = capsys.readouterr()
+    assert (
+        err
+        == """\
+[nix-alien] Selected candidate for 'libfoo.so': foo.out
+[nix-alien] Selected candidate for 'libbar.so': foo.out
+[nix-alien] Selected candidate for 'libquux.so': foo.out
+"""
+    )
 
 
 def test_get_unique_packages():
@@ -170,8 +204,22 @@ def test_main_with_args(mock_subprocess, mock_list_dependencies, capsys):
         DependencyMock(soname="libfoo.so", path="/lib/libfoo.so", found=False),
         DependencyMock(soname="libbar.so", path="/lib/libbar.so", found=False),
     ]
-    mock_subprocess.run.return_value = CompletedProcessMock(stdout="foo.out")
-    libs.main(["xyz", "--json", "--silent", "-l", "libqux.so", "-l", "libquux.so"])
+    mock_subprocess.run.return_value = CompletedProcessMock(
+        stdout="\n".join(["foo.out", "bar.out"])
+    )
+    libs.main(
+        [
+            "xyz",
+            "--json",
+            "--silent",
+            "-l",
+            "libqux.so",
+            "-l",
+            "libquux.so",
+            "-c",
+            "foo.out",
+        ]
+    )
 
     out, err = capsys.readouterr()
     assert json.loads(out) == {

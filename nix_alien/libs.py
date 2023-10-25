@@ -39,6 +39,7 @@ def find_libs(
     path: Union[Path, str],
     silent: bool = False,
     additional_libs: Iterable[str] = (),
+    select_candidates: Iterable[str] = (),
 ) -> dict[str, Optional[str]]:
     _print = get_print(silent)
     path = Path(path).expanduser()
@@ -55,7 +56,11 @@ def find_libs(
             continue
 
         candidates = find_lib_candidates(dep.soname)
-        if len(candidates) == 0:
+        # Not using sets here since we care about the order
+        possible_selected_candidates = [c for c in select_candidates if c in candidates]
+        if possible_selected_candidates:
+            selected_candidate = possible_selected_candidates.pop(0)
+        elif len(candidates) == 0:
             _print(f"No candidate found for '{dep.soname}'", file=sys.stderr)
             selected_candidate = None
         elif len(candidates) == 1:
@@ -63,7 +68,7 @@ def find_libs(
         else:
             intersection = set(resolved_deps.values()).intersection(candidates)
             if intersection:
-                # Can be any candidate really, lets pick the first one
+                # Can be any candidate really, lets pick an arbitrary one
                 selected_candidate = intersection.pop()
             else:
                 fzf_options = join(
@@ -105,6 +110,20 @@ def main(args=None):
         action="append",
         default=[],
     )
+    parser.add_argument(
+        "-c",
+        "--select-candidates",
+        metavar="CANDIDATE",
+        help=" ".join(
+            [
+                "Library candidates that will be auto-selected if found.",
+                "Useful for automation.",
+                "May be passed multiple times",
+            ]
+        ),
+        action="append",
+        default=[],
+    )
     parser.add_argument("-j", "--json", help="Output as json", action="store_true")
     parser.add_argument(
         "-s",
@@ -118,6 +137,7 @@ def main(args=None):
         parsed_args.program,
         silent=parsed_args.silent,
         additional_libs=parsed_args.additional_libs,
+        select_candidates=parsed_args.select_candidates,
     )
 
     if parsed_args.json:
