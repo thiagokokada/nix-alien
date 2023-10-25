@@ -95,7 +95,7 @@ There are also some other options, check them using `--help` flag on each
 program. Example for `nix-alien`:
 
 ```console
-usage: nix-alien [-h] [--version] [-l LIBRARY] [-p PACKAGE] [-r] [-d PATH] [-P] [-E] [-s] [-f] program ...
+usage: nix-alien [-h] [--version] [-l LIBRARY] [-p PACKAGE] [-c CANDIDATE] [-r] [-d PATH] [-P] [-E] [-s] [-f] program ...
 
 positional arguments:
   program               Program to run
@@ -108,6 +108,8 @@ options:
                         Additional library to search. May be passed multiple times
   -p PACKAGE, --additional-packages PACKAGE
                         Additional package to add. May be passed multiple times
+  -c CANDIDATE, --select-candidates CANDIDATE
+                        Library candidates that will be auto-selected if found. Useful for automation. May be passed multiple times
   -r, --recreate        Recreate 'default.nix' file if exists
   -d PATH, --destination PATH
                         Path where 'default.nix' file will be created
@@ -120,8 +122,8 @@ options:
 
 ### Usage without installing
 
-You can run the scripts from this repo directly without clonning or
-installing them, assuming you're using [a resonable up-to-date nix and enabled
+You can run the scripts from this repo directly without clonning or installing
+them, assuming you're using [a resonable up-to-date nix and enabled
 experimental Flakes support](https://nixos.wiki/wiki/Flakes#Enable_flakes).
 
 ```console
