@@ -32,12 +32,18 @@ in
     nix-alien-find-libs -c zlib.out ${babashka}/bb | grep -F "zlib.out"
   '';
 
-  # Without NIX_LD configured we will just test eval (e.g.: if the
-  # `default.nix` file was generated correctly)
+  # The tests below will fail in a NixOS system without NIX_LD setup, so we
+  # just test evaluation by checking if the error is the expect one (e.g.: lack
+  # of libs instead of nix eval errors).
+  # On non-NixOS systems (like GitHub Actions) this will work because babashka
+  # will just re-use the system libs (and almost every system contains zlib
+  # installed).
   nix-alien-ld = pkgs.writeShellScriptBin "nix-alien-ld-it" ''
+    . /etc/os-release
     export PATH="${lib.makeBinPath [ nix-alien gnugrep ]}:$PATH"
     export HOME="$(mktemp -d)"
-    if [[ -z "$NIX_LD" ]]; then
+
+    if [[ "$NAME" == "NixOS" ]] && [[ -z "$NIX_LD" ]]; then
       echo "[WARN] NIX_LD not setup! Will only test nix evaluation."
       nix-alien-ld -c zlib.out ${babashka}/bb -- --version 2>&1 | grep -F "required file not found"
     else
@@ -46,9 +52,10 @@ in
   '';
 
   nix-alien-ld-flake = pkgs.writeShellScriptBin "nix-alien-ld-flake-it" ''
+    . /etc/os-release
     export PATH="${lib.makeBinPath [ nix-alien gnugrep ]}:$PATH"
     export HOME="$(mktemp -d)"
-    if [[ -z "$NIX_LD" ]]; then
+    if [[ "$NAME" == "NixOS" ]] && [[ -z "$NIX_LD" ]]; then
       echo "[WARN] NIX_LD not setup! Will only test nix evaluation."
       nix-alien-ld -c zlib.out --flake ${babashka}/bb -- --version 2>&1 | grep -F "required file not found"
     else
