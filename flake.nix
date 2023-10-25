@@ -15,6 +15,8 @@
   outputs = { self, nixpkgs, flake-utils, ... }:
     {
       overlays.default = final: prev: import ./overlay.nix { inherit self final prev; };
+      # Integration tests are only available in x86_64-linux for now
+      integration-tests.x86_64-linux = import ./integration-tests.nix { inherit self; };
     } // (flake-utils.lib.eachSystem [ "aarch64-linux" "x86_64-linux" ] (system:
       let
         pkgs = import nixpkgs {

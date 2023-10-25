@@ -51,6 +51,7 @@ python3.pkgs.buildPythonApplication {
     description = "Run unpatched binaries on Nix/NixOS";
     homepage = "https://github.com/thiagokokada/nix-alien";
     license = licenses.mit;
+    mainProgram = "nix-alien";
     platforms = platforms.linux;
   };
 }
