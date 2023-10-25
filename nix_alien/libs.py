@@ -56,29 +56,34 @@ def find_libs(
             continue
 
         candidates = find_lib_candidates(dep.soname)
-        # Not using sets here since we care about the order
-        possible_selected_candidates = [c for c in select_candidates if c in candidates]
-        if possible_selected_candidates:
-            selected_candidate = possible_selected_candidates.pop(0)
-        elif len(candidates) == 0:
+        selected_candidate = None
+
+        if len(candidates) == 0:
             _print(f"No candidate found for '{dep.soname}'", file=sys.stderr)
-            selected_candidate = None
         elif len(candidates) == 1:
             selected_candidate = candidates[0]
         else:
-            intersection = set(resolved_deps.values()).intersection(candidates)
-            if intersection:
-                # Can be any candidate really, lets pick an arbitrary one
-                selected_candidate = intersection.pop()
-            else:
-                fzf_options = join(
-                    [
-                        "--cycle",
-                        "--prompt",
-                        f"Select candidate for '{dep.soname}'> ",
-                    ]
-                )
-                selected_candidate = fzf.prompt(candidates, fzf_options)[0]
+            # Prioritise user selected candidates
+            maybe_selected_candidates = (
+                c for c in select_candidates if c in candidates
+            )
+            selected_candidate = next(maybe_selected_candidates, None)
+
+            # Try to find an dependency that is already solved
+            if not selected_candidate:
+                intersection = (d for d in resolved_deps.values() if d in candidates)
+                selected_candidate = next(intersection, None)
+
+                # Show FZF to allow user to select the best dependency
+                if not selected_candidate:
+                    fzf_options = join(
+                        [
+                            "--cycle",
+                            "--prompt",
+                            f"Select candidate for '{dep.soname}'> ",
+                        ]
+                    )
+                    selected_candidate = fzf.prompt(candidates, fzf_options)[0]
 
         _print(
             f"Selected candidate for '{dep.soname}': {selected_candidate}",
