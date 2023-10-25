@@ -20,7 +20,7 @@ python3.pkgs.buildPythonApplication {
   format = "pyproject";
   inherit version;
 
-  src = ./.;
+  src = lib.cleanSource ./.;
 
   nativeBuildInputs = [ fzf ];
 
