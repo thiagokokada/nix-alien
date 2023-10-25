@@ -22,10 +22,11 @@ def create_template_drv(
     silent: bool = False,
     additional_libs: Iterable[str] = (),
     additional_packages: Iterable[str] = (),
+    select_candidates: Iterable[str] = (),
     _indent: int = 4,
 ) -> str:
     path = Path(program).expanduser()
-    packages = find_libs(path, silent, additional_libs)
+    packages = find_libs(path, silent, additional_libs, select_candidates)
 
     return read_template(template).safe_substitute(
         __name__=REMOVE_WHITESPACES.sub("_", path.name),
@@ -46,6 +47,7 @@ def create(
     silent: bool = False,
     additional_libs: Iterable[str] = (),
     additional_packages: Iterable[str] = (),
+    select_candidates: Iterable[str] = (),
 ) -> None:
     if recreate:
         destination.unlink(missing_ok=True)
@@ -53,7 +55,12 @@ def create(
     if not destination.exists():
         destination.parent.mkdir(parents=True, exist_ok=True)
         fhs_shell = create_template_drv(
-            template, program, silent, additional_libs, additional_packages
+            template,
+            program,
+            silent,
+            additional_libs,
+            additional_packages,
+            select_candidates,
         )
         with open(destination, "w", encoding="locale") as file:
             file.write(fhs_shell)
@@ -82,10 +89,11 @@ def create_template_drv_flake(
     silent: bool = False,
     additional_libs: Iterable[str] = (),
     additional_packages: Iterable[str] = (),
+    select_candidates: Iterable[str] = (),
     _indent: int = 12,
 ) -> str:
     path = Path(program).expanduser()
-    libs = find_libs(path, silent, additional_libs)
+    libs = find_libs(path, silent, additional_libs, select_candidates)
 
     return read_template(template).safe_substitute(
         __name__=path.name,
@@ -106,6 +114,7 @@ def create_flake(
     silent: bool = False,
     additional_libs: Iterable[str] = (),
     additional_packages: Iterable[str] = (),
+    select_candidates: Iterable[str] = (),
 ) -> None:
     if recreate:
         destination.unlink(missing_ok=True)
@@ -113,7 +122,12 @@ def create_flake(
     if not destination.exists():
         destination.parent.mkdir(parents=True, exist_ok=True)
         fhs_shell = create_template_drv_flake(
-            template, program, silent, additional_libs, additional_packages
+            template,
+            program,
+            silent,
+            additional_libs,
+            additional_packages,
+            select_candidates,
         )
         with open(destination, "w", encoding="locale") as file:
             file.write(fhs_shell)
@@ -160,6 +174,20 @@ def main(
         "--additional-packages",
         metavar="PACKAGE",
         help="Additional package to add. May be passed multiple times",
+        action="append",
+        default=[],
+    )
+    parser.add_argument(
+        "-c",
+        "--select-candidates",
+        metavar="CANDIDATE",
+        help=" ".join(
+            [
+                "Library candidates that will be auto-selected if found.",
+                "Useful for automation.",
+                "May be passed multiple times",
+            ]
+        ),
         action="append",
         default=[],
     )
@@ -231,6 +259,7 @@ def main(
             recreate=parsed_args.recreate,
             additional_libs=parsed_args.additional_libs,
             additional_packages=parsed_args.additional_packages,
+            select_candidates=parsed_args.select_candidates,
             silent=parsed_args.silent,
         )
     else:
@@ -241,5 +270,6 @@ def main(
             recreate=parsed_args.recreate,
             additional_libs=parsed_args.additional_libs,
             additional_packages=parsed_args.additional_packages,
+            select_candidates=parsed_args.select_candidates,
             silent=parsed_args.silent,
         )

@@ -31,6 +31,7 @@ def create_fhs_env(
     silent: bool = False,
     additional_libs: Iterable[str] = (),
     additional_packages: Iterable[str] = (),
+    select_candidates: Iterable[str] = (),
 ) -> None:
     return _impl.create(
         template=TEMPLATE,
@@ -42,6 +43,7 @@ def create_fhs_env(
         silent=silent,
         additional_libs=additional_libs,
         additional_packages=additional_packages,
+        select_candidates=select_candidates,
     )
 
 
@@ -68,6 +70,7 @@ def create_fhs_env_flake(
     silent: bool = False,
     additional_libs: Iterable[str] = (),
     additional_packages: Iterable[str] = (),
+    select_candidates: Iterable[str] = (),
 ) -> None:
     return _impl.create_flake(
         template=FLAKE_TEMPLATE,
@@ -78,6 +81,7 @@ def create_fhs_env_flake(
         silent=silent,
         additional_libs=additional_libs,
         additional_packages=additional_packages,
+        select_candidates=select_candidates,
     )
 
 
