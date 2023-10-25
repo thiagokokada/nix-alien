@@ -1,6 +1,7 @@
 { lib
 , fzf
 , nix-index
+, nix-filter
 , nixpkgs-src ? {
     lastModifiedDate = "19700101000000";
     rev = "nixpkgs-unstable";
@@ -20,7 +21,10 @@ python3.pkgs.buildPythonApplication {
   format = "pyproject";
   inherit version;
 
-  src = lib.cleanSource ./.;
+  src = nix-filter.lib {
+    root = ./.;
+    include = [ "nix_alien" "tests" "pyproject.toml" "README.md" ];
+  };
 
   nativeBuildInputs = [ fzf ];
 

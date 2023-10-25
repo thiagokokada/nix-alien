@@ -2,12 +2,18 @@
 , self ? (import ./compat.nix).flake
 }:
 
+let
+  inherit (self.inputs) nix-filter;
+in
 {
   inherit (self.outputs.packages.${pkgs.system}) nix-alien nix-index-update;
 
   check-py-files = pkgs.runCommand "check-py-files"
     {
-      src = ./.;
+      src = nix-filter.lib {
+        root = ./.;
+        include = [ "nix_alien" "tests" ];
+      };
       nativeBuildInputs = with pkgs; [
         python3.pkgs.black
         python3.pkgs.mypy
@@ -24,7 +30,10 @@
 
   check-nix-files = pkgs.runCommand "check-nix-files"
     {
-      src = ./.;
+      src = nix-filter.lib {
+        root = ./.;
+        include = [ (nix-filter.lib.matchExt "nix") ];
+      };
       nativeBuildInputs = with pkgs; [ nixpkgs-fmt statix ];
     } ''
     touch $out
