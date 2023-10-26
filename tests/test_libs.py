@@ -55,9 +55,7 @@ def test_find_libs_when_no_candidates_found(
         err
         == """\
 [nix-alien] No candidate found for 'libfoo.so'
-[nix-alien] Selected candidate for 'libfoo.so': None
 [nix-alien] No candidate found for 'libbar.so'
-[nix-alien] Selected candidate for 'libbar.so': None
 """
     )
 
