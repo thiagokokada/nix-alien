@@ -294,9 +294,10 @@ On non-Flakes system, you can use `nix-shell` to start a development shell.
 
 On Flakes enabled system, you can use `nix develop` instead.
 
-If you have [`nix-direnv`](https://github.com/nix-community/nix-direnv/)
-installed, there is a `.envrc` file configured to start the Flakes enabled setup
-automatically. Just run `direnv allow` inside this repo.
+If you have [`nix-direnv`](https://github.com/nix-community/nix-direnv/) or
+[`lorri`](https://github.com/nix-community/lorri) installed, there is a
+`.envrc` file configured to start the Flakes enabled setup automatically. Just
+run `direnv allow` inside this repo.
 
 ## Limitations
 
