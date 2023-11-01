@@ -42,4 +42,6 @@ select = [
     "UP", # pyupgrade
     "W",  # pycodestyle
 ]
-ignore = [ "PLR0913" ]
+ignore = [
+    "PLR0913" # too-many-arguments
+]

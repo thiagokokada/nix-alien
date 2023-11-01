@@ -5,15 +5,12 @@
 let
   inherit (self.inputs) nix-filter;
 in
-{
+rec {
   inherit (self.outputs.packages.${pkgs.system}) nix-alien nix-index-update;
 
   check-py-files = pkgs.runCommand "check-py-files"
     {
-      src = nix-filter.lib {
-        root = ./.;
-        include = [ "nix_alien" "tests" ];
-      };
+      inherit (nix-alien) src;
       nativeBuildInputs = with pkgs; [
         python3.pkgs.black
         python3.pkgs.mypy
