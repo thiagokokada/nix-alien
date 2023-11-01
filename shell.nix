@@ -15,6 +15,7 @@ let
 in
 python-with-packages.env.overrideAttrs (old: {
   buildInputs = with pkgs; [
+    fzf
     nixpkgs-fmt
     ruff
     statix
