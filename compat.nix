@@ -1,5 +1,7 @@
 # Compatibility with non-flakes systems
 rec {
+  system = builtins.currentSystem;
+
   flake =
     (import
       (
@@ -11,5 +13,5 @@ rec {
       )
       { src = ./.; }).defaultNix;
 
-  pkgs = import flake.inputs.nixpkgs { };
+  pkgs = flake.inputs.nixpkgs.legacyPackages.${system};
 }
