@@ -3,16 +3,17 @@
 }:
 
 let
-  inherit (pkgs) lib;
-  dirty = lib.optionalString (!(self ? rev)) "_dirty";
-  version = "0.1.0+git${self.lastModifiedDate}${dirty}";
+  shortRev = self.shortRev or "dirty";
+  version = "0.1.0+git_${shortRev}";
 in
 {
   nix-alien = pkgs.callPackage ./nix-alien.nix {
     inherit version;
     inherit (self.inputs) nix-filter;
     nix-index = self.inputs.nix-index-database.packages.${pkgs.system}.nix-index-with-db;
-    nixpkgs-src = self.inputs.nix-index-database.inputs.nixpkgs.sourceInfo;
+    nix-index-database-src = self.inputs.nix-index-database;
+    nixpkgs-build-src = self.inputs.nixpkgs;
+    nixpkgs-src = self.inputs.nix-index-database.inputs.nixpkgs;
   };
 
   # For backwards compat, may be removed in the future
