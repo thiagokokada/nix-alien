@@ -233,10 +233,7 @@ def main(
     )
     parsed_args = parser.parse_args(args=args)
 
-    if parsed_args.flake:
-        filename = "flake.nix"
-    else:
-        filename = "default.nix"
+    filename = "flake.nix" if parsed_args.flake else "default.nix"
 
     destination = get_dest_path(
         parsed_args.destination,

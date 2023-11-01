@@ -34,13 +34,15 @@ version = {attr = "nix_alien._version.__version__"}
 
 [tool.ruff]
 select = [
-    "B",  # flake8-bugbear
-    "E",  # pycodestyle
-    "F",  # Pyflakes
-    "I",  # isort
-    "PL", # pylint
-    "UP", # pyupgrade
-    "W",  # pycodestyle
+    "B",   # flake8-bugbear
+    "E",   # pycodestyle
+    "F",   # Pyflakes
+    "I",   # isort
+    "PL",  # pylint
+    "RUF", # ruff
+    "SIM", # flake8-simplify
+    "UP",  # pyupgrade
+    "W",   # pycodestyle
 ]
 ignore = [
     "PLR0913" # too-many-arguments
