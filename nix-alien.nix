@@ -1,12 +1,10 @@
 { lib
 , fzf
-, nix-index
 , nix-filter
-, nixpkgs-src ? {
-    lastModifiedDate = "19700101000000";
-    rev = "nixpkgs-unstable";
-    narHash = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
-  }
+, nix-index
+, nix-index-database-src
+, nixpkgs-build-src
+, nixpkgs-src
 , python3
 , version
 }:
@@ -50,7 +48,11 @@ python3'.pkgs.buildPythonApplication {
   ] ++ (lib.attrVals deps python3'.pkgs);
 
   preBuild = ''
-    echo "__version__ = \"${version}\"" > nix_alien/_version.py
+    substituteInPlace nix_alien/_version.py \
+      --subst-var-by version ${version} \
+      --subst-var-by nixIndexDatabaseRev ${nix-index-database-src.rev} \
+      --subst-var-by nixpkgsRev ${nixpkgs-src.rev} \
+      --subst-var-by nixpkgsBuildRev ${nixpkgs-build-src.rev}
     substituteInPlace {nix_alien,tests}/*.{py,nix} \
       --subst-var-by nixpkgsLastModifiedDate ${nixpkgs-src.lastModifiedDate} \
       --subst-var-by nixpkgsRev ${nixpkgs-src.rev} \

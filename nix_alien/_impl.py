@@ -9,7 +9,7 @@ from pathlib import Path
 from platform import machine
 from typing import Callable, Optional
 
-from ._version import __version__
+from ._version import version
 from .helpers import edit_file, get_dest_path, get_print, read_template
 from .libs import find_libs, get_unique_packages
 
@@ -160,7 +160,7 @@ def main(
 
     parser = argparse.ArgumentParser()
     parser.add_argument("program", help="Program to run")
-    parser.add_argument("--version", action="version", version=__version__)
+    parser.add_argument("--version", action="version", version=version)
     parser.add_argument(
         "-l",
         "--additional-libs",
