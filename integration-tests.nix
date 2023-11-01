@@ -12,7 +12,7 @@ let
     url = "https://github.com/babashka/babashka/releases/download/v${babashkaVersion}/babashka-${babashkaVersion}-linux-amd64.tar.gz";
     hash = "sha256-2WzGw0GxJpL3owiSf24moZvAeQ8TKFSul1PRvKS3OWI=";
   };
-  cleanEnv = ''${lib.getExe' coreutils "env"} -i PATH="$PATH" HOME="$HOME"'';
+  cleanEnv = ''env -i PATH="$PATH" HOME="$HOME"'';
 in
 {
   it = pkgs.writeShellScriptBin "nix-alien-it" ''
