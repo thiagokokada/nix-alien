@@ -12,7 +12,6 @@ rec {
     {
       inherit (nix-alien) src;
       nativeBuildInputs = with pkgs; [
-        python3.pkgs.black
         python3.pkgs.mypy
         ruff
       ];
@@ -20,8 +19,8 @@ rec {
     touch $out
     export PYLINTHOME="$(mktemp -d)"
     export RUFF_CACHE_DIR="$(mktemp -d)"
-    black --check $src/nix_alien
     mypy --ignore-missing-imports $src/nix_alien
+    ruff format --check $src/nix_alien
     ruff check $src/nix_alien
   '';
 

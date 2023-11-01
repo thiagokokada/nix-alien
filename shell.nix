@@ -7,7 +7,6 @@ let
     oldAttrs: { doCheck = false; }
   );
   python-with-packages = pkgs.python3.withPackages (ps: with ps; [
-    black
     mypy
     nix-alien
     pytest
