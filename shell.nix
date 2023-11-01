@@ -3,10 +3,11 @@
 }:
 
 let
-  nix-alien = self.outputs.packages.${pkgs.system}.nix-alien.overrideAttrs (
-    oldAttrs: { doCheck = false; }
-  );
-  python-with-packages = pkgs.python3.withPackages (ps: with ps; [
+  inherit (pkgs) python3;
+  nix-alien = python3.pkgs.toPythonModule
+    (self.outputs.packages.${pkgs.system}.nix-alien.overrideAttrs
+      (oldAttrs: { doCheck = false; }));
+  python-with-packages = python3.withPackages (ps: with ps; [
     mypy
     nix-alien
     pytest
