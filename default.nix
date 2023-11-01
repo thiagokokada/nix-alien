@@ -11,7 +11,6 @@ in
   nix-alien = pkgs.callPackage ./nix-alien.nix {
     inherit version;
     inherit (self.inputs) nix-filter;
-    python3 = pkgs.python310;
     nix-index = self.inputs.nix-index-database.packages.${pkgs.system}.nix-index-with-db;
     nixpkgs-src = self.inputs.nix-index-database.inputs.nixpkgs.sourceInfo;
   };
