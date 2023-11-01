@@ -3,14 +3,8 @@
 }:
 
 let
-  inherit (pkgs) python3 callPackage;
-  nix-alien = python3.pkgs.toPythonModule (callPackage ./nix-alien.nix {
-    dev = true;
-    inherit (self.inputs) nix-filter;
-    nix-index = self.inputs.nix-index-database.packages.${pkgs.system}.nix-index-with-db;
-    nixpkgs-src = self.inputs.nix-index-database.inputs.nixpkgs.sourceInfo;
-  });
-  python-with-packages = python3.withPackages (ps: with ps; [
+  nix-alien = self.outputs.packages.${pkgs.system}.nix-alien.override { dev = true; };
+  python-with-packages = pkgs.python3.withPackages (ps: with ps; [
     black
     mypy
     nix-alien
