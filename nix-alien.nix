@@ -8,18 +8,16 @@
     narHash = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
   }
 , python3
-, rev ? null
-, dev ? false
+, version
 }:
 
 let
-  version = if (rev != null) then rev else "dev";
   deps = (lib.importTOML ./pyproject.toml).project.dependencies;
 in
 python3.pkgs.buildPythonApplication {
+  inherit version;
   pname = "nix-alien";
   format = "pyproject";
-  inherit version;
 
   src = nix-filter.lib {
     root = ./.;
@@ -39,15 +37,13 @@ python3.pkgs.buildPythonApplication {
     setuptools
   ] ++ (lib.attrVals deps python3.pkgs);
 
-  preBuild = lib.optionalString (rev != null) ''
-    echo "__version__ = \"${rev}\"" > nix_alien/_version.py
+  preBuild = ''
+    echo "__version__ = \"${version}\"" > nix_alien/_version.py
     substituteInPlace {nix_alien,tests}/*.{py,nix} \
       --subst-var-by nixpkgsLastModifiedDate ${nixpkgs-src.lastModifiedDate} \
       --subst-var-by nixpkgsRev ${nixpkgs-src.rev} \
       --subst-var-by nixpkgsHash ${nixpkgs-src.narHash}
   '';
-
-  doCheck = !dev;
 
   nativeCheckInputs = with python3.pkgs; [
     pytestCheckHook

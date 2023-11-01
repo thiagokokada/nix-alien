@@ -3,7 +3,9 @@
 }:
 
 let
-  nix-alien = self.outputs.packages.${pkgs.system}.nix-alien.override { dev = true; };
+  nix-alien = self.outputs.packages.${pkgs.system}.nix-alien.overrideAttrs (
+    oldAttrs: { doCheck = false; }
+  );
   python-with-packages = pkgs.python3.withPackages (ps: with ps; [
     black
     mypy
