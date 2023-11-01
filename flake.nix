@@ -9,7 +9,7 @@
     flake-utils.url = "github:numtide/flake-utils";
     nix-filter.url = "github:numtide/nix-filter";
     nix-index-database.url = "github:Mic92/nix-index-database";
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nixpkgs.follows = "nix-index-database/nixpkgs";
   };
 
   outputs = { self, nixpkgs, flake-utils, ... }:
