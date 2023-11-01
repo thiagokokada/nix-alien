@@ -2,7 +2,7 @@ import os
 import subprocess
 import uuid
 from functools import partial
-from importlib.resources import read_text
+from importlib.resources import files
 from pathlib import Path
 from string import Template
 from typing import Callable, Optional
@@ -45,4 +45,4 @@ def get_print(silent: bool = False) -> Callable[..., None]:
 
 
 def read_template(filename: str) -> Template:
-    return Template(read_text(__package__, filename))
+    return Template(files(__package__).joinpath(filename).read_text())
