@@ -23,7 +23,13 @@ python3.pkgs.buildPythonApplication {
 
   src = nix-filter.lib {
     root = ./.;
-    include = [ "nix_alien" "tests" "pyproject.toml" "README.md" ];
+    include = [
+      "nix_alien"
+      "tests"
+      "pyproject.toml"
+      "README.md"
+      "LICENSE"
+    ];
   };
 
   nativeBuildInputs = [ fzf ];
