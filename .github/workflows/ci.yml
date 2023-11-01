@@ -20,6 +20,9 @@ jobs:
           nix flake check --print-build-logs
           # non-flake build
           nix-build
+          # make sure the development shell is working
+          nix develop --command "pytest"
+          nix-shell --run "pytest"
 
       - name: Integration tests
         run: |
