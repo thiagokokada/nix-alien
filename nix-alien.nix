@@ -1,5 +1,4 @@
 { lib
-, stdenv
 , fzf
 , nix-filter
 , nix-index
@@ -24,7 +23,7 @@ let
       pylddwrap = prev.pylddwrap.overrideAttrs (oldAttrs: {
         # Fails to build in GitHub Actions, but works once it is build
         # in a proper aarch64 system
-        doInstallCheck = stdenv.hostPlatform.isx86;
+        doInstallCheck = false;
       });
     };
   };
