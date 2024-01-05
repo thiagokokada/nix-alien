@@ -5,7 +5,7 @@
     flake-compat.url = "github:edolstra/flake-compat";
     flake-utils.url = "github:numtide/flake-utils";
     nix-filter.url = "github:numtide/nix-filter";
-    nix-index-database.url = "github:Mic92/nix-index-database";
+    nix-index-database.url = "github:nix-community/nix-index-database";
     nixpkgs.follows = "nix-index-database/nixpkgs";
   };
 
