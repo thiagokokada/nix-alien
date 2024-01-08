@@ -31,13 +31,13 @@ If your binary is located in `~/myapp`, run:
 ```console
 $ nix --extra-experimental-features "nix-command flakes" run github:thiagokokada/nix-alien -- ~/myapp
 ```
-_Tip_: if you are trying to run an OpenGL binary (e.g.: `blender`) in non-NixOS
-systems, you can wrap the command above in
-[nixGL](https://github.com/guibou/nixGL):
-
-```console
-$ nix --extra-experimental-features "nix-command flakes" run --impure github:guibou/nixGL --override-input nixpkgs nixpkgs/nixos-unstable -- nix run github:thiagokokada/nix-alien -- blender
-```
+> [!TIP]
+> If you are trying to run an OpenGL binary (e.g.: `blender`) in non-NixOS
+> systems, you can wrap the command above in
+> [nixGL](https://github.com/guibou/nixGL):
+> ```console
+> $ nix --extra-experimental-features "nix-command flakes" run --impure github:guibou/nixGL --override-input nixpkgs nixpkgs/nixos-unstable -- nix run github:thiagokokada/nix-alien -- blender
+> ```
 
 ## Usage
 
@@ -168,7 +168,8 @@ file.
 
 ### NixOS installation with Flakes
 
-> :warning: Overriding `nix-alien` inputs may cause mismatches between the
+> [!WARNING]
+> Overriding `nix-alien` inputs may cause mismatches between the
 > `nix-index-database` and `nixpkgs`, causing possibly incorrect results, so it
 > is unsupported.
 
@@ -316,9 +317,11 @@ libraries found in the binary. The second one can be used as:
 $ nix-alien -p libGL -p zlib ~/myapp
 ```
 
-To direct add the package to `default.nix` file. Warning: there is no
-validation, so you can receive an `undefied variable` error in case of
-an inexistent package.
+To direct add the package to `default.nix` file.
+
+> [!WARNING]
+> There is no validation in `-p` flag, so you can receive an `undefied
+> variable` error in case of an inexistent package.
 
 ## Technical Description
 
