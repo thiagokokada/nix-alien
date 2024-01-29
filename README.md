@@ -122,7 +122,7 @@ options:
 
 ### Usage without installing
 
-You can run the scripts from this repo directly without clonning or installing
+You can run the scripts from this repo directly without cloning or installing
 them, assuming you're using [a resonable up-to-date nix and enabled
 experimental Flakes support](https://nixos.wiki/wiki/Flakes#Enable_flakes).
 
