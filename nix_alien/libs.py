@@ -53,7 +53,7 @@ def find_libs(
     resolved_deps: dict[str, Optional[str]] = {}
 
     for dep in deps:
-        if not dep.soname or dep.found:
+        if not dep.soname or dep.found or dep.soname in resolved_deps:
             continue
 
         candidates = find_lib_candidates(dep.soname)
