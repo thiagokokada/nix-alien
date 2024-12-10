@@ -54,12 +54,12 @@ python3'.pkgs.buildPythonApplication {
   preBuild = ''
     substituteInPlace nix_alien/_version.py \
       --subst-var-by version ${version} \
-      --subst-var-by nixIndexDatabaseRev ${nix-index-database-src.rev} \
-      --subst-var-by nixpkgsRev ${nixpkgs-src.rev}
+      --subst-var-by nixIndexDatabaseRev ${nix-index-database-src.rev or "unknown"} \
+      --subst-var-by nixpkgsRev ${nixpkgs-src.rev or "unknown"}
     substituteInPlace {nix_alien,tests}/*.{py,nix} \
-      --subst-var-by nixpkgsLastModifiedDate ${nixpkgs-src.lastModifiedDate} \
-      --subst-var-by nixpkgsRev ${nixpkgs-src.rev} \
-      --subst-var-by nixpkgsHash ${nixpkgs-src.narHash}
+      --subst-var-by nixpkgsLastModifiedDate ${nixpkgs-src.lastModifiedDate or "unknown"} \
+      --subst-var-by nixpkgsRev ${nixpkgs-src.rev or "unknown"} \
+      --subst-var-by nixpkgsHash ${nixpkgs-src.narHash or "unknown"}
   '';
 
   nativeCheckInputs = with python3'.pkgs; [
