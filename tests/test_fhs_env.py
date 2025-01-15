@@ -24,9 +24,9 @@ def test_create_fhs_env_drv(mock_find_libs, pytestconfig):
 }:
 
 let
-  inherit (pkgs) buildFHSUserEnv;
+  inherit (pkgs) buildFHSEnv;
 in
-buildFHSUserEnv {
+buildFHSEnv {
   name = "xyz-fhs";
   targetPkgs = p: with p; [
     bar.out
@@ -62,9 +62,9 @@ def test_create_fhs_env_drv_with_spaces(mock_find_libs, pytestconfig):
 }:
 
 let
-  inherit (pkgs) buildFHSUserEnv;
+  inherit (pkgs) buildFHSEnv;
 in
-buildFHSUserEnv {
+buildFHSEnv {
   name = "x_y_z-fhs";
   targetPkgs = p: with p; [
     bar.out
@@ -105,9 +105,9 @@ def test_create_fhs_env_drv_flake(mock_machine, mock_find_libs, pytestconfig):
     {
       defaultPackage.${system} =
         let
-          inherit (pkgs) buildFHSUserEnv;
+          inherit (pkgs) buildFHSEnv;
         in
-        buildFHSUserEnv {
+        buildFHSEnv {
           name = "xyz-fhs";
           targetPkgs = p: with p; [
             bar.out

@@ -8,9 +8,9 @@
 }:
 
 let
-  inherit (pkgs) buildFHSUserEnv;
+  inherit (pkgs) buildFHSEnv;
 in
-buildFHSUserEnv {
+buildFHSEnv {
   name = "${__name__}-fhs";
   targetPkgs = p: with p; [
     ${__packages__}
