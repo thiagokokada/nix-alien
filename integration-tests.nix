@@ -41,7 +41,7 @@ in
     testNixAlienLd() {
       if [[ "$NAME" == "NixOS" ]] && [[ -z "$NIX_LD" ]]; then
         echo "[WARN] NIX_LD not setup! Will only test nix evaluation."
-        ${cleanEnv} nix-alien-ld -c zlib ${babashka}/bb -- --version 2>&1 | grep -F "required file not found"
+        ${cleanEnv} nix-alien-ld -c zlib ${babashka}/bb -- --version 2>&1 | grep -F "Could not start dynamically linked executable"
       else
         ${cleanEnv} nix-alien-ld -c zlib ${babashka}/bb -- --version | grep -F "babashka v${babashkaVersion}"
       fi
@@ -50,7 +50,7 @@ in
     testNixAlienLdFlake() {
       if [[ "$NAME" == "NixOS" ]] && [[ -z "$NIX_LD" ]]; then
         echo "[WARN] NIX_LD not setup! Will only test nix evaluation."
-        ${cleanEnv} nix-alien-ld -c zlib --flake ${babashka}/bb -- --version 2>&1 | grep -F "required file not found"
+        ${cleanEnv} nix-alien-ld -c zlib --flake ${babashka}/bb -- --version 2>&1 | grep -F "Could not start dynamically linked executable"
       else
         ${cleanEnv} nix-alien-ld -c zlib --flake ${babashka}/bb -- --version | grep -F "babashka v${babashkaVersion}"
       fi
