@@ -2,9 +2,6 @@
 , self ? (import ./compat.nix).flake
 }:
 
-let
-  inherit (self.inputs) nix-filter;
-in
 rec {
   inherit (self.outputs.packages.${pkgs.system}) nix-alien nix-index-update;
 
@@ -26,10 +23,7 @@ rec {
 
   check-nix-files = pkgs.runCommand "check-nix-files"
     {
-      src = nix-filter.lib {
-        root = ./.;
-        include = [ (nix-filter.lib.matchExt "nix") ];
-      };
+      src = ./.;
       nativeBuildInputs = with pkgs; [ nixpkgs-fmt statix ];
     } ''
     touch $out

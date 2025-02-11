@@ -1,6 +1,5 @@
 { lib
 , fzf
-, nix-filter
 , nix-index
 , nix-index-database-src
 , nixpkgs-src
@@ -9,47 +8,21 @@
 }:
 
 let
-  deps = (lib.importTOML ./pyproject.toml).project.dependencies;
-  python3' = python3.override {
-    packageOverrides = final: prev: {
-      icontract = prev.icontract.overrideAttrs (oldAttrs: {
-        # icontract is a dependency of pylddwrap, that has complex check
-        # dependencies (astor, deal, numpy...) but almost no runtime
-        # dependencies
-        # Disable its tests because it often breaks builds while bringing
-        # no actual advantage here
-        doInstallCheck = false;
-      });
-      pylddwrap = prev.pylddwrap.overrideAttrs (oldAttrs: {
-        # Fails to build in GitHub Actions, but works once it is build
-        # in a proper aarch64 system
-        doInstallCheck = false;
-      });
-    };
-  };
+  deps = (lib.importTOML ./src/pyproject.toml).project.dependencies;
 in
-python3'.pkgs.buildPythonApplication {
+python3.pkgs.buildPythonApplication {
   inherit version;
   pname = "nix-alien";
   format = "pyproject";
 
-  src = nix-filter.lib {
-    root = ./.;
-    include = [
-      "nix_alien"
-      "tests"
-      "pyproject.toml"
-      "README.md"
-      "LICENSE"
-    ];
-  };
+  src = ./src;
 
   nativeBuildInputs = [ fzf ];
 
-  propagatedBuildInputs = with python3'.pkgs; [
+  propagatedBuildInputs = with python3.pkgs; [
     nix-index
     setuptools
-  ] ++ (lib.attrVals deps python3'.pkgs);
+  ] ++ (lib.attrVals deps python3.pkgs);
 
   preBuild = ''
     substituteInPlace nix_alien/_version.py \
@@ -62,7 +35,7 @@ python3'.pkgs.buildPythonApplication {
       --subst-var-by nixpkgsHash ${nixpkgs-src.narHash or "unknown"}
   '';
 
-  nativeCheckInputs = with python3'.pkgs; [
+  nativeCheckInputs = with python3.pkgs; [
     pytestCheckHook
   ];
 
