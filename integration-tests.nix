@@ -6,56 +6,59 @@ let
     system = "x86_64-linux";
     overlays = [ self.overlays.default ];
   };
-  inherit (pkgs) lib coreutils gnugrep nix-alien nix shunit2;
   babashkaVersion = "1.3.185";
   babashka = pkgs.fetchzip {
     url = "https://github.com/babashka/babashka/releases/download/v${babashkaVersion}/babashka-${babashkaVersion}-linux-amd64.tar.gz";
     hash = "sha256-2WzGw0GxJpL3owiSf24moZvAeQ8TKFSul1PRvKS3OWI=";
   };
-  cleanEnv = ''env -i PATH="$PATH" HOME="$HOME"'';
 in
 {
-  it = pkgs.writeShellScriptBin "nix-alien-it" ''
-    export PATH="${lib.makeBinPath [ coreutils gnugrep nix-alien nix ]}"
-    export HOME="$(mktemp -d)"
-    . /etc/os-release
+  it = pkgs.testers.runNixOSTest {
+    name = "nix-alien";
 
-    testNixAlien() {
-      ${cleanEnv} nix-alien -c zlib ${babashka}/bb -- --version | grep -F "babashka v${babashkaVersion}"
-    }
+    nodes.machine = { pkgs, lib, ... }: {
+      environment.systemPackages = with pkgs; [
+        nix-alien
+      ];
 
-    testNixAlienFlake() {
-      ${cleanEnv} nix-alien -c zlib --flake ${babashka}/bb -- --version | grep -F "babashka v${babashkaVersion}"
-    }
+      programs.nix-ld.enable = true;
 
-    testNixAlienFindLibs() {
-      ${cleanEnv} nix-alien-find-libs -c zlib ${babashka}/bb | grep -F "zlib.out"
-    }
+      nix = {
+        nixPath = [ "${self.inputs.nixpkgs}" ];
+        # settings = {
+        #   substituters = lib.mkForce [ ];
+        #   hashed-mirrors = null;
+        #   connect-timeout = 1;
+        # };
+      };
 
-    # The tests below will fail in a NixOS system without NIX_LD setup, so we
-    # just test evaluation by checking if the error is the expect one (e.g.: lack
-    # of libs instead of nix eval errors).
-    # On non-NixOS systems (like GitHub Actions) this will work because babashka
-    # will just re-use the system libs (and almost every system contains zlib
-    # installed).
-    testNixAlienLd() {
-      if [[ "$NAME" == "NixOS" ]] && [[ -z "$NIX_LD" ]]; then
-        echo "[WARN] NIX_LD not setup! Will only test nix evaluation."
-        ${cleanEnv} nix-alien-ld -c zlib ${babashka}/bb -- --version 2>&1 | grep -F "Could not start dynamically linked executable"
-      else
-        ${cleanEnv} nix-alien-ld -c zlib ${babashka}/bb -- --version | grep -F "babashka v${babashkaVersion}"
-      fi
-    }
+      # FIXME: the tests are impure, need to run with `--option sandbox false`
+      networking.useDHCP = true;
 
-    testNixAlienLdFlake() {
-      if [[ "$NAME" == "NixOS" ]] && [[ -z "$NIX_LD" ]]; then
-        echo "[WARN] NIX_LD not setup! Will only test nix evaluation."
-        ${cleanEnv} nix-alien-ld -c zlib --flake ${babashka}/bb -- --version 2>&1 | grep -F "Could not start dynamically linked executable"
-      else
-        ${cleanEnv} nix-alien-ld -c zlib --flake ${babashka}/bb -- --version | grep -F "babashka v${babashkaVersion}"
-      fi
-    }
+      system = {
+        # includeBuildDependencies = true;
+        extraDependencies = with pkgs; [
+          zlib
+        ];
+      };
 
-    . ${shunit2}/bin/shunit2
-  '';
+      virtualisation = {
+        cores = 2;
+        memorySize = 2048;
+        diskSize = 10240;
+      };
+    };
+
+    testScript = /* python */ ''
+      start_all()
+
+      machine.wait_for_unit("multi-user.target")
+
+      machine.succeed("nix-alien -c zlib ${babashka}/bb -- --version | grep -F 'babashka v${babashkaVersion}'")
+      machine.succeed("nix-alien -c zlib --flake ${babashka}/bb -- --version | grep -F 'babashka v${babashkaVersion}'")
+      machine.succeed("nix-alien-ld -c zlib ${babashka}/bb -- --version | grep -F 'babashka v${babashkaVersion}'")
+      machine.succeed("nix-alien-ld -c zlib --flake ${babashka}/bb -- --version | grep -F 'babashka v${babashkaVersion}'")
+      machine.succeed("nix-alien-find-libs -c zlib ${babashka}/bb | grep -F 'zlib.out'")
+    '';
+  };
 }
