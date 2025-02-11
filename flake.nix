@@ -3,7 +3,6 @@
 
   inputs = {
     flake-compat.url = "github:edolstra/flake-compat";
-    flake-utils.url = "github:numtide/flake-utils";
     nix-index-database = {
       url = "github:nix-community/nix-index-database";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -11,40 +10,50 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
   };
 
-  outputs = { self, nixpkgs, flake-utils, ... }:
+  outputs = { self, nixpkgs, ... }:
+    let
+      overlay = final: prev: import ./overlay.nix { inherit self final prev; };
+
+      supportedSystems = [ "x86_64-linux" "aarch64-linux" ];
+
+      # Helper function to generate an attrset '{ x86_64-linux = f "x86_64-linux"; ... }'.
+      forAllSystems = nixpkgs.lib.genAttrs supportedSystems;
+
+      # Nixpkgs instantiated for supported system types.
+      nixpkgsFor = forAllSystems (system: import nixpkgs { inherit system; overlays = [ overlay ]; });
+    in
     {
       overlays.default = final: prev: import ./overlay.nix { inherit self final prev; };
+
       # Integration tests are only available in x86_64-linux for now
       integration-tests.x86_64-linux = import ./integration-tests.nix { inherit self; };
-    } // (flake-utils.lib.eachSystem [ "aarch64-linux" "x86_64-linux" ] (system:
-      let
-        pkgs = import nixpkgs {
-          inherit system;
-          overlays = [ self.overlays.default ];
-        };
-      in
-      {
-        formatter = pkgs.nixpkgs-fmt;
 
-        packages = {
+      checks = forAllSystems (system: let pkgs = nixpkgsFor.${system}; in import ./checks.nix { inherit pkgs self; });
+
+      formatter = forAllSystems (system: let pkgs = nixpkgsFor.${system}; in pkgs.nixpkgs-fmt);
+
+      apps = forAllSystems (system:
+        let
+          genNixAlienApp = name: {
+            type = "app";
+            program = nixpkgs.lib.getExe' self.packages.${system}.nix-alien name;
+          };
+        in
+        {
+          default = self.outputs.apps.${system}.nix-alien;
+          nix-alien = genNixAlienApp "nix-alien";
+          nix-alien-ld = genNixAlienApp "nix-alien-ld";
+          nix-alien-find-libs = genNixAlienApp "nix-alien-find-libs";
+        });
+
+      packages = forAllSystems (system:
+        let pkgs = nixpkgsFor.${system}; in {
           inherit (pkgs) nix-alien nix-index-update;
           default = self.outputs.packages.${system}.nix-alien;
-        };
+        });
 
-        checks = import ./checks.nix { inherit pkgs self; };
-
-        apps =
-          let
-            inherit (flake-utils.lib) mkApp;
-          in
-          {
-            default = self.outputs.apps.${system}.nix-alien;
-            nix-alien = mkApp { drv = self.outputs.packages.${system}.nix-alien; };
-            nix-alien-ld = mkApp { drv = self.outputs.packages.${system}.nix-alien; name = "nix-alien-ld"; };
-            nix-alien-find-libs = mkApp { drv = self.outputs.packages.${system}.nix-alien; name = "nix-alien-find-libs"; };
-            nix-index-update = mkApp { drv = self.outputs.packages.${system}.nix-index-update; };
-          };
-
-        devShells.default = import ./shell.nix { inherit pkgs self; };
-      }));
+      devShells = forAllSystems (system:
+        let pkgs = nixpkgsFor.${system}; in
+        { default = import ./shell.nix { inherit pkgs self; }; });
+    };
 }
