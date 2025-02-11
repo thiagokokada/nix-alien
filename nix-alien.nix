@@ -1,6 +1,5 @@
 { lib
 , fzf
-, nix-filter
 , nix-index
 , nix-index-database-src
 , nixpkgs-src
@@ -9,7 +8,7 @@
 }:
 
 let
-  deps = (lib.importTOML ./pyproject.toml).project.dependencies;
+  deps = (lib.importTOML ./src/pyproject.toml).project.dependencies;
   python3' = python3.override {
     packageOverrides = final: prev: {
       icontract = prev.icontract.overrideAttrs (oldAttrs: {
@@ -33,16 +32,7 @@ python3'.pkgs.buildPythonApplication {
   pname = "nix-alien";
   format = "pyproject";
 
-  src = nix-filter.lib {
-    root = ./.;
-    include = [
-      "nix_alien"
-      "tests"
-      "pyproject.toml"
-      "README.md"
-      "LICENSE"
-    ];
-  };
+  src = ./src;
 
   nativeBuildInputs = [ fzf ];
 
