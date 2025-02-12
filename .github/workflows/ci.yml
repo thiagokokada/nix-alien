@@ -16,8 +16,6 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
-      - uses: DeterminateSystems/magic-nix-cache-action@main
-
       - name: CI
         run: |
           nix flake check --print-build-logs
@@ -37,8 +35,6 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           extra-conf: |
             extra-platforms = aarch64-linux
-
-      - uses: DeterminateSystems/magic-nix-cache-action@main
 
       - name: Install QEMU
         run: |
@@ -61,8 +57,6 @@ jobs:
       - uses: DeterminateSystems/nix-installer-action@main
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-
-      - uses: DeterminateSystems/magic-nix-cache-action@main
 
       - name: Integration tests
         run: |
