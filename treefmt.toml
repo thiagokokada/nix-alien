@@ -1,0 +1,9 @@
+[formatter.ruff-format]
+command = "ruff"
+options = ["format"]
+includes = ["*.py"]
+
+[formatter.nixfmt-rfc-style]
+command = "nixfmt"
+includes = ["*.nix"]
+excludes = ["src/*"]

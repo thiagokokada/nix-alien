@@ -32,7 +32,7 @@ nix_alien = ["*.nix"]
 [tool.setuptools.dynamic]
 version = {attr = "nix_alien._version.__version__"}
 
-[tool.ruff]
+[tool.ruff.lint]
 select = [
     "B",   # flake8-bugbear
     "E",   # pycodestyle

@@ -1,7 +1,8 @@
-{ writeShellApplication
-, coreutils
-, system
-, wget
+{
+  writeShellApplication,
+  coreutils,
+  system,
+  wget,
 }:
 
 writeShellApplication {
