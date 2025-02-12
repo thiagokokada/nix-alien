@@ -1,10 +1,11 @@
-{ lib
-, fzf
-, nix-index
-, nix-index-database-src
-, nixpkgs-src
-, python3
-, version
+{
+  lib,
+  fzf,
+  nix-index,
+  nix-index-database-src,
+  nixpkgs-src,
+  python3,
+  version,
 }:
 
 let
@@ -19,10 +20,13 @@ python3.pkgs.buildPythonApplication {
 
   nativeBuildInputs = [ fzf ];
 
-  propagatedBuildInputs = with python3.pkgs; [
-    nix-index
-    setuptools
-  ] ++ (lib.attrVals deps python3.pkgs);
+  propagatedBuildInputs =
+    with python3.pkgs;
+    [
+      nix-index
+      setuptools
+    ]
+    ++ (lib.attrVals deps python3.pkgs);
 
   preBuild = ''
     substituteInPlace nix_alien/_version.py \

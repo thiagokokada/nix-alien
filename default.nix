@@ -1,5 +1,6 @@
-{ pkgs ? (import ./compat.nix).pkgs
-, self ? (import ./compat.nix).flake
+{
+  pkgs ? (import ./compat.nix).pkgs,
+  self ? (import ./compat.nix).flake,
 }:
 
 let
