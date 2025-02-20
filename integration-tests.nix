@@ -18,7 +18,7 @@ in
     name = "nix-alien";
 
     nodes.machine =
-      { pkgs, lib, ... }:
+      { pkgs, ... }:
       {
         environment.systemPackages = with pkgs; [
           nix-alien
@@ -48,7 +48,6 @@ in
         virtualisation = {
           cores = 2;
           memorySize = 2048;
-          diskSize = 10240;
         };
       };
 
