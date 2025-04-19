@@ -5,10 +5,9 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "nix_alien"
 description = "Run unpatched binaries on Nix/NixOS"
-readme = "README.md"
 requires-python = ">=3.9"
 keywords = ["nix", "nixos"]
-license = {file = "LICENSE"}
+license = "MIT"
 classifiers = [
     "Programming Language :: Python :: 3",
 ]
