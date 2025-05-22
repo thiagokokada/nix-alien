@@ -2,8 +2,6 @@
 
 ![nix-alien](./.github/nix-alien.jpg)
 
-[![FlakeHub](https://img.shields.io/endpoint?url=https://flakehub.com/f/thiagokokada/nix-alien/badge)](https://flakehub.com/flake/thiagokokada/nix-alien)
-
 [![ci](https://github.com/thiagokokada/nix-alien/actions/workflows/ci.yml/badge.svg)](https://github.com/thiagokokada/nix-alien/actions/workflows/ci.yml)
 
 ## Introduction
