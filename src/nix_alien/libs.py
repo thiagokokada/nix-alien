@@ -25,7 +25,6 @@ def find_lib_candidates(basename: str) -> list[str]:
             "--minimal",
             "--at-root",
             "--whole-name",
-            "--top-level",
             os.path.join("/lib", basename),
         ],
         check=True,
