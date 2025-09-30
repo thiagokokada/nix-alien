@@ -10,11 +10,10 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
-      - uses: DeterminateSystems/nix-installer-action@main
+      - uses: cachix/install-nix-action@v31
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-
-      - uses: DeterminateSystems/magic-nix-cache-action@main
+          nix_path: nixpkgs=channel:nixos-unstable
+          github_access_token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Set default git branch (to reduce log spam)
         run: git config --global init.defaultBranch master
