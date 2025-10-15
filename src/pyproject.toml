@@ -38,5 +38,6 @@ select = [
     "W",   # pycodestyle
 ]
 ignore = [
-    "PLR0913" # too-many-arguments
+    "PLR0913", # too-many-arguments
+    "UP045", # allow Optional[X]
 ]
