@@ -4,10 +4,10 @@ import re
 import shlex
 import subprocess
 import sys
-from collections.abc import Iterable
+from collections.abc import Callable, Iterable
 from pathlib import Path
 from platform import machine
-from typing import Callable, Optional
+from typing import Optional
 
 from ._version import version
 from .helpers import edit_file, get_dest_path, get_print, read_template
