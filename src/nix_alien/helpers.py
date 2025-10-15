@@ -1,11 +1,12 @@
 import os
 import subprocess
 import uuid
+from collections.abc import Callable
 from functools import partial
 from importlib.resources import files
 from pathlib import Path
 from string import Template
-from typing import Callable, Optional
+from typing import Optional
 
 UUID_NAMESPACE = uuid.UUID("eebf3397-2041-4370-bf33-937b33d5c959")
 
