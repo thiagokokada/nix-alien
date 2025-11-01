@@ -10,7 +10,8 @@ in
 {
   nix-alien = pkgs.callPackage ./nix-alien.nix {
     inherit version;
-    nix-index = self.inputs.nix-index-database.packages.${pkgs.system}.nix-index-with-db;
+    nix-index =
+      self.inputs.nix-index-database.packages.${pkgs.stdenv.hostPlatform.system}.nix-index-with-db;
     nix-index-database-src = self.inputs.nix-index-database;
     nixpkgs-src = self.inputs.nixpkgs;
   };

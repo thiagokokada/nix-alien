@@ -6,7 +6,7 @@
 let
   inherit (pkgs) python3;
   nix-alien = python3.pkgs.toPythonModule (
-    self.outputs.packages.${pkgs.system}.nix-alien.overrideAttrs (oldAttrs: {
+    self.outputs.packages.${pkgs.stdenv.hostPlatform.system}.nix-alien.overrideAttrs (oldAttrs: {
       doInstallCheck = false;
     })
   );

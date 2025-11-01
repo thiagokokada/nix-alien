@@ -4,7 +4,7 @@
 }:
 
 rec {
-  inherit (self.outputs.packages.${pkgs.system}) nix-alien nix-index-update;
+  inherit (self.outputs.packages.${pkgs.stdenv.hostPlatform.system}) nix-alien nix-index-update;
 
   check-py-files =
     pkgs.runCommand "check-py-files"
