@@ -10,7 +10,7 @@ jobs:
   build-x86_64-linux:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - uses: DeterminateSystems/nix-installer-action@main
         with:
@@ -28,7 +28,7 @@ jobs:
   build-aarch64-linux:
     runs-on: ubuntu-24.04-arm
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - uses: DeterminateSystems/nix-installer-action@main
         with:
@@ -43,7 +43,7 @@ jobs:
   it-x86_64-linux:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - uses: DeterminateSystems/nix-installer-action@main
         with:
