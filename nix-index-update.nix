@@ -1,7 +1,7 @@
 {
   writeShellApplication,
   coreutils,
-  system,
+  stdenv,
   wget,
 }:
 
@@ -14,7 +14,7 @@ writeShellApplication {
   ];
 
   text = ''
-    readonly filename="index-${system}"
+    readonly filename="index-${stdenv.hostPlatform.system}"
     readonly dest_dir="$HOME/.cache/nix-index"
 
     mkdir -p "$dest_dir"
