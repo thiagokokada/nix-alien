@@ -39,6 +39,7 @@ select = [
 ]
 ignore = [
     "PLR0913", # too-many-arguments
+    "PLR0917", # too-many-positional-arguments
     "UP007", # allow X | Y
     "UP045", # allow Optional[X]
 ]
