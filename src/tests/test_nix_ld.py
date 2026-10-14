@@ -14,14 +14,7 @@ def test_create_nix_ld_drv(mock_find_libs, pytestconfig):
     assert (
         nix_ld.create_nix_ld_drv("xyz", additional_packages=["libGL"])
         == """\
-{ pkgs ? import
-    (builtins.fetchTarball {
-      name = "nixpkgs-unstable-@nixpkgsLastModifiedDate@";
-      url = "https://github.com/NixOS/nixpkgs/archive/@nixpkgsRev@.tar.gz";
-      sha256 = "@nixpkgsHash@";
-    })
-    { }
-}:
+{ pkgs ? import (builtins.storePath "@nixpkgsPath@") { } }:
 
 let
   inherit (pkgs) lib stdenv;
@@ -54,14 +47,7 @@ def test_create_nix_ld_drv_with_spaces(mock_find_libs, pytestconfig):
     assert (
         nix_ld.create_nix_ld_drv("x y z", additional_packages=["libGL"])
         == """\
-{ pkgs ? import
-    (builtins.fetchTarball {
-      name = "nixpkgs-unstable-@nixpkgsLastModifiedDate@";
-      url = "https://github.com/NixOS/nixpkgs/archive/@nixpkgsRev@.tar.gz";
-      sha256 = "@nixpkgsHash@";
-    })
-    { }
-}:
+{ pkgs ? import (builtins.storePath "@nixpkgsPath@") { } }:
 
 let
   inherit (pkgs) lib stdenv;
