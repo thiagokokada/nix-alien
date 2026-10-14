@@ -34,8 +34,7 @@ python3.pkgs.buildPythonApplication {
       --subst-var-by nixIndexDatabaseRev ${nix-index-database-src.rev or "unknown"} \
       --subst-var-by nixpkgsRev ${nixpkgs-src.rev or "unknown"}
     substituteInPlace {nix_alien,tests}/*.{py,nix} \
-      --subst-var-by nixpkgsPath ${nixpkgs-src.outPath} \
-      --subst-var-by nixpkgsRev ${nixpkgs-src.rev or "nixpkgs-unstable"}
+      --subst-var-by nixpkgsPath ${nixpkgs-src.outPath}
   '';
 
   nativeCheckInputs = with python3.pkgs; [

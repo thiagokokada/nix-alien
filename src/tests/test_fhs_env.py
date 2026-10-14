@@ -81,7 +81,7 @@ def test_create_fhs_env_drv_flake(mock_machine, mock_find_libs, pytestconfig):
 {
   description = "xyz-fhs";
 
-  inputs.nixpkgs.url = "github:NixOS/nixpkgs/@nixpkgsRev@";
+  inputs.nixpkgs.url = "path:@nixpkgsPath@";
 
   outputs = { self, nixpkgs }:
     let
