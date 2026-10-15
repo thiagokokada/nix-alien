@@ -1,7 +1,7 @@
 {
   description = "${__name__}-nix-ld";
 
-  inputs.nixpkgs.url = "github:NixOS/nixpkgs/@nixpkgsRev@";
+  inputs.nixpkgs.url = "path:@nixpkgsPath@";
 
   outputs = { self, nixpkgs }:
     let

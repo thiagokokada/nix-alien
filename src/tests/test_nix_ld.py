@@ -14,14 +14,7 @@ def test_create_nix_ld_drv(mock_find_libs, pytestconfig):
     assert (
         nix_ld.create_nix_ld_drv("xyz", additional_packages=["libGL"])
         == """\
-{ pkgs ? import
-    (builtins.fetchTarball {
-      name = "nixpkgs-unstable-@nixpkgsLastModifiedDate@";
-      url = "https://github.com/NixOS/nixpkgs/archive/@nixpkgsRev@.tar.gz";
-      sha256 = "@nixpkgsHash@";
-    })
-    { }
-}:
+{ pkgs ? import (builtins.storePath "@nixpkgsPath@") { } }:
 
 let
   inherit (pkgs) lib stdenv;
@@ -54,14 +47,7 @@ def test_create_nix_ld_drv_with_spaces(mock_find_libs, pytestconfig):
     assert (
         nix_ld.create_nix_ld_drv("x y z", additional_packages=["libGL"])
         == """\
-{ pkgs ? import
-    (builtins.fetchTarball {
-      name = "nixpkgs-unstable-@nixpkgsLastModifiedDate@";
-      url = "https://github.com/NixOS/nixpkgs/archive/@nixpkgsRev@.tar.gz";
-      sha256 = "@nixpkgsHash@";
-    })
-    { }
-}:
+{ pkgs ? import (builtins.storePath "@nixpkgsPath@") { } }:
 
 let
   inherit (pkgs) lib stdenv;
@@ -99,7 +85,7 @@ def test_create_nix_ld_drv_flake(mock_machine, mock_find_libs, pytestconfig):
 {
   description = "xyz-nix-ld";
 
-  inputs.nixpkgs.url = "github:NixOS/nixpkgs/@nixpkgsRev@";
+  inputs.nixpkgs.url = "path:@nixpkgsPath@";
 
   outputs = { self, nixpkgs }:
     let
@@ -241,7 +227,7 @@ def test_main_with_print(monkeypatch, capsys):
     assert (
         out
         == """\
-/home/nameless-shelter/.cache/nix-alien/d51a223b-43f0-56c6-b5c8-2404823026ac/nix-ld/default.nix
+/home/nameless-shelter/.cache/nix-alien/424fa159-7102-5903-809b-402a6fe1cce4/nix-ld/default.nix
 """
     )
 
@@ -251,6 +237,6 @@ def test_main_with_print(monkeypatch, capsys):
     assert (
         out
         == """\
-/home/nameless-shelter/.cache/nix-alien/d51a223b-43f0-56c6-b5c8-2404823026ac/nix-ld/flake.nix
+/home/nameless-shelter/.cache/nix-alien/424fa159-7102-5903-809b-402a6fe1cce4/nix-ld/flake.nix
 """
     )
